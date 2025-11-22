@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Остатки по аптекам</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #dbeafe;
+            --danger: #dc2626;
+            --danger-light: #fecaca;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --success: #16a34a;
+            --success-light: #dcfce7;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 8px;
+            background: var(--gray-100);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .view-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+            color: var(--gray-600);
+        }
+
+        .view-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .view-btn:hover {
+            color: var(--primary);
+        }
+
+        .filters-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .main-filters-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-clear-btn {
+            font-size: 11px;
+            padding: 2px 6px;
+            background: var(--gray-200);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .filter-clear-btn:hover {
+            background: var(--gray-300);
+        }
+
+        input[type="text"],
+        select {
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: white;
+            color: var(--gray-800);
+            width: 100%;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--gray-400);
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 8px 12px;
+            border: 2px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            color: var(--gray-700);
+        }
+
+        .toggle-btn.active {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .toggle-btn.inactive {
+            background: var(--danger-light);
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .expiry-filter-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .expiry-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 8px 12px;
+            border: 2px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            color: var(--gray-700);
+        }
+
+        .expiry-btn.inactive {
+            background: var(--gray-100);
+            color: var(--gray-600);
+            border-color: var(--gray-300);
+        }
+
+        .expiry-btn.active-6 {
+            background: var(--warning-light);
+            color: var(--warning);
+            border-color: var(--warning);
+        }
+
+        .expiry-btn.active-2 {
+            background: var(--danger-light);
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .additional-filters-section {
+            border-top: 1px solid var(--gray-200);
+            padding-top: 16px;
+            margin-top: 16px;
+        }
+
+        .additional-filters-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .additional-filters-header:hover {
+            opacity: 0.8;
+        }
+
+        .toggle-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-light);
+            border-radius: 6px;
+            color: var(--primary);
+            font-weight: 700;
+            transition: transform 0.2s;
+            transform: rotate(-90deg);
+        }
+
+        .toggle-icon.open {
+            transform: rotate(0deg);
+        }
+
+        .additional-filters-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .additional-filters-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .additional-filters-content.open {
+            max-height: 600px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-800);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--gray-300);
+        }
+
+        .mini-spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .results-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .results-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .results-count {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .results-count strong {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--gray-50);
+            border-bottom: 2px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--gray-700);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 14px;
+        }
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        .pharmacy-name {
+            font-weight: 600;
+            color: var(--primary);
+            max-width: 300px;
+        }
+
+        .nomenclature {
+            color: var(--gray-800);
+            max-width: 250px;
+        }
+
+        .expiry-date {
+            font-weight: 500;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .expiry-date.danger {
+            color: var(--danger);
+            background: var(--danger-light);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .expiry-date.warning {
+            color: var(--warning);
+            background: var(--warning-light);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .stock-highlight {
+            background: var(--success-light);
+            color: var(--success);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .center-cell {
+            text-align: center;
+        }
+
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--gray-500);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        .info-box {
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: var(--primary-dark);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .main-filters-row {
+                grid-template-columns: 1fr;
+            }
+
+            .additional-filters-content {
+                grid-template-columns: 1fr;
+            }
+
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            th, td {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+
+            .header-title h1 {
+                font-size: 22px;
+            }
+
+            .table-wrapper {
+                max-height: 50vh;
+            }
+
+            input[type="text"],
+            select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Заголовок -->
+        <div class="header">
+            <div class="header-title">
+                <h1>📊 Остатки по аптекам</h1>
+            </div>
+            <div class="view-toggle">
+                <button class="view-btn active" id="viewDetailed" title="Полная информация">📋 Детальный</button>
+                <button class="view-btn" id="viewSimple" title="Только остатки">📦 Простой</button>
+            </div>
+        </div>
+
+        <!-- Информационное сообщение -->
+        <div class="info-box" id="infoBox" style="display: none;"></div>
+
+        <!-- Панель фильтров -->
+        <div class="filters-panel">
+            <!-- Основные фильтры -->
+            <div class="main-filters-row">
+                <div class="filter-group">
+                    <label class="filter-label">
+                        🔍 Поиск по номенклатуре
+                        <button class="filter-clear-btn" id="clearSearchName">Очистить</button>
+                    </label>
+                    <input type="text" id="searchName" placeholder="Введите название препарата...">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">
+                        🏥 Фильтр по аптеке
+                        <button class="filter-clear-btn" id="clearPharmacy">Очистить</button>
+                    </label>
+                    <select id="pharmacyFilter">
+                        <option value="">Все аптеки</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">
+                        ⏳ Срок годности
+                        <button class="filter-clear-btn" id="clearExpiry">Очистить</button>
+                    </label>
+                    <div class="expiry-filter-group">
+                        <button class="expiry-btn inactive" id="expiry6months" style="font-size: 11px;">⚠️ &lt; 6 мес.</button>
+                        <button class="expiry-btn inactive" id="expiry2months" style="font-size: 11px;">🚨 &lt; 2 мес.</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Дополнительные фильтры (раскрывающееся меню) -->
+            <div class="additional-filters-section">
+                <div class="additional-filters-header" id="toggleAdditionalFilters">
+                    <div class="toggle-icon">▼</div>
+                    <h3>📋 Дополнительные фильтры</h3>
+                </div>
+
+                <div class="additional-filters-content" id="additionalFiltersContent">
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            📄 Поиск по номеру счета
+                            <button class="filter-clear-btn" id="clearSearchInvoice">Очистить</button>
+                        </label>
+                        <input type="text" id="searchInvoice" placeholder="Номер счета-фактуры...">
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            📦 Категория товара
+                            <button class="filter-clear-btn" id="clearCategory">Очистить</button>
+                        </label>
+                        <select id="categoryFilter">
+                            <option value="">Все категории</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            🏗️ Фильтр по складу
+                            <button class="filter-clear-btn" id="clearStorage">Очистить</button>
+                        </label>
+                        <select id="storageFilter">
+                            <option value="">Все склады</option>
+                            <option value="Входящий">Входящий</option>
+                            <option value="Арбитраж">Арбитраж</option>
+                            <option value="Торговый зал">Торговый зал</option>
+                            <option value="Расхождения">Расхождения</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            🔄 Компенсация сроков
+                            <button class="filter-clear-btn" id="clearCompensation">Очистить</button>
+                        </label>
+                        <div class="toggle-group">
+                            <button class="toggle-btn" id="compensationDa">Да</button>
+                            <button class="toggle-btn" id="compensationNet">Нет</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            ✓ Обязательный ассортимент
+                            <button class="filter-clear-btn" id="clearAssortment">Очистить</button>
+                        </label>
+                        <div class="toggle-group">
+                            <button class="toggle-btn" id="assortmentDa">Да</button>
+                            <button class="toggle-btn" id="assortmentNet">Нет</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопки -->
+            <div class="filter-buttons">
+                <button class="btn-primary" id="applyFilters">
+                    <span id="applyText">Применить фильтры</span>
+                </button>
+                <button class="btn-secondary" id="resetFilters">Очистить все</button>
+            </div>
+        </div>
+
+        <!-- Результаты -->
+        <div class="results-panel">
+            <div class="results-header">
+                <div class="results-count">Результатов: <strong id="resultCount">0</strong></div>
+                <div id="loadingIndicator" style="display: none; font-size: 12px; color: var(--gray-600);">
+                    <span style="display: inline-flex; align-items: center; gap: 6px;">
+                        <span class="mini-spinner"></span>
+                        Обновление...
+                    </span>
+                </div>
+            </div>
+            <div class="table-wrapper" id="tableContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <span>Загрузка данных...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxYTIIrz6uIcSOhYEom8nOX_ViQ_sOXyWq6FSeBg23f62zlsmbELnVrodeGRMslG1uBiw/exec';
+        
+        // 4 основных типа складов
+        const MAIN_STORAGES = ['Входящий', 'Арбитраж', 'Торговый зал', 'Расхождения'];
+        
+        let allData = [];
+        let filteredData = [];
+        let currentExpiryFilter = 'none';
+        let currentView = 'detailed';
+        let currentCompensation = 'all';
+        let currentAssortment = 'all';
+        let currentStorage = '';
+        let pharmacies = new Set();
+        let categories = new Set();
+        let isApplying = false;
+        let additionalFiltersOpen = false;
+
+        async function init() {
+            await loadData();
+            setupEventListeners();
+        }
+
+        async function loadData() {
+            try {
+                const response = await fetch(`${API_URL}?action=getData`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    allData = result.data;
+                    
+                    if (allData.length > 10000) {
+                        showInfo(`📊 Загружено ${allData.length.toLocaleString('ru-RU')} записей. Рекомендуется применить фильтры.`);
+                    }
+                    
+                    filteredData = [...allData];
+                    populateFilters();
+                    displayTable();
+                } else {
+                    showError('Ошибка API: ' + (result.message || 'неизвестная ошибка'));
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                showError('Ошибка загрузки данных. Проверьте API URL.');
+            }
+        }
+
+        /**
+         * Парсит тип склада из колонки Склад
+         * Формат: "1030-52 Арбитраж" -> "Арбитраж"
+         */
+        function parseStorageType(storageStr) {
+            if (!storageStr) return '';
+            
+            const parts = storageStr.trim().split(/\s+/);
+            if (parts.length > 1) {
+                const storageType = parts.slice(1).join(' ');
+                return storageType;
+            }
+            
+            return '';
+        }
+
+        function populateFilters() {
+            allData.forEach(item => {
+                if (item['Аптека']) pharmacies.add(item['Аптека']);
+                if (item['Категория товара']) categories.add(item['Категория товара']);
+            });
+
+            const pharmacySelect = document.getElementById('pharmacyFilter');
+            const sortedPharmacies = Array.from(pharmacies).sort();
+            sortedPharmacies.forEach(pharmacy => {
+                const option = document.createElement('option');
+                option.value = pharmacy;
+                option.textContent = pharmacy;
+                pharmacySelect.appendChild(option);
+            });
+
+            const categorySelect = document.getElementById('categoryFilter');
+            const sortedCategories = Array.from(categories).sort();
+            sortedCategories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categorySelect.appendChild(option);
+            });
+        }
+
+        function setupEventListeners() {
+            document.getElementById('applyFilters').addEventListener('click', applyFiltersWithLoading);
+            document.getElementById('resetFilters').addEventListener('click', resetFilters);
+            
+            document.getElementById('viewDetailed').addEventListener('click', () => switchView('detailed'));
+            document.getElementById('viewSimple').addEventListener('click', () => switchView('simple'));
+            
+            // Раскрывающееся меню дополнительных фильтров
+            document.getElementById('toggleAdditionalFilters').addEventListener('click', toggleAdditionalFilters);
+            
+            // Кнопки очистки
+            document.getElementById('clearSearchName').addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('searchName').value = '';
+                applyFiltersWithLoading();
+            });
+            document.getElementById('clearSearchInvoice').addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('searchInvoice').value = '';
+                applyFiltersWithLoading();
+            });
+            document.getElementById('clearPharmacy').addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('pharmacyFilter').value = '';
+                applyFiltersWithLoading();
+            });
+            document.getElementById('clearCategory').addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('categoryFilter').value = '';
+                applyFiltersWithLoading();
+            });
+            document.getElementById('clearStorage').addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('storageFilter').value = '';
+                currentStorage = '';
+                applyFiltersWithLoading();
+            });
+            
+            // Компенсация сроков
+            document.getElementById('compensationDa').addEventListener('click', () => toggleCompensation('da'));
+            document.getElementById('compensationNet').addEventListener('click', () => toggleCompensation('net'));
+            document.getElementById('clearCompensation').addEventListener('click', (e) => {
+                e.preventDefault();
+                currentCompensation = 'all';
+                updateCompensationButtons();
+                applyFiltersWithLoading();
+            });
+            
+            // Обязательный ассортимент
+            document.getElementById('assortmentDa').addEventListener('click', () => toggleAssortment('da'));
+            document.getElementById('assortmentNet').addEventListener('click', () => toggleAssortment('net'));
+            document.getElementById('clearAssortment').addEventListener('click', (e) => {
+                e.preventDefault();
+                currentAssortment = 'all';
+                updateAssortmentButtons();
+                applyFiltersWithLoading();
+            });
+            
+            // Склад
+            document.getElementById('storageFilter').addEventListener('change', () => {
+                currentStorage = document.getElementById('storageFilter').value;
+                applyFiltersWithLoading();
+            });
+            
+            // Срок годности
+            document.getElementById('expiry6months').addEventListener('click', () => selectExpiryFilter('6months'));
+            document.getElementById('expiry2months').addEventListener('click', () => selectExpiryFilter('2months'));
+            document.getElementById('clearExpiry').addEventListener('click', (e) => {
+                e.preventDefault();
+                currentExpiryFilter = 'none';
+                updateExpiryButtons();
+                applyFiltersWithLoading();
+            });
+        }
+
+        function toggleAdditionalFilters() {
+            additionalFiltersOpen = !additionalFiltersOpen;
+            const content = document.getElementById('additionalFiltersContent');
+            const icon = document.querySelector('.toggle-icon');
+            
+            if (additionalFiltersOpen) {
+                content.classList.add('open');
+                icon.classList.add('open');
+            } else {
+                content.classList.remove('open');
+                icon.classList.remove('open');
+            }
+        }
+
+        function toggleCompensation(value) {
+            if (currentCompensation === value) {
+                currentCompensation = 'all';
+            } else {
+                currentCompensation = value;
+            }
+            updateCompensationButtons();
+            applyFiltersWithLoading();
+        }
+
+        function toggleAssortment(value) {
+            if (currentAssortment === value) {
+                currentAssortment = 'all';
+            } else {
+                currentAssortment = value;
+            }
+            updateAssortmentButtons();
+            applyFiltersWithLoading();
+        }
+
+        function updateCompensationButtons() {
+            const btnDa = document.getElementById('compensationDa');
+            const btnNet = document.getElementById('compensationNet');
+            
+            btnDa.classList.remove('active', 'inactive');
+            btnNet.classList.remove('active', 'inactive');
+            
+            if (currentCompensation === 'da') {
+                btnDa.classList.add('active');
+                btnNet.classList.add('inactive');
+            } else if (currentCompensation === 'net') {
+                btnNet.classList.add('active');
+                btnDa.classList.add('inactive');
+            }
+        }
+
+        function updateAssortmentButtons() {
+            const btnDa = document.getElementById('assortmentDa');
+            const btnNet = document.getElementById('assortmentNet');
+            
+            btnDa.classList.remove('active', 'inactive');
+            btnNet.classList.remove('active', 'inactive');
+            
+            if (currentAssortment === 'da') {
+                btnDa.classList.add('active');
+                btnNet.classList.add('inactive');
+            } else if (currentAssortment === 'net') {
+                btnNet.classList.add('active');
+                btnDa.classList.add('inactive');
+            }
+        }
+
+        function updateExpiryButtons() {
+            const btn6 = document.getElementById('expiry6months');
+            const btn2 = document.getElementById('expiry2months');
+            
+            btn6.classList.remove('active-6', 'inactive');
+            btn2.classList.remove('active-2', 'inactive');
+            
+            if (currentExpiryFilter === '6months') {
+                btn6.classList.add('active-6');
+                btn2.classList.add('inactive');
+            } else if (currentExpiryFilter === '2months') {
+                btn2.classList.add('active-2');
+                btn6.classList.add('inactive');
+            } else {
+                btn6.classList.add('inactive');
+                btn2.classList.add('inactive');
+            }
+        }
+
+        function switchView(view) {
+            currentView = view;
+            document.getElementById('viewDetailed').classList.toggle('active', view === 'detailed');
+            document.getElementById('viewSimple').classList.toggle('active', view === 'simple');
+            displayTable();
+        }
+
+        function selectExpiryFilter(filter) {
+            if (currentExpiryFilter === filter) {
+                currentExpiryFilter = 'none';
+            } else {
+                currentExpiryFilter = filter;
+            }
+            updateExpiryButtons();
+            applyFiltersWithLoading();
+        }
+
+        async function applyFiltersWithLoading() {
+            if (isApplying) return;
+            isApplying = true;
+            document.getElementById('loadingIndicator').style.display = 'inline';
+            document.getElementById('applyFilters').disabled = true;
+            
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            try {
+                applyFilters();
+            } finally {
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('applyFilters').disabled = false;
+                isApplying = false;
+            }
+        }
+
+        function applyFilters() {
+            const searchName = document.getElementById('searchName').value.toLowerCase();
+            const searchInvoice = document.getElementById('searchInvoice').value.toLowerCase();
+            const pharmacy = document.getElementById('pharmacyFilter').value;
+            const category = document.getElementById('categoryFilter').value;
+
+            filteredData = allData.filter(item => {
+                if (searchName && !item['Номенклатура']?.toString().toLowerCase().includes(searchName)) {
+                    return false;
+                }
+
+                if (searchInvoice && !item['Номер счета-фактуры']?.toString().toLowerCase().includes(searchInvoice)) {
+                    return false;
+                }
+
+                if (pharmacy && item['Аптека'] !== pharmacy) {
+                    return false;
+                }
+
+                if (category && item['Категория товара'] !== category) {
+                    return false;
+                }
+
+                // Парсим тип склада из "1030-52 Арбитраж"
+                if (currentStorage) {
+                    const storageType = parseStorageType(item['Склад']);
+                    if (storageType !== currentStorage) {
+                        return false;
+                    }
+                }
+
+                if (currentCompensation !== 'all') {
+                    const compensation = item['Компенсация сроков'] || '';
+                    const targetValue = currentCompensation === 'da' ? 'Да' : 'Нет';
+                    if (compensation !== targetValue) {
+                        return false;
+                    }
+                }
+
+                if (currentAssortment !== 'all') {
+                    const assortment = item['Обязательный ассортимент'] || '';
+                    const targetValue = currentAssortment === 'da' ? 'Да' : 'Нет';
+                    if (assortment !== targetValue) {
+                        return false;
+                    }
+                }
+
+                if (currentExpiryFilter !== 'none') {
+                    const expiryStr = item['Срок годности'];
+                    if (expiryStr) {
+                        const expiryDate = new Date(expiryStr);
+                        const today = new Date();
+                        
+                        if (currentExpiryFilter === '6months') {
+                            const sixMonthsAhead = new Date();
+                            sixMonthsAhead.setMonth(sixMonthsAhead.getMonth() + 6);
+                            if (expiryDate > sixMonthsAhead) return false;
+                        } else if (currentExpiryFilter === '2months') {
+                            const twoMonthsAhead = new Date();
+                            twoMonthsAhead.setMonth(twoMonthsAhead.getMonth() + 2);
+                            if (expiryDate > twoMonthsAhead) return false;
+                        }
+                    }
+                }
+
+                return true;
+            });
+
+            displayTable();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchName').value = '';
+            document.getElementById('searchInvoice').value = '';
+            document.getElementById('pharmacyFilter').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('storageFilter').value = '';
+            
+            currentExpiryFilter = 'none';
+            currentCompensation = 'all';
+            currentAssortment = 'all';
+            currentStorage = '';
+            
+            updateExpiryButtons();
+            updateCompensationButtons();
+            updateAssortmentButtons();
+            
+            filteredData = [...allData];
+            displayTable();
+            hideInfo();
+        }
+
+        function sortAndGroupData(data) {
+            return data.sort((a, b) => {
+                const nameA = (a['Номенклатура'] || '').toString();
+                const nameB = (b['Номенклатура'] || '').toString();
+                
+                const nameCompare = nameA.localeCompare(nameB, 'ru');
+                if (nameCompare !== 0) {
+                    return nameCompare;
+                }
+                
+                const pharmA = (a['Аптека'] || '').toString();
+                const pharmB = (b['Аптека'] || '').toString();
+                const pharmCompare = pharmA.localeCompare(pharmB, 'ru');
+                if (pharmCompare !== 0) {
+                    return pharmCompare;
+                }
+                
+                const expiryA = new Date(a['Срок годности'] || '9999-12-31');
+                const expiryB = new Date(b['Срок годности'] || '9999-12-31');
+                return expiryA - expiryB;
+            });
+        }
+
+        function displayTable() {
+            const container = document.getElementById('tableContainer');
+            
+            if (filteredData.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div class="empty-state-title">Данные не найдены</div>
+                        <p>Попробуйте изменить параметры фильтра</p>
+                    </div>
+                `;
+                document.getElementById('resultCount').textContent = '0';
+                return;
+            }
+
+            if (currentView === 'simple') {
+                displaySimpleView(container);
+            } else {
+                displayDetailedView(container);
+            }
+            
+            document.getElementById('resultCount').textContent = filteredData.length.toLocaleString('ru-RU');
+            
+            if (filteredData.length > 1000) {
+                showInfo(`⚠️ Показаны первые 1000 из ${filteredData.length.toLocaleString('ru-RU')} результатов. Используйте фильтры для уточнения поиска.`);
+            } else {
+                hideInfo();
+            }
+        }
+
+        function displaySimpleView(container) {
+            const nomenclatureMap = new Map();
+            
+            filteredData.slice(0, 1000).forEach(item => {
+                const key = `${item['Номенклатура']}`;
+                if (!nomenclatureMap.has(key)) {
+                    nomenclatureMap.set(key, {
+                        nomenclature: item['Номенклатура'],
+                        expiryDate: item['Срок годности'],
+                        pharmacies: {}
+                    });
+                }
+                
+                const data = nomenclatureMap.get(key);
+                const pharmacy = item['Аптека'] || 'Без аптеки';
+                
+                if (!data.pharmacies[pharmacy]) {
+                    data.pharmacies[pharmacy] = 0;
+                }
+                data.pharmacies[pharmacy] += item['Остаток на складе'] || 0;
+            });
+
+            let sortedData = Array.from(nomenclatureMap.values());
+            sortedData.sort((a, b) => 
+                (a.nomenclature || '').localeCompare((b.nomenclature || ''), 'ru')
+            );
+
+            let html = '<table><thead><tr>';
+            html += '<th>Номенклатура</th>';
+            html += '<th>Срок годности</th>';
+            html += '<th>Остатки по аптекам</th>';
+            html += '</tr></thead><tbody>';
+
+            sortedData.forEach(data => {
+                html += '<tr>';
+                html += `<td class="nomenclature">${data.nomenclature}</td>`;
+                
+                try {
+                    const expiryDate = new Date(data.expiryDate);
+                    const today = new Date();
+                    const daysUntilExpiry = Math.floor((expiryDate - today) / (1000 * 60 * 60 * 24));
+                    
+                    let expiryClass = 'expiry-date';
+                    if (daysUntilExpiry < 60) {
+                        expiryClass = 'expiry-date danger';
+                    } else if (daysUntilExpiry < 180) {
+                        expiryClass = 'expiry-date warning';
+                    }
+                    html += `<td class="${expiryClass}">${expiryDate.toLocaleDateString('ru-RU')}</td>`;
+                } catch (e) {
+                    html += `<td>-</td>`;
+                }
+                
+                let pharmacyStocks = [];
+                let totalStock = 0;
+                
+                const sortedPharmacies = Object.keys(data.pharmacies).sort((a, b) => 
+                    a.localeCompare(b, 'ru')
+                );
+                
+                sortedPharmacies.forEach(pharmacy => {
+                    const stock = data.pharmacies[pharmacy];
+                    pharmacyStocks.push(`${pharmacy}: <span class="stock-highlight">${stock}</span>`);
+                    totalStock += stock;
+                });
+                
+                html += `<td style="font-size: 13px;">${pharmacyStocks.join('<br>')}<br><strong style="color: var(--primary);">Всего: ${totalStock}</strong></td>`;
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function displayDetailedView(container) {
+            const displayColumns = [
+                'Аптека',
+                'Номенклатура',
+                'Срок годности',
+                'Остаток на складе',
+                'Цена розничная с НДС',
+                'Наценка',
+                'Номер счета-фактуры',
+                'Категория товара'
+            ];
+
+            const sortedData = sortAndGroupData(filteredData);
+
+            let html = '<table><thead><tr>';
+            displayColumns.forEach(col => {
+                html += `<th>${col}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            const displayLimit = Math.min(sortedData.length, 1000);
+            
+            for (let i = 0; i < displayLimit; i++) {
+                const item = sortedData[i];
+                html += '<tr>';
+                displayColumns.forEach(col => {
+                    let cellContent = item[col];
+                    let cellClass = '';
+
+                    if (col === 'Аптека') {
+                        cellClass = 'pharmacy-name';
+                    } else if (col === 'Номенклатура') {
+                        cellClass = 'nomenclature';
+                    } else if (col === 'Срок годности') {
+                        try {
+                            const expiryDate = new Date(cellContent);
+                            const today = new Date();
+                            const daysUntilExpiry = Math.floor((expiryDate - today) / (1000 * 60 * 60 * 24));
+                            
+                            if (daysUntilExpiry < 60) {
+                                cellClass = 'expiry-date danger center-cell';
+                            } else if (daysUntilExpiry < 180) {
+                                cellClass = 'expiry-date warning center-cell';
+                            } else {
+                                cellClass = 'expiry-date center-cell';
+                            }
+                            
+                            cellContent = expiryDate.toLocaleDateString('ru-RU');
+                        } catch (e) {
+                            cellClass = 'center-cell';
+                        }
+                    } else if (col === 'Остаток на складе') {
+                        cellClass = 'center-cell';
+                    } else if (col === 'Цена розничная с НДС') {
+                        cellClass = 'center-cell';
+                    } else if (col === 'Наценка') {
+                        cellClass = 'center-cell';
+                        if (cellContent) {
+                            cellContent = (cellContent * 100).toFixed(1) + '%';
+                        }
+                    } else if (col === 'Номер счета-фактуры') {
+                        cellClass = 'center-cell';
+                    }
+
+                    html += `<td class="${cellClass}">${cellContent || '—'}</td>`;
+                });
+                html += '</tr>';
+            }
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function showInfo(message) {
+            const box = document.getElementById('infoBox');
+            box.textContent = message;
+            box.style.display = 'block';
+        }
+
+        function hideInfo() {
+            document.getElementById('infoBox').style.display = 'none';
+        }
+
+        function showError(message) {
+            const container = document.getElementById('tableContainer');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">⚠️</div>
+                    <div class="empty-state-title">Ошибка</div>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
