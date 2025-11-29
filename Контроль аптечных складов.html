@@ -1,828 +1,828 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 Контроль Аптечных Складов</title>
-    <style>
-        :root {
-            --color-cream-50: rgba(252, 252, 249, 1);
-            --color-cream-100: rgba(255, 255, 253, 1);
-            --color-slate-900: rgba(19, 52, 59, 1);
-            --color-teal-500: rgba(33, 128, 141, 1);
-            --color-red-500: rgba(192, 21, 47, 1);
-            --color-orange-500: rgba(168, 75, 47, 1);
-            --color-background: var(--color-cream-50);
-            --color-surface: var(--color-cream-100);
-            --color-text: var(--color-slate-900);
-            --color-primary: var(--color-teal-500);
-            --color-btn-primary-text: var(--color-cream-50);
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--color-background);
-            color: var(--color-text);
-        }
-        .app-container { display: flex; min-height: 100vh; }
-        .sidebar {
-            width: 260px;
-            background-color: var(--color-surface);
-            border-right: 1px solid #ddd;
-            padding: 24px;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        .logo {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 32px;
-            color: var(--color-primary);
-        }
-        .filter-section {
-            margin-bottom: 24px;
-        }
-        .filter-label {
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: #666;
-            margin-bottom: 12px;
-            display: block;
-        }
-        .filter-input, .filter-select {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .filter-checkbox {
-            margin: 8px 0;
-            display: flex;
-            align-items: center;
-        }
-        .filter-checkbox input[type="checkbox"] {
-            margin-right: 8px;
-            cursor: pointer;
-            accent-color: #27ae60;
-        }
-        .filter-checkbox label {
-            cursor: pointer;
-            font-size: 14px;
-            flex: 1;
-        }
-        .filter-actions {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            font-size: 13px;
-        }
-        .filter-link {
-            cursor: pointer;
-            color: var(--color-primary);
-            text-decoration: none;
-            font-weight: 500;
-            padding: 6px 0;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-            flex: 1;
-            text-align: center;
-        }
-        .filter-link:hover {
-            color: var(--color-primary);
-            border-bottom-color: var(--color-primary);
-            opacity: 0.8;
-        }
-        .main-content {
-            flex: 1;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-        .header h1 {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--color-text);
-        }
-        .header-info {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-        .info-box {
-            background-color: var(--color-surface);
-            padding: 12px 16px;
-            border-radius: 6px;
-            border-left: 3px solid #27ae60;
-            font-size: 14px;
-        }
-        .info-box strong {
-            color: var(--color-text);
-            display: block;
-            margin-bottom: 4px;
-        }
-        .info-box span {
-            color: #666;
-            font-size: 12px;
-        }
-        .header-controls {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .btn-primary {
-            background-color: var(--color-primary);
-            color: var(--color-btn-primary-text);
-        }
-        .btn-primary:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-        .btn-secondary {
-            background-color: #f0f0f0;
-            color: var(--color-text);
-            border: 1px solid #ddd;
-        }
-        .btn-secondary:hover {
-            background-color: #e0e0e0;
-        }
-        #showHiddenBtn {
-            display: none;
-            background-color: var(--color-orange-500);
-            color: white;
-        }
-        #showHiddenBtn.visible {
-            display: inline-block;
-        }
-        .content-container {
-            flex: 1;
-            overflow-y: auto;
-            background-color: white;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            padding: 24px;
-        }
-        .notification {
-            background-color: #f9f9f9;
-            border-left: 4px solid #ddd;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-        .notification.info {
-            border-left-color: #2980b9;
-            background-color: #ecf0f1;
-        }
-        .notification.urgent {
-            border-left-color: var(--color-red-500);
-            background-color: #ffe6e6;
-        }
-        /* Цвета для разных типов уведомлений */
-        .notification.type-incoming {
-            border-left-color: #3498db;
-            background-color: #ebf5fb;
-        }
-        .notification.type-arbitration {
-            border-left-color: #f39c12;
-            background-color: #fef5e7;
-        }
-        .notification.type-expired {
-            border-left-color: #e74c3c;
-            background-color: #fadbd8;
-        }
-        .notification.type-isg {
-            border-left-color: #9b59b6;
-            background-color: #f4ecf7;
-        }
-        .notification.type-discrepancy {
-            border-left-color: #1abc9c;
-            background-color: #e8f8f5;
-        }
-        .notification.type-counterfeit {
-            border-left-color: #c0392b;
-            background-color: #fadbd8;
-        }
-        .notification:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        .notification-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .notification-type {
-            font-weight: 600;
-            color: var(--color-text);
-            font-size: 14px;
-        }
-        .notification-pharmacy {
-            font-size: 12px;
-            color: #666;
-            background-color: rgba(0, 0, 0, 0.05);
-            padding: 2px 8px;
-            border-radius: 3px;
-        }
-        .notification-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin-bottom: 12px;
-            font-size: 13px;
-            color: #555;
-        }
-        .detail-item {
-            background-color: rgba(255, 255, 255, 0.7);
-            padding: 8px;
-            border-radius: 3px;
-            border-left: 2px solid #ccc;
-        }
-        .detail-label {
-            font-weight: 600;
-            font-size: 11px;
-            text-transform: uppercase;
-            color: #999;
-            margin-bottom: 4px;
-        }
-        .detail-value {
-            color: var(--color-text);
-            word-break: break-word;
-        }
-        .notification-description {
-            font-style: italic;
-            color: #666;
-            margin-bottom: 12px;
-            font-size: 13px;
-            padding: 8px;
-            background-color: rgba(255, 255, 255, 0.5);
-            border-radius: 3px;
-        }
-        .notification-controls {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-        }
-        .hide-btn {
-            padding: 6px 12px;
-            background-color: #ddd;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
-        }
-        .hide-btn:hover {
-            background-color: #ccc;
-        }
-        .no-notifications {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-        }
-        .no-notifications-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
-        .no-notifications p {
-            font-size: 16px;
-            font-weight: 500;
-        }
-        .loading {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--color-primary);
-        }
-        .spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--color-primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 16px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .footer {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #ddd;
-            font-size: 12px;
-            color: #999;
-            text-align: center;
-        }
-        .error-message {
-            display: none;
-            background-color: #ffe6e6;
-            border-left: 4px solid var(--color-red-500);
-            padding: 12px;
-            margin-bottom: 16px;
-            border-radius: 4px;
-            color: var(--color-text);
-        }
-        .error-message.show {
-            display: block;
-        }
-        .success-message {
-            display: none;
-            background-color: #e6ffe6;
-            border-left: 4px solid #22aa22;
-            padding: 12px;
-            margin-bottom: 16px;
-            border-radius: 4px;
-            color: var(--color-text);
-        }
-        .success-message.show {
-            display: block;
-        }
-        @media (max-width: 768px) {
-            .app-container { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid #ddd; }
-            .header { flex-direction: column; align-items: flex-start; }
-            .header h1 { font-size: 24px; }
-            .header-info { flex-direction: column; width: 100%; }
-            .info-box { flex: 1; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📊 Контроль Аптечных Складов</title>
+<style>
+:root {
+--color-cream-50: rgba(252, 252, 249, 1);
+--color-cream-100: rgba(255, 255, 253, 1);
+--color-slate-900: rgba(19, 52, 59, 1);
+--color-teal-500: rgba(33, 128, 141, 1);
+--color-red-500: rgba(192, 21, 47, 1);
+--color-orange-500: rgba(168, 75, 47, 1);
+--color-background: var(--color-cream-50);
+--color-surface: var(--color-cream-100);
+--color-text: var(--color-slate-900);
+--color-primary: var(--color-teal-500);
+--color-btn-primary-text: var(--color-cream-50);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+background-color: var(--color-background);
+color: var(--color-text);
+}
+.app-container { display: flex; min-height: 100vh; }
+.sidebar {
+width: 260px;
+background-color: var(--color-surface);
+border-right: 1px solid #ddd;
+padding: 24px;
+position: sticky;
+top: 0;
+height: 100vh;
+overflow-y: auto;
+}
+.logo {
+font-size: 20px;
+font-weight: bold;
+margin-bottom: 32px;
+color: var(--color-primary);
+}
+.filter-section {
+margin-bottom: 24px;
+}
+.filter-label {
+font-size: 12px;
+font-weight: 600;
+text-transform: uppercase;
+color: #666;
+margin-bottom: 12px;
+display: block;
+}
+.filter-input, .filter-select {
+width: 100%;
+padding: 8px 12px;
+border: 1px solid #ddd;
+border-radius: 4px;
+font-size: 14px;
+}
+.filter-checkbox {
+margin: 8px 0;
+display: flex;
+align-items: center;
+}
+.filter-checkbox input[type="checkbox"] {
+margin-right: 8px;
+cursor: pointer;
+accent-color: #27ae60;
+}
+.filter-checkbox label {
+cursor: pointer;
+font-size: 14px;
+flex: 1;
+}
+.filter-actions {
+display: flex;
+gap: 8px;
+margin-bottom: 12px;
+font-size: 13px;
+}
+.filter-link {
+cursor: pointer;
+color: var(--color-primary);
+text-decoration: none;
+font-weight: 500;
+padding: 6px 0;
+border-bottom: 2px solid transparent;
+transition: all 0.2s;
+flex: 1;
+text-align: center;
+}
+.filter-link:hover {
+color: var(--color-primary);
+border-bottom-color: var(--color-primary);
+opacity: 0.8;
+}
+.main-content {
+flex: 1;
+padding: 24px;
+display: flex;
+flex-direction: column;
+}
+.header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 24px;
+gap: 16px;
+flex-wrap: wrap;
+}
+.header h1 {
+font-size: 28px;
+font-weight: 600;
+color: var(--color-text);
+}
+.header-info {
+display: flex;
+gap: 16px;
+flex-wrap: wrap;
+}
+.info-box {
+background-color: var(--color-surface);
+padding: 12px 16px;
+border-radius: 6px;
+border-left: 3px solid #27ae60;
+font-size: 14px;
+}
+.info-box strong {
+color: var(--color-text);
+display: block;
+margin-bottom: 4px;
+}
+.info-box span {
+color: #666;
+font-size: 12px;
+}
+.header-controls {
+display: flex;
+gap: 8px;
+flex-wrap: wrap;
+}
+.btn {
+padding: 8px 16px;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+font-size: 14px;
+font-weight: 500;
+transition: all 0.2s;
+}
+.btn-secondary {
+background-color: #f0f0f0;
+color: var(--color-text);
+border: 1px solid #ddd;
+}
+.btn-secondary:hover {
+background-color: #e0e0e0;
+}
+#refreshBtn {
+background-color: #f0f0f0;
+color: var(--color-text);
+border: 1px solid #ddd;
+}
+#refreshBtn:hover {
+background-color: #e0e0e0;
+}
+#refreshBtn.loading {
+opacity: 0.7;
+pointer-events: none;
+}
+.content-container {
+flex: 1;
+overflow-y: auto;
+background-color: white;
+border-radius: 6px;
+border: 1px solid #ddd;
+padding: 24px;
+}
+.notification {
+background-color: #f9f9f9;
+border-left: 4px solid #ddd;
+padding: 16px;
+margin-bottom: 12px;
+border-radius: 4px;
+transition: all 0.2s;
+}
+.notification.info {
+border-left-color: #2980b9;
+background-color: #ecf0f1;
+}
+.notification.urgent {
+border-left-color: var(--color-red-500);
+background-color: #ffe6e6;
+}
+.notification.type-incoming {
+border-left-color: #3498db;
+background-color: #ebf5fb;
+}
+.notification.type-arbitration {
+border-left-color: #f39c12;
+background-color: #fef5e7;
+}
+.notification.type-expired {
+border-left-color: #e74c3c;
+background-color: #fadbd8;
+}
+.notification.type-isg {
+border-left-color: #9b59b6;
+background-color: #f4ecf7;
+}
+.notification.type-discrepancy {
+border-left-color: #1abc9c;
+background-color: #e8f8f5;
+}
+.notification.type-counterfeit {
+border-left-color: #c0392b;
+background-color: #fadbd8;
+}
+.notification:hover {
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.notification-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 8px;
+}
+.notification-type {
+font-weight: 600;
+color: var(--color-text);
+font-size: 14px;
+}
+.notification-pharmacy {
+font-size: 12px;
+color: #666;
+background-color: rgba(0, 0, 0, 0.05);
+padding: 2px 8px;
+border-radius: 3px;
+}
+.notification-details {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+gap: 12px;
+margin-bottom: 12px;
+font-size: 13px;
+color: #555;
+}
+.detail-item {
+background-color: rgba(255, 255, 255, 0.7);
+padding: 8px;
+border-radius: 3px;
+border-left: 2px solid #ccc;
+}
+.detail-label {
+font-weight: 600;
+font-size: 11px;
+text-transform: uppercase;
+color: #999;
+margin-bottom: 4px;
+}
+.detail-value {
+color: var(--color-text);
+word-break: break-word;
+}
+.notification-description {
+font-style: italic;
+color: #666;
+margin-bottom: 12px;
+font-size: 13px;
+padding: 8px;
+background-color: rgba(255, 255, 255, 0.5);
+border-radius: 3px;
+}
+.no-notifications {
+text-align: center;
+padding: 40px 20px;
+color: #999;
+}
+.no-notifications-icon {
+font-size: 48px;
+margin-bottom: 16px;
+}
+.no-notifications p {
+font-size: 16px;
+font-weight: 500;
+}
+.loading {
+text-align: center;
+padding: 40px 20px;
+color: var(--color-primary);
+}
+.spinner {
+display: inline-block;
+width: 40px;
+height: 40px;
+border: 3px solid #f3f3f3;
+border-top: 3px solid var(--color-primary);
+border-radius: 50%;
+animation: spin 1s linear infinite;
+margin-bottom: 16px;
+}
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+.footer {
+margin-top: 16px;
+padding-top: 16px;
+border-top: 1px solid #ddd;
+font-size: 12px;
+color: #999;
+text-align: center;
+}
+.error-message {
+display: none;
+background-color: #ffe6e6;
+border-left: 4px solid var(--color-red-500);
+padding: 12px;
+margin-bottom: 16px;
+border-radius: 4px;
+color: var(--color-text);
+}
+.error-message.show {
+display: block;
+}
+.success-message {
+display: none;
+background-color: #e6ffe6;
+border-left: 4px solid #22aa22;
+padding: 12px;
+margin-bottom: 16px;
+border-radius: 4px;
+color: var(--color-text);
+}
+.success-message.show {
+display: block;
+}
+.cache-info {
+font-size: 11px;
+color: #999;
+margin-top: 8px;
+}
+@media (max-width: 768px) {
+.app-container { flex-direction: column; }
+.sidebar { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid #ddd; }
+.header { flex-direction: column; align-items: flex-start; }
+.header h1 { font-size: 24px; }
+.header-info { flex-direction: column; width: 100%; }
+.info-box { flex: 1; }
+}
+</style>
 </head>
 <body>
-    <div class="app-container">
-        <div class="sidebar">
-            <div class="logo">📊 Склады</div>
-            
-            <div class="filter-section">
-                <label class="filter-label">Выбор аптеки</label>
-                <select id="pharmacyFilter" class="filter-input">
-                    <option value="">Все аптеки</option>
-                </select>
-            </div>
-            
-            <div class="filter-section">
-                <label class="filter-label">Типы уведомлений</label>
-                <div class="filter-actions">
-                    <span class="filter-link" onclick="selectAllTypes()">Выделить все</span>
-                    <span class="filter-link" onclick="deselectAllTypes()">Снять выделение</span>
-                </div>
-                <div id="typeFilters"></div>
-            </div>
-            
-            <button class="btn btn-secondary" onclick="clearHiddenNotifications()" style="width: 100%; margin-top: 16px;">
-                🗑️ Очистить скрытые
-            </button>
-        </div>
-        
-        <div class="main-content">
-            <div class="header">
-                <h1>📊 Ситуация по складам</h1>
-                <div class="header-info">
-                    <div class="info-box">
-                        <strong id="totalNotifications">0</strong>
-                        <span>Всего проблем</span>
-                    </div>
-                    <div class="info-box">
-                        <strong id="affectedPharmacies">0</strong>
-                        <span>Аптек затронуто</span>
-                    </div>
-                </div>
-                <div class="header-controls">
-                    <button id="showHiddenBtn" class="btn btn-secondary" onclick="toggleHiddenNotifications()"></button>
-                </div>
-            </div>
-            
-            <div class="error-message" id="errorContainer"></div>
-            <div class="success-message" id="successContainer"></div>
-            
-            <div class="content-container" id="notificationsContainer">
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>Загрузка данных...</p>
-                </div>
-            </div>
-            
-            <div class="footer">
-                <span id="lastUpdate">Актуально на: --:--</span>
-            </div>
-        </div>
-    </div>
-
-    <script>
+<div class="app-container">
+<div class="sidebar">
+<div class="logo">📊 Склады</div>
+<div class="filter-section">
+<label class="filter-label">Выбор аптеки</label>
+<select id="pharmacyFilter" class="filter-input">
+<option value="">Все аптеки</option>
+</select>
+</div>
+<div class="filter-section">
+<label class="filter-label">Типы уведомлений</label>
+<div class="filter-actions">
+<span class="filter-link" onclick="selectAllTypes()">Выделить все</span>
+<span class="filter-link" onclick="deselectAllTypes()">Снять выделение</span>
+</div>
+<div id="typeFilters"></div>
+</div>
+<button id="refreshBtn" class="btn btn-secondary" onclick="forceRefreshData()" style="width: 100%; margin-bottom: 8px;">
+🔄 Обновить данные
+</button>
+<div class="cache-info" id="cacheInfo"></div>
+</div>
+<div class="main-content">
+<div class="header">
+<h1>📊 Ситуация по складам</h1>
+<div class="header-info">
+<div class="info-box">
+<strong id="totalNotifications">0</strong>
+<span>Всего проблем</span>
+</div>
+<div class="info-box">
+<strong id="affectedPharmacies">0</strong>
+<span>Аптек затронуто</span>
+</div>
+</div>
+</div>
+<div class="error-message" id="errorContainer"></div>
+<div class="success-message" id="successContainer"></div>
+<div class="content-container" id="notificationsContainer">
+<div class="loading">
+<div class="spinner"></div>
+<p>Загрузка данных...</p>
+</div>
+</div>
+<div class="footer">
+<span id="lastUpdate">Актуально на: --:--</span>
+</div>
+</div>
+</div>
+<script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbxP3mHYR9wl0v_UH0zqFcj3RHMRf6SsjTz_EbpRfBKuFlfWGmMN0eu_Ly3e3ygAMKamgQ/exec';
+const CACHE_KEY = 'warehouseNotificationsCache';
+const CACHE_TIMESTAMP_KEY = 'warehouseNotificationsCacheTime';
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 часа в миллисекундах
 
 // ВНУТРЕННИЕ КОДЫ ТИПОВ (для хранения и фильтрации)
 const NOTIFICATION_TYPES_INTERNAL = {
-    INCOMING: 'Входящий склад - накладная непринята',
-    ARBITRATION: 'Арбитраж - подлежит возврату/списанию',
-    EXPIRED: 'Торговый зал - истекший срок',
-    ISG: 'Необходимо пробить ИСГ',
-    DISCREPANCY: 'Расхождение - долгий срок',
-    COUNTERFEIT: 'ФАЛЬСИФИКАТ - Торговый зал'
+INCOMING: 'Входящий склад - накладная непринята',
+ARBITRATION: 'Арбитраж - подлежит возврату/списанию',
+EXPIRED: 'Торговый зал - истекший срок',
+ISG: 'Необходимо пробить ИСГ',
+DISCREPANCY: 'Расхождение - долгий срок',
+COUNTERFEIT: 'ФАЛЬСИФИКАТ - Торговый зал'
 };
 
 // ОТОБРАЖАЕМЫЕ НАЗВАНИЯ ТИПОВ (для пользователя)
 const NOTIFICATION_TYPES_DISPLAY = {
-    'Входящий склад - накладная непринята': 'Накладная непринята',
-    'Арбитраж - подлежит возврату/списанию': 'Подлежит возврату/списанию',
-    'Торговый зал - истекший срок': 'Истекший срок в Торговом зале',
-    'Необходимо пробить ИСГ': 'Необходимо пробить ИСГ',
-    'Расхождение - долгий срок': 'Долгий срок на складе Расхождение',
-    'ФАЛЬСИФИКАТ - Торговый зал': 'Фальсификат в Торговом зале'
+'Входящий склад - накладная непринята': 'Накладная непринята',
+'Арбитраж - подлежит возврату/списанию': 'Подлежит возврату/списанию',
+'Торговый зал - истекший срок': 'Истекший срок в Торговом зале',
+'Необходимо пробить ИСГ': 'Необходимо пробить ИСГ',
+'Расхождение - долгий срок': 'Долгий срок на складе Расхождение',
+'ФАЛЬСИФИКАТ - Торговый зал': 'Фальсификат в Торговом зале'
 };
 
 // Массив внутренних типов (для фильтров)
 const NOTIFICATION_TYPES = [
-    NOTIFICATION_TYPES_INTERNAL.INCOMING,
-    NOTIFICATION_TYPES_INTERNAL.ARBITRATION,
-    NOTIFICATION_TYPES_INTERNAL.EXPIRED,
-    NOTIFICATION_TYPES_INTERNAL.ISG,
-    NOTIFICATION_TYPES_INTERNAL.DISCREPANCY,
-    NOTIFICATION_TYPES_INTERNAL.COUNTERFEIT
+NOTIFICATION_TYPES_INTERNAL.INCOMING,
+NOTIFICATION_TYPES_INTERNAL.ARBITRATION,
+NOTIFICATION_TYPES_INTERNAL.EXPIRED,
+NOTIFICATION_TYPES_INTERNAL.ISG,
+NOTIFICATION_TYPES_INTERNAL.DISCREPANCY,
+NOTIFICATION_TYPES_INTERNAL.COUNTERFEIT
 ];
 
 // Маппинг типов на CSS классы для цветов
 const TYPE_COLOR_CLASS = {
-    'Входящий склад - накладная непринята': 'type-incoming',
-    'Арбитраж - подлежит возврату/списанию': 'type-arbitration',
-    'Торговый зал - истекший срок': 'type-expired',
-    'Необходимо пробить ИСГ': 'type-isg',
-    'Расхождение - долгий срок': 'type-discrepancy',
-    'ФАЛЬСИФИКАТ - Торговый зал': 'type-counterfeit'
+'Входящий склад - накладная непринята': 'type-incoming',
+'Арбитраж - подлежит возврату/списанию': 'type-arbitration',
+'Торговый зал - истекший срок': 'type-expired',
+'Необходимо пробить ИСГ': 'type-isg',
+'Расхождение - долгий срок': 'type-discrepancy',
+'ФАЛЬСИФИКАТ - Торговый зал': 'type-counterfeit'
 };
 
 let allNotifications = [];
 let lastUpdate = null;
-let showingHidden = false;
+let isLoading = false;
+
 let filters = {
-    pharmacy: '',
-    types: new Set(NOTIFICATION_TYPES)
+pharmacy: '',
+types: new Set(NOTIFICATION_TYPES)
 };
 
 // ТЕСТОВЫЕ ДАННЫЕ (удалить когда API заработает)
 const TEST_DATA = {
-    "timestamp": new Date().toISOString(),
-    "byPharmacy": {
-        "№1": [
-            {
-                "type": "Входящий склад - накладная непринята",
-                "номенклатура": "Парацетамол 500мг",
-                "поставщик": "ООО Фармстандарт",
-                "накладная": "ФС-001-2025",
-                "количество": "100 шт",
-                "цена": "1500",
-                "детали": "Требует акцепта"
-            },
-            {
-                "type": "Торговый зал - истекший срок",
-                "номенклатура": "Витамин C 1000мг",
-                "срокГодности": "20.11.2025",
-                "количество": "50 шт",
-                "цена": "2000",
-                "детали": "Требует списания"
-            }
-        ],
-        "№5": [
-            {
-                "type": "Арбитраж - подлежит возврату/списанию",
-                "номенклатура": "Аспирин 500мг",
-                "поставщик": "Новартис",
-                "накладная": "НОВ-515-2025",
-                "количество": "200 шт",
-                "цена": "3500",
-                "детали": "Брак упаковки"
-            }
-        ],
-        "№12": [
-            {
-                "type": "Необходимо пробить ИСГ",
-                "номенклатура": "Ибупрофен 400мг",
-                "поставщик": "ЗАО Синтез",
-                "накладная": "СИН-012-2025",
-                "количество": "150 шт"
-            }
-        ],
-        "№25": [
-            {
-                "type": "Расхождение - долгий срок",
-                "номенклатура": "Левомицетин 250мг",
-                "поставщик": "Балканфарма",
-                "накладная": "БАЛ-025-2025",
-                "количество": "75 шт",
-                "цена": "800",
-                "детали": "Расхождение 5 дней, требует разбора"
-            }
-        ]
-    }
+"timestamp": new Date().toISOString(),
+"byPharmacy": {
+"№1": [
+{
+"type": "Входящий склад - накладная непринята",
+"номенклатура": "Парацетамол 500мг",
+"поставщик": "ООО Фармстандарт",
+"накладная": "ФС-001-2025",
+"количество": "100 шт",
+"цена": "1500",
+"детали": "Требует акцепта"
+},
+{
+"type": "Торговый зал - истекший срок",
+"номенклатура": "Витамин C 1000мг",
+"срокГодности": "20.11.2025",
+"количество": "50 шт",
+"цена": "2000",
+"детали": "Требует списания"
+}
+],
+"№5": [
+{
+"type": "Арбитраж - подлежит возврату/списанию",
+"номенклатура": "Аспирин 500мг",
+"поставщик": "Новартис",
+"накладная": "НОВ-515-2025",
+"количество": "200 шт",
+"цена": "3500",
+"детали": "Брак упаковки"
+}
+],
+"№12": [
+{
+"type": "Необходимо пробить ИСГ",
+"номенклатура": "Ибупрофен 400мг",
+"поставщик": "ЗАО Синтез",
+"накладная": "СИН-012-2025",
+"количество": "150 шт"
+}
+],
+"№25": [
+{
+"type": "Расхождение - долгий срок",
+"номенклатура": "Левомицетин 250мг",
+"поставщик": "Балканфарма",
+"накладная": "БАЛ-025-2025",
+"количество": "75 шт",
+"цена": "800",
+"детали": "Расхождение 5 дней, требует разбора"
+}
+]
+}
 };
 
+// ========== ФУНКЦИИ КЭШИРОВАНИЯ ==========
+
+function getCachedData() {
+try {
+const cached = localStorage.getItem(CACHE_KEY);
+const timestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+if (cached && timestamp) {
+const cacheAge = Date.now() - parseInt(timestamp);
+if (cacheAge < CACHE_DURATION) {
+console.log('✅ Используется кэшированные данные (возраст:', Math.floor(cacheAge / 1000 / 60), 'мин)');
+return JSON.parse(cached);
+}
+}
+} catch (error) {
+console.error('❌ Ошибка при чтении кэша:', error);
+}
+return null;
+}
+
+function saveToCache(data) {
+try {
+localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+console.log('💾 Данные сохранены в кэш');
+updateCacheInfo();
+} catch (error) {
+console.error('❌ Ошибка при сохранении в кэш:', error);
+}
+}
+
+function clearCache() {
+localStorage.removeItem(CACHE_KEY);
+localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+console.log('🗑️ Кэш очищен');
+updateCacheInfo();
+}
+
+function updateCacheInfo() {
+try {
+const timestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+const cacheInfoEl = document.getElementById('cacheInfo');
+if (timestamp) {
+const date = new Date(parseInt(timestamp));
+const now = new Date();
+const diff = now - date;
+let timeStr = '';
+if (diff < 60000) {
+timeStr = 'только что';
+} else if (diff < 3600000) {
+timeStr = Math.floor(diff / 60000) + ' мин назад';
+} else if (diff < 86400000) {
+timeStr = Math.floor(diff / 3600000) + ' ч назад';
+} else {
+timeStr = Math.floor(diff / 86400000) + ' дн назад';
+}
+cacheInfoEl.textContent = `💾 Кэш обновлен: ${timeStr}`;
+} else {
+cacheInfoEl.textContent = '💾 Кэш не используется';
+}
+} catch (error) {
+console.error('Ошибка при обновлении информации о кэше:', error);
+}
+}
+
+// ========== ОСНОВНЫЕ ФУНКЦИИ ==========
+
 function getUrgencyClass(type) {
-    if (type.includes('истекший') || type.includes('Необходимо пробить ИСГ') || type.includes('Расхождение') || type.includes('Арбитраж') || type.includes('ФАЛЬСИФИКАТ')) {
-        return 'urgent';
-    }
-    return 'info';
+if (type.includes('истекший') || type.includes('Необходимо пробить ИСГ') || type.includes('Расхождение') || type.includes('Арбитраж') || type.includes('ФАЛЬСИФИКАТ')) {
+return 'urgent';
 }
-
-function getHiddenNotifications() {
-    const hidden = localStorage.getItem('hiddenNotifications');
-    return hidden ? JSON.parse(hidden) : [];
-}
-
-function saveHiddenNotification(notifId) {
-    const hidden = getHiddenNotifications();
-    if (!hidden.includes(notifId)) {
-        hidden.push(notifId);
-        localStorage.setItem('hiddenNotifications', JSON.stringify(hidden));
-    }
-    updateShowHiddenButton();
-}
-
-function clearHiddenNotifications() {
-    localStorage.setItem('hiddenNotifications', JSON.stringify([]));
-    updateShowHiddenButton();
-}
-
-function generateNotificationId(notif) {
-    return `${notif.аптека}_${notif.type}_${notif.номенклатура || ''}_${notif.накладная || ''}`.replace(/[^a-z0-9_а-я]/gi, '_');
-}
-
-function updateShowHiddenButton() {
-    const hidden = getHiddenNotifications();
-    const btn = document.getElementById('showHiddenBtn');
-    if (hidden.length > 0 && !showingHidden) {
-        btn.classList.add('visible');
-        btn.textContent = `👁️ Показать скрытые (${hidden.length})`;
-    } else {
-        btn.classList.remove('visible');
-    }
-}
-
-function toggleHiddenNotifications() {
-    showingHidden = !showingHidden;
-    renderNotifications();
-    if (!showingHidden) {
-        updateShowHiddenButton();
-    }
+return 'info';
 }
 
 function selectAllTypes() {
-    NOTIFICATION_TYPES.forEach(type => {
-        const checkbox = document.getElementById(`filter_${type}`);
-        if (checkbox) {
-            checkbox.checked = true;
-            filters.types.add(type);
-        }
-    });
-    renderNotifications();
+NOTIFICATION_TYPES.forEach(type => {
+const checkbox = document.getElementById(`filter_${type}`);
+if (checkbox) {
+checkbox.checked = true;
+filters.types.add(type);
+}
+});
+renderNotifications();
 }
 
 function deselectAllTypes() {
-    NOTIFICATION_TYPES.forEach(type => {
-        const checkbox = document.getElementById(`filter_${type}`);
-        if (checkbox) {
-            checkbox.checked = false;
-            filters.types.delete(type);
-        }
-    });
-    renderNotifications();
+NOTIFICATION_TYPES.forEach(type => {
+const checkbox = document.getElementById(`filter_${type}`);
+if (checkbox) {
+checkbox.checked = false;
+filters.types.delete(type);
+}
+});
+renderNotifications();
 }
 
-async function loadNotifications() {
-    try {
-        console.log('🔄 Загрузка уведомлений...');
-        console.log('📍 API URL:', API_URL);
+async function loadNotifications(forceRefresh = false) {
+try {
+// Если принудительное обновление - очищаем кэш
+if (forceRefresh) {
+console.log('🔄 Принудительное обновление данных...');
+clearCache();
+}
 
-        const response = await fetch(`${API_URL}?app=notifications`, {
-            method: 'GET',
-            mode: 'cors'
-        });
+// Пытаемся получить кэшированные данные
+let data = getCachedData();
 
-        console.log('📊 Статус ответа:', response.status);
+if (!data) {
+console.log('🔄 Загрузка свежих данных с API...');
+const response = await fetch(`${API_URL}?app=notifications`, {
+method: 'GET',
+mode: 'cors'
+});
 
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
+console.log('📊 Статус ответа:', response.status);
+if (!response.ok) {
+throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+}
 
-        const rawText = await response.text();
-        console.log('📝 Ответ получен, размер:', rawText.length);
+const rawText = await response.text();
+console.log('📝 Ответ получен, размер:', rawText.length);
+data = JSON.parse(rawText);
 
-        const data = JSON.parse(rawText);
-        console.log('✅ JSON распарсен успешно');
+if (!data.byPharmacy) {
+throw new Error('Структура данных ошибочна: отсутствует поле byPharmacy');
+}
 
-        if (!data.byPharmacy) {
-            throw new Error('Структура данных ошибочна: отсутствует поле byPharmacy');
-        }
+console.log('✅ Данные загружены с API');
+// Сохраняем в кэш
+saveToCache(data);
+document.getElementById('errorContainer').classList.remove('show');
+showSuccess('✅ Данные успешно загружены с API');
+} else if (forceRefresh) {
+showSuccess('✅ Данные обновлены');
+}
 
-        console.log('✅ Данные загружены с API');
-        allNotifications = flattenNotifications(data.byPharmacy);
-        lastUpdate = new Date(data.timestamp);
-        document.getElementById('errorContainer').classList.remove('show');
-        showSuccess('✅ Данные успешно загружены с API');
-    } catch (error) {
-        console.error('❌ Ошибка при загрузке:', error);
-        console.warn('⚠️ Используются тестовые данные для демонстрации');
-        showError('⚠️ Ошибка загрузки: ' + error.message + ' (используются тестовые данные)');
-        
-        allNotifications = flattenNotifications(TEST_DATA.byPharmacy);
-        lastUpdate = new Date(TEST_DATA.timestamp);
-    }
-    
-    initializeFilters();
-    updatePharmacyOptions();
-    renderNotifications();
-    updateShowHiddenButton();
+allNotifications = flattenNotifications(data.byPharmacy);
+lastUpdate = new Date(data.timestamp);
+setRefreshButtonState(false);
+
+} catch (error) {
+console.error('❌ Ошибка при загрузке:', error);
+console.warn('⚠️ Используются тестовые данные для демонстрации');
+showError('⚠️ Ошибка загрузки: ' + error.message + ' (используются тестовые данные)');
+allNotifications = flattenNotifications(TEST_DATA.byPharmacy);
+lastUpdate = new Date(TEST_DATA.timestamp);
+setRefreshButtonState(false);
+}
+
+initializeFilters();
+updatePharmacyOptions();
+renderNotifications();
+updateCacheInfo();
 }
 
 function flattenNotifications(byPharmacy) {
-    const flattened = [];
-    for (const pharmacy in byPharmacy) {
-        const notifs = byPharmacy[pharmacy];
-        if (Array.isArray(notifs)) {
-            notifs.forEach(notif => {
-                flattened.push({ ...notif, аптека: pharmacy });
-            });
-        }
-    }
-    return flattened;
+const flattened = [];
+for (const pharmacy in byPharmacy) {
+const notifs = byPharmacy[pharmacy];
+if (Array.isArray(notifs)) {
+notifs.forEach(notif => {
+flattened.push({ ...notif, аптека: pharmacy });
+});
+}
+}
+return flattened;
 }
 
 function initializeFilters() {
-    const container = document.getElementById('typeFilters');
-    container.innerHTML = '';
-    
-    NOTIFICATION_TYPES.forEach(type => {
-        const div = document.createElement('div');
-        div.className = 'filter-checkbox';
-        const displayName = NOTIFICATION_TYPES_DISPLAY[type] || type;
-        div.innerHTML = `
-            <input type="checkbox" id="filter_${type}" checked onchange="updateTypeFilter(this)">
-            <label for="filter_${type}">${displayName}</label>
-        `;
-        container.appendChild(div);
-    });
+const container = document.getElementById('typeFilters');
+container.innerHTML = '';
+NOTIFICATION_TYPES.forEach(type => {
+const div = document.createElement('div');
+div.className = 'filter-checkbox';
+const displayName = NOTIFICATION_TYPES_DISPLAY[type] || type;
+div.innerHTML = `
+<input type="checkbox" id="filter_${type}" checked onchange="updateTypeFilter(this)">
+<label for="filter_${type}">${displayName}</label>
+`;
+container.appendChild(div);
+});
 }
 
 function updateTypeFilter(checkbox) {
-    const type = checkbox.id.replace('filter_', '');
-    if (checkbox.checked) {
-        filters.types.add(type);
-    } else {
-        filters.types.delete(type);
-    }
-    renderNotifications();
+const type = checkbox.id.replace('filter_', '');
+if (checkbox.checked) {
+filters.types.add(type);
+} else {
+filters.types.delete(type);
+}
+renderNotifications();
 }
 
 function getFilteredNotifications() {
-    let filtered = allNotifications;
-    
-    if (filters.pharmacy) {
-        filtered = filtered.filter(n => n.аптека === filters.pharmacy);
-    }
-    
-    filtered = filtered.filter(n => filters.types.has(n.type));
-    
-    const hidden = showingHidden ? new Set() : new Set(getHiddenNotifications());
-    filtered = filtered.filter(n => !hidden.has(generateNotificationId(n)));
-    
-    return filtered;
+let filtered = allNotifications;
+if (filters.pharmacy) {
+filtered = filtered.filter(n => n.аптека === filters.pharmacy);
+}
+filtered = filtered.filter(n => filters.types.has(n.type));
+return filtered;
 }
 
 function renderNotifications() {
-    const filtered = getFilteredNotifications();
-    const container = document.getElementById('notificationsContainer');
-    
-    document.getElementById('totalNotifications').textContent = filtered.length;
-    const affectedPharmacies = new Set(filtered.map(n => n.аптека)).size;
-    document.getElementById('affectedPharmacies').textContent = affectedPharmacies;
-    
-    if (filtered.length === 0) {
-        container.innerHTML = `
-            <div class="no-notifications">
-                <div class="no-notifications-icon">✅</div>
-                <p>${showingHidden ? 'Нет скрытых уведомлений' : 'Нет уведомлений'}</p>
-            </div>
-        `;
-        return;
-    }
-    
-    const notifId = (notif) => generateNotificationId(notif);
-    
-    container.innerHTML = filtered.map(notif => {
-        const details = Object.entries(notif)
-            .filter(([key]) => !['type', 'аптека', 'детали'].includes(key) && notif[key])
-            .map(([key, value]) => `
-                <div class="detail-item">
-                    <div class="detail-label">${key}</div>
-                    <div class="detail-value">${value}</div>
-                </div>
-            `).join('');
-        
-        const colorClass = TYPE_COLOR_CLASS[notif.type] || 'info';
-        const displayType = NOTIFICATION_TYPES_DISPLAY[notif.type] || notif.type;
-        
-        return `
-            <div class="notification ${colorClass}">
-                <div class="notification-header">
-                    <div>
-                        <div class="notification-type">${displayType}</div>
-                        <div class="notification-pharmacy">${notif.аптека}</div>
-                    </div>
-                </div>
-                <div class="notification-details">
-                    ${details}
-                </div>
-                ${notif.детали ? `<div class="notification-description">${notif.детали}</div>` : ''}
-                <div class="notification-controls">
-                    <button class="hide-btn" onclick="hideNotification('${notifId(notif)}')">
-                        ${showingHidden ? '🗑️ Удалить из скрытых' : '👁️‍🗨️ Скрыть'}
-                    </button>
-                </div>
-            </div>
-        `;
-    }).join('');
+const filtered = getFilteredNotifications();
+const container = document.getElementById('notificationsContainer');
+document.getElementById('totalNotifications').textContent = filtered.length;
+const affectedPharmacies = new Set(filtered.map(n => n.аптека)).size;
+document.getElementById('affectedPharmacies').textContent = affectedPharmacies;
 
-    if (lastUpdate) {
-        const time = lastUpdate.toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'long' });
-        document.getElementById('lastUpdate').textContent = `Актуально на: ${time}`;
-    }
+if (filtered.length === 0) {
+container.innerHTML = `
+<div class="no-notifications">
+<div class="no-notifications-icon">✅</div>
+<p>Нет уведомлений</p>
+</div>
+`;
+return;
 }
 
-function hideNotification(notifId) {
-    if (showingHidden) {
-        let hidden = getHiddenNotifications();
-        hidden = hidden.filter(id => id !== notifId);
-        localStorage.setItem('hiddenNotifications', JSON.stringify(hidden));
-    } else {
-        saveHiddenNotification(notifId);
-    }
-    renderNotifications();
+container.innerHTML = filtered.map(notif => {
+const details = Object.entries(notif)
+.filter(([key]) => !['type', 'аптека', 'детали'].includes(key) && notif[key])
+.map(([key, value]) => `
+<div class="detail-item">
+<div class="detail-label">${key}</div>
+<div class="detail-value">${value}</div>
+</div>
+`).join('');
+
+const colorClass = TYPE_COLOR_CLASS[notif.type] || 'info';
+const displayType = NOTIFICATION_TYPES_DISPLAY[notif.type] || notif.type;
+return `
+<div class="notification ${colorClass}">
+<div class="notification-header">
+<div>
+<div class="notification-type">${displayType}</div>
+<div class="notification-pharmacy">${notif.аптека}</div>
+</div>
+</div>
+<div class="notification-details">
+${details}
+</div>
+${notif.детали ? `<div class="notification-description">${notif.детали}</div>` : ''}
+</div>
+`;
+}).join('');
+
+if (lastUpdate) {
+const time = lastUpdate.toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'long' });
+document.getElementById('lastUpdate').textContent = `Актуально на: ${time}`;
+}
 }
 
 function showError(message) {
-    const errorContainer = document.getElementById('errorContainer');
-    errorContainer.innerHTML = message;
-    errorContainer.classList.add('show');
+const errorContainer = document.getElementById('errorContainer');
+errorContainer.innerHTML = message;
+errorContainer.classList.add('show');
 }
 
 function showSuccess(message) {
-    const successContainer = document.getElementById('successContainer');
-    successContainer.textContent = message;
-    successContainer.classList.add('show');
-    setTimeout(() => {
-        successContainer.classList.remove('show');
-    }, 5000);
+const successContainer = document.getElementById('successContainer');
+successContainer.textContent = message;
+successContainer.classList.add('show');
+setTimeout(() => {
+successContainer.classList.remove('show');
+}, 5000);
 }
 
 function updatePharmacyOptions() {
-    const pharmacySelect = document.getElementById('pharmacyFilter');
-    const pharmacies = [...new Set(allNotifications.map(n => n.аптека))].sort();
-    const currentValue = pharmacySelect.value;
-    
-    // Сохраняем опцию "Все аптеки"
-    pharmacySelect.innerHTML = '<option value="">Все аптеки</option>';
-    
-    pharmacies.forEach(pharmacy => {
-        const option = document.createElement('option');
-        option.value = pharmacy;
-        option.textContent = pharmacy;
-        pharmacySelect.appendChild(option);
-    });
-    
-    pharmacySelect.value = currentValue;
+const pharmacySelect = document.getElementById('pharmacyFilter');
+const pharmacies = [...new Set(allNotifications.map(n => n.аптека))].sort();
+const currentValue = pharmacySelect.value;
+// Сохраняем опцию "Все аптеки"
+pharmacySelect.innerHTML = '<option value="">Все аптеки</option>';
+pharmacies.forEach(pharmacy => {
+const option = document.createElement('option');
+option.value = pharmacy;
+option.textContent = pharmacy;
+pharmacySelect.appendChild(option);
+});
+pharmacySelect.value = currentValue;
+}
+
+function setRefreshButtonState(loading) {
+const btn = document.getElementById('refreshBtn');
+if (loading) {
+btn.classList.add('loading');
+btn.textContent = '⏳ Обновление...';
+btn.disabled = true;
+} else {
+btn.classList.remove('loading');
+btn.textContent = '🔄 Обновить данные';
+btn.disabled = false;
+}
+}
+
+function forceRefreshData() {
+setRefreshButtonState(true);
+loadNotifications(true);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const pharmacySelect = document.getElementById('pharmacyFilter');
-    
-    // Слушаем изменения
-    pharmacySelect.addEventListener('change', (e) => {
-        filters.pharmacy = e.target.value;
-        renderNotifications();
-    });
+const pharmacySelect = document.getElementById('pharmacyFilter');
+pharmacySelect.addEventListener('change', (e) => {
+filters.pharmacy = e.target.value;
+renderNotifications();
 });
-
-window.addEventListener('DOMContentLoaded', loadNotifications);
-    </script>
+loadNotifications();
+});
+</script>
 </body>
 </html>
