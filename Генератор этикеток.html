@@ -1,451 +1,462 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор этикеток</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            margin-bottom: 30px;
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .header-text h1 {
-            color: #009e49;
-            font-size: 28px;
-            margin: 0;
-        }
-        button {
-            background-color: #009e49;
-            color: white;
-            padding: 10px 15px;
-            font-size: 14px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        button:hover {
-            background-color: #007a3e;
-        }
-        button.add-btn {
-            background-color: #4CAF50;
-        }
-        button.clear-btn {
-            background-color: #f44336;
-        }
-        button.delete-btn {
-            background-color: #ff6b6b;
-            padding: 5px 10px;
-            font-size: 12px;
-        }
-        .wrapper {
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 20px;
-        }
-        .sidebar {
-            width: 350px;
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            height: fit-content;
-        }
-        .sidebar h2 {
-            color: #009e49;
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
-        .size-controls {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #009e49;
-        }
-        .size-controls h3 {
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .size-input-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        .size-input-group label {
-            display: block;
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 4px;
-            font-weight: bold;
-        }
-        .size-input-group input {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-            font-size: 13px;
-            width: 100%;
-        }
-        .control-row {
-            margin-bottom: 12px;
-        }
-        .control-row label {
-            display: block;
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 4px;
-            font-weight: bold;
-        }
-        .control-row input,
-        .control-row select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-            font-size: 13px;
-        }
-        .color-options {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        .color-option {
-            flex: 1;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
-            font-size: 12px;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-        .color-option.active {
-            border-color: #009e49;
-            box-shadow: 0 0 5px rgba(0, 158, 73, 0.3);
-        }
-        .color-option.white-green {
-            background-color: #009e49;
-            color: white;
-        }
-        .color-option.green-white {
-            background-color: white;
-            color: #009e49;
-            border: 2px solid #009e49;
-        }
-        .paste-area {
-            width: 100%;
-            height: 100px;
-            padding: 10px;
-            border: 2px dashed #009e49;
-            border-radius: 5px;
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            margin-bottom: 15px;
-            resize: none;
-            background: #f9f9f9;
-        }
-        .paste-button {
-            width: 100%;
-            background-color: #2196F3;
-            margin-bottom: 15px;
-        }
-        .items-container {
-            max-height: 400px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-        }
-        .item-row {
-            display: grid;
-            grid-template-columns: 1fr 60px 30px;
-            gap: 8px;
-            margin-bottom: 10px;
-            align-items: center;
-        }
-        .item-row input {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-            font-size: 13px;
-        }
-        .item-row input[type="number"] {
-            text-align: center;
-        }
-        .controls-sidebar {
-            display: flex;
-            gap: 10px;
-            flex-direction: column;
-        }
-        .labels-grid {
-            display: grid;
-            gap: 10px;
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            justify-content: center;
-        }
-        .label-box {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-        .label-text {
-            width: 100%;
-            font-family: Arial, Helvetica, sans-serif;
-            font-weight: bold;
-            text-align: center;
-            line-height: 1.1;
-            padding: 0 5px;
-            word-wrap: break-word;
-        }
-        @media print {
-            @page {
-                size: A4 landscape;
-                margin: 10mm;
-            }
-            body {
-                padding: 0;
-                background: white;
-                margin: 0;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            .header, .sidebar {
-                display: none;
-            }
-            .wrapper {
-                display: block;
-            }
-            .labels-grid {
-                display: grid;
-                gap: 3mm;
-                padding: 0;
-                margin: 0;
-                justify-content: start;
-            }
-            .label-box {
-                page-break-inside: avoid;
-                box-shadow: none;
-            }
-            .label-text {
-                color: inherit !important;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Генератор этикеток</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+body {
+font-family: Arial, sans-serif;
+padding: 20px;
+background: #f5f5f5;
+}
+.header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 15px;
+margin-bottom: 30px;
+background: white;
+padding: 20px;
+border-radius: 5px;
+box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.header-text h1 {
+color: #009e49;
+font-size: 28px;
+margin: 0;
+}
+button {
+background-color: #009e49;
+color: white;
+padding: 10px 15px;
+font-size: 14px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+font-weight: bold;
+}
+button:hover {
+background-color: #007a3e;
+}
+button.add-btn {
+background-color: #4CAF50;
+}
+button.clear-btn {
+background-color: #f44336;
+}
+button.delete-btn {
+background-color: #ff6b6b;
+padding: 5px 10px;
+font-size: 12px;
+}
+.wrapper {
+display: grid;
+grid-template-columns: 350px 1fr;
+gap: 20px;
+}
+.sidebar {
+width: 350px;
+background: white;
+padding: 20px;
+border-radius: 5px;
+box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+height: fit-content;
+}
+.sidebar h2 {
+color: #009e49;
+margin-bottom: 20px;
+font-size: 16px;
+}
+.size-controls {
+background: #f9f9f9;
+padding: 15px;
+border-radius: 5px;
+margin-bottom: 20px;
+border-left: 4px solid #009e49;
+}
+.size-controls h3 {
+font-size: 14px;
+color: #333;
+margin-bottom: 12px;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.size-input-group {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+margin-bottom: 12px;
+}
+.size-input-group label {
+display: block;
+font-size: 12px;
+color: #666;
+margin-bottom: 4px;
+font-weight: bold;
+}
+.size-input-group input {
+padding: 8px;
+border: 1px solid #ddd;
+border-radius: 3px;
+font-size: 13px;
+width: 100%;
+}
+.control-row {
+margin-bottom: 12px;
+}
+.control-row label {
+display: block;
+font-size: 12px;
+color: #666;
+margin-bottom: 4px;
+font-weight: bold;
+}
+.control-row input,
+.control-row select {
+width: 100%;
+padding: 8px;
+border: 1px solid #ddd;
+border-radius: 3px;
+font-size: 13px;
+}
+.color-options {
+display: flex;
+gap: 10px;
+margin-bottom: 12px;
+}
+.color-option {
+flex: 1;
+padding: 10px;
+border: 2px solid #ddd;
+border-radius: 5px;
+cursor: pointer;
+text-align: center;
+font-size: 12px;
+font-weight: bold;
+transition: all 0.2s;
+}
+.color-option.active {
+border-color: #009e49;
+box-shadow: 0 0 5px rgba(0, 158, 73, 0.3);
+}
+.color-option.white-green {
+background-color: #009e49;
+color: white;
+}
+.color-option.green-white {
+background-color: white;
+color: #009e49;
+border: 2px solid #009e49;
+}
+.paste-area {
+width: 100%;
+height: 100px;
+padding: 10px;
+border: 2px dashed #009e49;
+border-radius: 5px;
+font-family: Arial, sans-serif;
+font-size: 12px;
+margin-bottom: 15px;
+resize: none;
+background: #f9f9f9;
+}
+.paste-button {
+width: 100%;
+background-color: #2196F3;
+margin-bottom: 15px;
+}
+.items-container {
+max-height: 400px;
+overflow-y: auto;
+margin-bottom: 20px;
+}
+.item-row {
+display: grid;
+grid-template-columns: 1fr 60px 30px;
+gap: 8px;
+margin-bottom: 10px;
+align-items: center;
+}
+.item-row input {
+padding: 8px;
+border: 1px solid #ddd;
+border-radius: 3px;
+font-size: 13px;
+}
+.item-row input[type="number"] {
+text-align: center;
+}
+.controls-sidebar {
+display: flex;
+gap: 10px;
+flex-direction: column;
+}
+.labels-grid {
+display: grid;
+gap: 10px;
+background: white;
+padding: 20px;
+border-radius: 5px;
+justify-content: center;
+}
+.label-box {
+display: flex;
+align-items: center;
+justify-content: center;
+box-sizing: border-box;
+overflow: hidden;
+}
+.label-text {
+width: 100%;
+font-family: Arial, Helvetica, sans-serif;
+font-weight: bold;
+text-align: center;
+line-height: 1.1;
+padding: 0 5px;
+word-wrap: break-word;
+}
+@media print {
+@page {
+size: A4 landscape;
+margin: 10mm;
+}
+body {
+padding: 0;
+background: white;
+margin: 0;
+-webkit-print-color-adjust: exact !important;
+print-color-adjust: exact !important;
+}
+.header, .sidebar {
+display: none !important;
+}
+.wrapper {
+display: block !important;
+}
+.main {
+display: block !important;
+}
+.labels-grid {
+display: grid !important;
+gap: 3mm;
+padding: 0 !important;
+margin: 0 !important;
+justify-content: start;
+background: white !important;
+border-radius: 0 !important;
+-webkit-print-color-adjust: exact !important;
+print-color-adjust: exact !important;
+}
+.label-box {
+page-break-inside: avoid;
+box-shadow: none !important;
+-webkit-print-color-adjust: exact !important;
+print-color-adjust: exact !important;
+border-radius: 0 !important;
+}
+.label-text {
+-webkit-print-color-adjust: exact !important;
+print-color-adjust: exact !important;
+}
+}
+</style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-text">
-            <h1>Генератор этикеток</h1>
-        </div>
-        <button onclick="window.print()">📥 Сохранить как PDF</button>
-    </div>
-    <div class="wrapper">
-        <div class="sidebar">
-            <h2>Управление</h2>
+<div class="header">
+<div class="header-text">
+<h1>Генератор этикеток</h1>
+</div>
+<button onclick="window.print()">📥 Сохранить как PDF</button>
+</div>
+<div class="wrapper">
+<div class="sidebar">
+<h2>Управление</h2>
+<div class="size-controls">
+<h3>⚙️ Параметры этикетки</h3>
+<div class="size-input-group">
+<div>
+<label for="labelWidth">Ширина (см):</label>
+<input type="number" id="labelWidth" value="9" min="1" max="30" step="0.1" onchange="updateLabels()">
+</div>
+<div>
+<label for="labelHeight">Высота (см):</label>
+<input type="number" id="labelHeight" value="3" min="1" max="30" step="0.1" onchange="updateLabels()">
+</div>
+</div>
+<div class="control-row">
+<label for="fontSize">Размер шрифта (pt):</label>
+<input type="number" id="fontSize" value="22" min="8" max="72" step="1" onchange="updateLabels()">
+</div>
+<div class="control-row">
+<label>Цвета:</label>
+<div class="color-options">
+<div class="color-option white-green active" data-color="white-green" onclick="setColorMode('white-green')">
+Белый<br>на зелёном
+</div>
+<div class="color-option green-white" data-color="green-white" onclick="setColorMode('green-white')">
+Зелёный<br>на белом
+</div>
+</div>
+</div>
+</div>
+<div style="margin-bottom: 15px;">
+<p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+Вставьте список:
+</p>
+<textarea id="pasteArea" class="paste-area" placeholder=""></textarea>
+<button class="paste-button" onclick="importFromPaste()">Загрузить список</button>
+</div>
+<div class="items-container" id="itemsList"></div>
+<div class="controls-sidebar">
+<button class="add-btn" onclick="addItem()">Добавить</button>
+<button class="clear-btn" onclick="clearAll()">Удалить всё</button>
+</div>
+</div>
+<div class="main">
+<div class="labels-grid" id="labelsGrid"></div>
+</div>
+</div>
+<script>
+let items = [];
+let colorMode = 'white-green';
 
-            <div class="size-controls">
-                <h3>⚙️ Параметры этикетки</h3>
-                <div class="size-input-group">
-                    <div>
-                        <label for="labelWidth">Ширина (см):</label>
-                        <input type="number" id="labelWidth" value="9" min="1" max="30" step="0.1" onchange="updateLabels()">
-                    </div>
-                    <div>
-                        <label for="labelHeight">Высота (см):</label>
-                        <input type="number" id="labelHeight" value="3" min="1" max="30" step="0.1" onchange="updateLabels()">
-                    </div>
-                </div>
+function setColorMode(mode) {
+colorMode = mode;
+document.querySelectorAll('.color-option').forEach(btn => {
+btn.classList.remove('active');
+});
+document.querySelector(`[data-color="${mode}"]`).classList.add('active');
+updateLabels();
+}
 
-                <div class="control-row">
-                    <label for="fontSize">Размер шрифта (pt):</label>
-                    <input type="number" id="fontSize" value="22" min="8" max="72" step="1" onchange="updateLabels()">
-                </div>
+function updateLabels() {
+generateLabels();
+}
 
-                <div class="control-row">
-                    <label>Цвета:</label>
-                    <div class="color-options">
-                        <div class="color-option white-green active" data-color="white-green" onclick="setColorMode('white-green')">
-                            Белый<br>на зелёном
-                        </div>
-                        <div class="color-option green-white" data-color="green-white" onclick="setColorMode('green-white')">
-                            Зелёный<br>на белом
-                        </div>
-                    </div>
-                </div>
-            </div>
+function getLabelParams() {
+const width = parseFloat(document.getElementById('labelWidth').value);
+const height = parseFloat(document.getElementById('labelHeight').value);
+const fontSize = parseInt(document.getElementById('fontSize').value);
+return { width, height, fontSize };
+}
 
-            <div style="margin-bottom: 15px;">
-                <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                    Вставьте список:
-                </p>
-                <textarea id="pasteArea" class="paste-area" placeholder=""></textarea>
-                <button class="paste-button" onclick="importFromPaste()">Загрузить список</button>
-            </div>
-            <div class="items-container" id="itemsList"></div>
-            <div class="controls-sidebar">
-                <button class="add-btn" onclick="addItem()">Добавить</button>
-                <button class="clear-btn" onclick="clearAll()">Удалить всё</button>
-            </div>
-        </div>
-        <div class="main">
-            <div class="labels-grid" id="labelsGrid"></div>
-        </div>
-    </div>
-    <script>
-        // Изначально список пуст
-        let items = [];
-        let colorMode = 'white-green'; // white-green или green-white
+function getColors() {
+if (colorMode === 'white-green') {
+return { bg: '#009e49', text: 'white' };
+} else {
+return { bg: 'white', text: '#009e49' };
+}
+}
 
-        function setColorMode(mode) {
-            colorMode = mode;
-            document.querySelectorAll('.color-option').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`[data-color="${mode}"]`).classList.add('active');
-            updateLabels();
-        }
+function renderItems() {
+const list = document.getElementById('itemsList');
+list.innerHTML = '';
+items.forEach((item, index) => {
+const row = document.createElement('div');
+row.className = 'item-row';
+row.innerHTML = `
+<input type="text" value="${item.name}" onchange="updateItem(${index}, this.value, items[${index}].count)">
+<input type="number" value="${item.count}" min="1" onchange="updateItem(${index}, items[${index}].name, parseInt(this.value)); generateLabels()">
+<button class="delete-btn" onclick="deleteItem(${index})">✕</button>
+`;
+list.appendChild(row);
+});
+}
 
-        function updateLabels() {
-            generateLabels();
-        }
+function updateItem(index, name, count) {
+items[index] = { name, count: Math.max(1, count) };
+generateLabels();
+}
 
-        function getLabelParams() {
-            const width = parseFloat(document.getElementById('labelWidth').value);
-            const height = parseFloat(document.getElementById('labelHeight').value);
-            const fontSize = parseInt(document.getElementById('fontSize').value);
-            return { width, height, fontSize };
-        }
+function deleteItem(index) {
+items.splice(index, 1);
+renderItems();
+generateLabels();
+}
 
-        function getColors() {
-            if (colorMode === 'white-green') {
-                return { bg: '#009e49', text: 'white' };
-            } else {
-                return { bg: 'white', text: '#009e49' };
-            }
-        }
+function addItem() {
+items.push({ name: '', count: 1 });
+renderItems();
+generateLabels();
+setTimeout(() => {
+const inputs = document.querySelectorAll('.item-row input[type="text"]');
+if (inputs.length > 0) inputs[inputs.length - 1].focus();
+}, 0);
+}
 
-        function renderItems() {
-            const list = document.getElementById('itemsList');
-            list.innerHTML = '';
-            items.forEach((item, index) => {
-                const row = document.createElement('div');
-                row.className = 'item-row';
-                row.innerHTML = `
-                    <input type="text" value="${item.name}" onchange="updateItem(${index}, this.value, items[${index}].count)">
-                    <input type="number" value="${item.count}" min="1" onchange="updateItem(${index}, items[${index}].name, parseInt(this.value)); generateLabels()">
-                    <button class="delete-btn" onclick="deleteItem(${index})">✕</button>
-                `;
-                list.appendChild(row);
-            });
-        }
+function clearAll() {
+if (confirm('Удалить все этикетки?')) {
+items = [];
+renderItems();
+generateLabels();
+}
+}
 
-        function updateItem(index, name, count) {
-            items[index] = { name, count: Math.max(1, count) };
-            generateLabels();
-        }
+function importFromPaste() {
+const text = document.getElementById('pasteArea').value;
+if (!text.trim()) {
+alert('Вставьте текст в поле');
+return;
+}
+const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+if (lines.length > 0) {
+items = lines.map(line => ({ name: line, count: 1 }));
+renderItems();
+generateLabels();
+document.getElementById('pasteArea').value = '';
+}
+}
 
-        function deleteItem(index) {
-            items.splice(index, 1);
-            renderItems();
-            generateLabels();
-        }
+function generateLabels() {
+const grid = document.getElementById('labelsGrid');
+const { width, height, fontSize } = getLabelParams();
+const { bg, text } = getColors();
+grid.style.gridTemplateColumns = `repeat(auto-fill, ${width}cm)`;
+grid.style.gridAutoRows = `${height}cm`;
+grid.innerHTML = '';
 
-        function addItem() {
-            items.push({ name: '', count: 1 });
-            renderItems();
-            generateLabels();
-            setTimeout(() => {
-                const inputs = document.querySelectorAll('.item-row input[type="text"]');
-                if (inputs.length > 0) inputs[inputs.length - 1].focus();
-            }, 0);
-        }
+items.forEach(item => {
+if (item.name.trim()) {
+for (let i = 0; i < item.count; i++) {
+const labelBox = document.createElement('div');
+labelBox.className = 'label-box';
+labelBox.style.width = `${width}cm`;
+labelBox.style.height = `${height}cm`;
+labelBox.style.backgroundColor = bg;
+labelBox.style.WebkitPrintColorAdjust = 'exact';
+labelBox.style.printColorAdjust = 'exact';
 
-        function clearAll() {
-            if (confirm('Удалить все этикетки?')) {
-                items = [];
-                renderItems();
-                generateLabels();
-            }
-        }
+if (colorMode === 'green-white') {
+labelBox.style.border = '2px solid #009e49';
+}
 
-        function importFromPaste() {
-            const text = document.getElementById('pasteArea').value;
-            if (!text.trim()) {
-                alert('Вставьте текст в поле');
-                return;
-            }
-            const lines = text.split('\n').map(line => line.trim()).filter(line => line);
-            if (lines.length > 0) {
-                items = lines.map(line => ({ name: line, count: 1 }));
-                renderItems();
-                generateLabels();
-                document.getElementById('pasteArea').value = '';
-            }
-        }
+const labelText = document.createElement('div');
+labelText.className = 'label-text';
+labelText.style.fontSize = `${fontSize}pt`;
+labelText.style.color = text;
+labelText.style.WebkitPrintColorAdjust = 'exact';
+labelText.style.printColorAdjust = 'exact';
+labelText.textContent = item.name;
 
-        function generateLabels() {
-            const grid = document.getElementById('labelsGrid');
-            const { width, height, fontSize } = getLabelParams();
-            const { bg, text } = getColors();
+labelBox.appendChild(labelText);
+grid.appendChild(labelBox);
+}
+}
+});
+}
 
-            grid.style.gridTemplateColumns = `repeat(auto-fill, ${width}cm)`;
-            grid.style.gridAutoRows = `${height}cm`;
-
-            grid.innerHTML = '';
-            items.forEach(item => {
-                if (item.name.trim()) {
-                    for (let i = 0; i < item.count; i++) {
-                        const labelBox = document.createElement('div');
-                        labelBox.className = 'label-box';
-                        labelBox.style.width = `${width}cm`;
-                        labelBox.style.height = `${height}cm`;
-                        labelBox.style.backgroundColor = bg;
-                        if (colorMode === 'green-white') {
-                            labelBox.style.border = '2px solid #009e49';
-                        }
-
-                        const labelText = document.createElement('div');
-                        labelText.className = 'label-text';
-                        labelText.style.fontSize = `${fontSize}pt`;
-                        labelText.style.color = text;
-                        labelText.textContent = item.name;
-
-                        labelBox.appendChild(labelText);
-                        grid.appendChild(labelBox);
-                    }
-                }
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            renderItems();
-            generateLabels();
-        });
-    </script>
+document.addEventListener('DOMContentLoaded', () => {
+renderItems();
+generateLabels();
+});
+</script>
 </body>
 </html>
