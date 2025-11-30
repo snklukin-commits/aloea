@@ -110,20 +110,45 @@ background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
 color: white;
 border-color: transparent;
 }
-.print-btn {
+.action-btn {
 padding: 10px 20px;
-background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-color: white;
-border: none;
+background: white;
+border: 2px solid #ecf0f1;
+color: #2c3e50;
 border-radius: 8px;
 cursor: pointer;
 font-weight: 600;
 font-size: 0.9rem;
 transition: all 0.3s;
 }
+.print-btn {
+background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+color: white;
+border: none;
+}
 .print-btn:hover {
 transform: translateY(-2px);
 box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+}
+.refresh-btn {
+background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+color: white;
+border: none;
+}
+.refresh-btn:hover:not(.loading) {
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(155, 89, 182, 0.4);
+}
+.refresh-btn.loading {
+opacity: 0.7;
+cursor: not-allowed;
+}
+.refresh-icon {
+display: inline-block;
+transition: transform 0.3s;
+}
+.refresh-btn.loading .refresh-icon {
+animation: spin 1s linear infinite;
 }
 .promotions-grid {
 display: grid;
@@ -326,6 +351,13 @@ font-size: 0.9rem;
 margin-top: 40px;
 box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
+.cache-info {
+font-size: 0.85rem;
+color: #95a5a6;
+margin-top: 15px;
+padding-top: 15px;
+border-top: 1px solid #ecf0f1;
+}
 .error-message {
 background: #ffebee;
 color: #c62828;
@@ -334,6 +366,15 @@ border-radius: 8px;
 margin-bottom: 20px;
 display: none;
 border-left: 4px solid #c62828;
+}
+.success-message {
+background: #e8f5e9;
+color: #2e7d32;
+padding: 20px;
+border-radius: 8px;
+margin-bottom: 20px;
+display: none;
+border-left: 4px solid #2e7d32;
 }
 .print-tables {
 display: none;
@@ -356,10 +397,22 @@ to {
 opacity: 1;
 }
 }
+@keyframes spin {
+from {
+transform: rotate(0deg);
+}
+to {
+transform: rotate(360deg);
+}
+}
 @media print {
 @page {
-size: A4 landscape;
+size: A4 portrait;
 margin: 5mm;
+}
+* {
+margin: 0;
+padding: 0;
 }
 body {
 background: white;
@@ -368,6 +421,8 @@ margin: 0;
 }
 .container {
 max-width: 100%;
+padding: 0;
+margin: 0;
 }
 .header {
 display: none;
@@ -381,34 +436,44 @@ display: none;
 .error-message {
 display: none;
 }
+.success-message {
+display: none !important;
+}
 .promotions-grid {
 display: none;
 }
 .print-tables {
 display: block;
+width: 100%;
+height: auto;
 }
 .promotion-section {
-break-inside: avoid;
+page-break-after: always;
 page-break-inside: avoid;
-page-break-after: auto;
+width: 100%;
+height: auto;
 box-shadow: none;
-margin-bottom: 2mm;
-border: 0.5pt solid #999;
+margin: 0;
+padding: 0 5mm;
+border: none;
+position: relative;
+display: flex;
+flex-direction: column;
 }
 .promotion-section:last-child {
-page-break-after: auto;
-margin-bottom: 0;
+page-break-after: avoid;
 }
 .promotion-title {
-padding: 3mm 4mm;
+padding: 6mm 0 4mm 0;
 margin: 0;
-break-inside: avoid;
 display: flex;
 align-items: center;
 gap: 8mm;
+page-break-inside: avoid;
+flex-shrink: 0;
 }
 .promotion-icon {
-font-size: 11mm;
+font-size: 12mm;
 line-height: 1;
 flex-shrink: 0;
 }
@@ -416,19 +481,21 @@ flex-shrink: 0;
 flex: 1;
 }
 .promotion-name h2 {
-font-size: 10pt;
+font-size: 16pt;
 margin: 0;
-margin-bottom: 1mm;
+margin-bottom: 0.5mm;
 font-weight: 700;
 }
 .promotion-name p {
-font-size: 8pt;
+font-size: 10pt;
 margin: 0;
 opacity: 0.9;
 }
 .table-wrapper {
-padding: 2.5mm 3mm;
-break-inside: avoid;
+padding: 3mm 0 5mm 0;
+flex: 1;
+display: flex;
+flex-direction: column;
 overflow: hidden;
 }
 table {
@@ -438,6 +505,7 @@ border-collapse: collapse;
 margin: 0;
 table-layout: fixed;
 line-height: 1.3;
+flex: 1;
 }
 table thead {
 background: #f0f0f0 !important;
@@ -445,12 +513,12 @@ background: #f0f0f0 !important;
 print-color-adjust: exact;
 }
 table th {
-padding: 2.5mm 2.5mm;
-font-size: 8.5pt;
+padding: 2.5mm 1.5mm;
+font-size: 8pt;
 text-align: left;
 font-weight: 700;
 color: #2c3e50;
-border-bottom: 1pt solid #2ecc71;
+border-bottom: 2pt solid #2ecc71;
 text-transform: uppercase;
 -webkit-print-color-adjust: exact;
 print-color-adjust: exact;
@@ -458,7 +526,7 @@ word-wrap: break-word;
 overflow-wrap: break-word;
 }
 table td {
-padding: 2mm 2.5mm;
+padding: 2mm 1.5mm;
 font-size: 9pt;
 border-bottom: 0.5pt solid #ddd;
 color: #34495e;
@@ -467,21 +535,21 @@ overflow-wrap: break-word;
 }
 table th:first-child,
 table td:first-child {
-width: 50%;
+width: 58%;
 }
 table th:nth-child(2),
 table td:nth-child(2) {
-width: 16.67%;
+width: 14%;
 text-align: center;
 }
 table th:nth-child(3),
 table td:nth-child(3) {
-width: 16.67%;
+width: 14%;
 text-align: right;
 }
 table th:nth-child(4),
 table td:nth-child(4) {
-width: 16.67%;
+width: 14%;
 text-align: right;
 }
 table tbody tr:nth-child(odd) {
@@ -490,7 +558,7 @@ background: white !important;
 print-color-adjust: exact;
 }
 table tbody tr:last-child td {
-border-bottom: 1pt solid #2ecc71;
+border-bottom: 1.5pt solid #2ecc71;
 }
 .price-cell {
 font-weight: 700;
@@ -532,7 +600,7 @@ flex-direction: column;
 .controls {
 flex-direction: column;
 }
-.filter-btn, .print-btn {
+.filter-btn, .action-btn {
 width: 100%;
 }
 }
@@ -561,12 +629,14 @@ width: 100%;
 </div>
 </div>
 <div class="error-message" id="errorMessage"></div>
+<div class="success-message" id="successMessage"></div>
 <div class="controls">
 <button class="filter-btn active" onclick="filterPromotions('all')">📊 Все акции</button>
 <button class="filter-btn" onclick="filterPromotions('1plus1')">🎁 1+1</button>
 <button class="filter-btn" onclick="filterPromotions('3equals2')">⭐ 3=2</button>
 <button class="filter-btn" onclick="filterPromotions('discount')">💰 -50%</button>
-<button class="print-btn" onclick="printPromotions()">🖨️ Печать</button>
+<button class="action-btn print-btn" onclick="printPromotions()">🖨️ Печать</button>
+<button class="action-btn refresh-btn" id="refreshBtn" onclick="refreshCache()"><span class="refresh-icon">🔄</span> Обновить</button>
 </div>
 <div class="promotions-grid" id="promotionsContainer">
 <div class="empty-state">
@@ -578,238 +648,343 @@ width: 100%;
 <div class="print-tables" id="printContainer"></div>
 <div class="footer">
 <strong>Аптечная сеть АЛОЭ</strong> | Портал акций СТМ
+<div class="cache-info" id="cacheInfo"></div>
 </div>
 </div>
+
 <script>
-const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzXnw1HexNnwLKJ5usYCsH7Q0qJSvK2LD9REYU7S_eiTXx4cRe861oTk8fWCjkXJqfx7w/exec';
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyaD2qAPhqiM5zwuwcoqwbOzzqMfC2OO9Mf1nPnldZ9nUdNnVGtx8lvtO2y9x2FyQduqA/exec';
 const CACHE_KEY = 'stmPromotionsCache';
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 let allData = {};
 let currentFilter = 'all';
+
 const promotionInfo = {
-'1+1': {
-icon: '🎁',
-description: 'Купи 1 - Получи 2',
-color: 'type-1plus1',
-savings: 50
-},
-'3=2': {
-icon: '⭐',
-description: 'Купи 2 - Получи 3',
-color: 'type-3equals2',
-savings: 33
-},
-'-50% на 2-ю уп.': {
-icon: '💰',
-description: 'Скидка 50% на вторую упаковку',
-color: 'type-discount',
-savings: 25
-}
+  '1+1': {
+    icon: '🎁',
+    description: 'Купи 1 - Получи 2',
+    color: 'type-1plus1',
+    savings: 50
+  },
+  '3=2': {
+    icon: '⭐',
+    description: 'Купи 2 - Получи 3',
+    color: 'type-3equals2',
+    savings: 33
+  },
+  '-50% на 2-ю уп.': {
+    icon: '💰',
+    description: 'Скидка 50% на вторую упаковку',
+    color: 'type-discount',
+    savings: 25
+  }
 };
+
 async function loadData() {
-try {
-const cached = getCachedData();
-if (cached) {
-allData = cached;
-renderPromotions('all');
-generatePrintTables();
-updateStats();
-return;
+  try {
+    const cached = getCachedData();
+    if (cached) {
+      allData = cached;
+      renderPromotions('all');
+      generatePrintTables();
+      updateStats();
+      updateCacheInfo(true);
+      return;
+    }
+
+    const response = await fetch(GAS_WEB_APP_URL);
+    const data = await response.json();
+
+    if (data.error) {
+      showError('❌ Ошибка: ' + data.error);
+      return;
+    }
+
+    allData = data;
+    saveCache(data);
+    renderPromotions('all');
+    generatePrintTables();
+    updateStats();
+    updateCacheInfo(false);
+    showSuccess('✅ Данные загружены успешно');
+  } catch (e) {
+    showError('⚠️ Ошибка подключения: ' + e.message);
+    console.error('Ошибка:', e);
+  }
 }
-const response = await fetch(GAS_WEB_APP_URL);
-const data = await response.json();
-if (data.error) {
-showError('❌ Ошибка: ' + data.error);
-return;
-}
-allData = data;
-saveCache(data);
-renderPromotions('all');
-generatePrintTables();
-updateStats();
-} catch (e) {
-showError('⚠️ Ошибка подключения: ' + e.message);
-console.error('Ошибка:', e);
-}
-}
+
 function getCachedData() {
-try {
-const raw = localStorage.getItem(CACHE_KEY);
-if (!raw) return null;
-const parsed = JSON.parse(raw);
-if (!parsed.timestamp || !parsed.data) return null;
-const age = Date.now() - parsed.timestamp;
-if (age > CACHE_TTL_MS) {
-localStorage.removeItem(CACHE_KEY);
-return null;
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed.timestamp || !parsed.data) return null;
+    const age = Date.now() - parsed.timestamp;
+    if (age > CACHE_TTL_MS) {
+      localStorage.removeItem(CACHE_KEY);
+      return null;
+    }
+    return parsed.data;
+  } catch (e) {
+    console.log('Кэш недоступен:', e);
+    return null;
+  }
 }
-return parsed.data;
-} catch (e) {
-console.log('Кэш недоступен:', e);
-return null;
-}
-}
+
 function saveCache(data) {
-try {
-const payload = {
-timestamp: Date.now(),
-data: data
-};
-localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
-} catch (e) {
-console.log('Не удалось сохранить кэш:', e);
+  try {
+    const payload = {
+      timestamp: Date.now(),
+      data: data
+    };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
+  } catch (e) {
+    console.log('Не удалось сохранить кэш:', e);
+  }
 }
+
+function getCacheTimestamp() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed.timestamp || null;
+  } catch (e) {
+    return null;
+  }
 }
+
+function updateCacheInfo(isFromCache) {
+  const cacheInfo = document.getElementById('cacheInfo');
+  const timestamp = getCacheTimestamp();
+  if (timestamp && isFromCache) {
+    const date = new Date(timestamp);
+    const timeStr = date.toLocaleString('ru-RU', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    cacheInfo.innerHTML = `📦 Кэш обновлён: ${timeStr}`;
+  } else {
+    cacheInfo.innerHTML = '🌐 Свежие данные из источника';
+  }
+}
+
+async function refreshCache() {
+  const refreshBtn = document.getElementById('refreshBtn');
+  refreshBtn.classList.add('loading');
+  refreshBtn.disabled = true;
+
+  try {
+    const response = await fetch(GAS_WEB_APP_URL);
+    const data = await response.json();
+
+    if (data.error) {
+      showError('❌ Ошибка при обновлении: ' + data.error);
+      return;
+    }
+
+    allData = data;
+    saveCache(data);
+    renderPromotions(currentFilter);
+    generatePrintTables();
+    updateStats();
+    updateCacheInfo(false);
+    showSuccess('✅ Кэш успешно обновлён');
+  } catch (e) {
+    showError('⚠️ Ошибка при обновлении кэша: ' + e.message);
+    console.error('Ошибка:', e);
+  } finally {
+    refreshBtn.classList.remove('loading');
+    refreshBtn.disabled = false;
+  }
+}
+
 function renderPromotions(filter = 'all') {
-const container = document.getElementById('promotionsContainer');
-const isAllFilter = filter === 'all';
-container.innerHTML = '';
-container.classList.toggle('single-view', !isAllFilter);
-let hasContent = false;
-Object.entries(allData.promotions || {}).forEach(([promo, items]) => {
-if (filter !== 'all' && !promo.includes(getFilterKey(filter))) return;
-if (!items.length) return;
-hasContent = true;
-const info = promotionInfo[promo];
-const card = document.createElement('div');
-card.className = `promotion-card ${info.color}`;
-const scrollClass = isAllFilter ? 'with-scroll' : '';
-card.innerHTML = `
-<div class="card-header ${info.color}">
-<div class="promotion-icon">${info.icon}</div>
-<div class="promotion-info">
-<h2>${promo}</h2>
-<p>${info.description}</p>
-</div>
-</div>
-<div class="card-body">
-<h3>📦 Позиции в акции</h3>
-<div class="item-list ${scrollClass}">
-${items.map(item => `
-<div class="item">
-<div class="item-header">
-<div class="item-name">${escapeHtml(item.nomenclature)}</div>
-<div class="discount-badge">${info.savings}% скидка</div>
-</div>
-<div class="item-prices">
-<div class="price-item">
-<span class="price-label">Комплект (${item.bundleSize} шт)</span>
-<span class="price-value">${formatPrice(item.bundleSum)}</span>
-</div>
-<div class="price-item">
-<span class="price-label">За упаковку</span>
-<span class="price-value">${formatPrice(item.pricePerPackage)}</span>
-</div>
-</div>
-</div>
-`).join('')}
-</div>
-<div class="stats-row">
-<div class="stat-item">
-<div class="stat-item-value">${items.length}</div>
-<div class="stat-item-label">Позиций</div>
-</div>
-</div>
-</div>
-`;
-container.appendChild(card);
-});
-if (!hasContent) {
-container.innerHTML = `
-<div class="empty-state" style="grid-column: 1 / -1;">
-<div class="empty-state-icon">📭</div>
-<h2>Нет акций по выбранному фильтру</h2>
-<p>Попробуйте выбрать другой тип акции</p>
-</div>
-`;
+  const container = document.getElementById('promotionsContainer');
+  const isAllFilter = filter === 'all';
+  container.innerHTML = '';
+  container.classList.toggle('single-view', !isAllFilter);
+
+  let hasContent = false;
+
+  Object.entries(allData.promotions || {}).forEach(([promo, items]) => {
+    if (filter !== 'all' && !promo.includes(getFilterKey(filter))) return;
+    if (!items.length) return;
+
+    hasContent = true;
+    const info = promotionInfo[promo];
+    const card = document.createElement('div');
+    card.className = `promotion-card ${info.color}`;
+    const scrollClass = isAllFilter ? 'with-scroll' : '';
+
+    card.innerHTML = `
+      <div class="card-header ${info.color}">
+        <div class="promotion-icon">${info.icon}</div>
+        <div class="promotion-info">
+          <h2>${promo}</h2>
+          <p>${info.description}</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h3>📦 Позиции в акции</h3>
+        <div class="item-list ${scrollClass}">
+          ${items.map(item => `
+            <div class="item">
+              <div class="item-header">
+                <div class="item-name">${escapeHtml(item.nomenclature)}</div>
+                <div class="discount-badge">${info.savings}% скидка</div>
+              </div>
+              <div class="item-prices">
+                <div class="price-item">
+                  <span class="price-label">Комплект (${item.bundleSize} шт)</span>
+                  <span class="price-value">${formatPrice(item.bundleSum)}</span>
+                </div>
+                <div class="price-item">
+                  <span class="price-label">За упаковку</span>
+                  <span class="price-value">${formatPrice(item.pricePerPackage)}</span>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="stats-row">
+          <div class="stat-item">
+            <div class="stat-item-value">${items.length}</div>
+            <div class="stat-item-label">Позиций</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+
+  if (!hasContent) {
+    container.innerHTML = `
+      <div class="empty-state" style="grid-column: 1 / -1;">
+        <div class="empty-state-icon">📭</div>
+        <h2>Нет акций по выбранному фильтру</h2>
+        <p>Попробуйте выбрать другой тип акции</p>
+      </div>
+    `;
+  }
 }
-}
+
 function generatePrintTables() {
-const printContainer = document.getElementById('printContainer');
-printContainer.innerHTML = '';
-Object.entries(allData.promotions || {}).forEach(([promo, items]) => {
-if (!items.length) return;
-const info = promotionInfo[promo];
-const section = document.createElement('div');
-section.className = `promotion-section ${info.color}`;
-let tableRows = items.map(item => `
-<tr>
-<td>${escapeHtml(item.nomenclature)}</td>
-<td>${item.bundleSize}</td>
-<td class="price-cell">${formatPrice(item.bundleSum)}</td>
-<td class="price-cell">${formatPrice(item.pricePerPackage)}</td>
-</tr>
-`).join('');
-section.innerHTML = `
-<div class="promotion-title" style="background: linear-gradient(135deg, ${getBackgroundGradient(info.color)} 100%); -webkit-print-color-adjust: exact; print-color-adjust: exact; color: white;">
-<div class="promotion-icon">${info.icon}</div>
-<div class="promotion-name">
-<h2>${promo}</h2>
-<p>${info.description}</p>
-</div>
-</div>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr>
-<th>Препарат</th>
-<th>Кол-во</th>
-<th>Стоимость</th>
-<th>За упаковку</th>
-</tr>
-</thead>
-<tbody>
-${tableRows}
-</tbody>
-</table>
-</div>
-`;
-printContainer.appendChild(section);
-});
+  const printContainer = document.getElementById('printContainer');
+  printContainer.innerHTML = '';
+
+  Object.entries(allData.promotions || {}).forEach(([promo, items]) => {
+    if (!items.length) return;
+
+    const info = promotionInfo[promo];
+    const section = document.createElement('div');
+    section.className = `promotion-section ${info.color}`;
+
+    let tableRows = items.map(item => `
+      <tr>
+        <td>${escapeHtml(item.nomenclature)}</td>
+        <td>${item.bundleSize}</td>
+        <td class="price-cell">${formatPrice(item.bundleSum)}</td>
+        <td class="price-cell">${formatPrice(item.pricePerPackage)}</td>
+      </tr>
+    `).join('');
+
+    section.innerHTML = `
+      <div class="promotion-title" style="background: linear-gradient(135deg, ${getBackgroundGradient(info.color)} 100%); -webkit-print-color-adjust: exact; print-color-adjust: exact; color: white;">
+        <div class="promotion-icon">${info.icon}</div>
+        <div class="promotion-name">
+          <h2>${promo}</h2>
+          <p>${info.description}</p>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Препарат</th>
+              <th>Кол-во</th>
+              <th>Стоимость</th>
+              <th>За упаковку</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    printContainer.appendChild(section);
+  });
 }
+
 function getBackgroundGradient(color) {
-const gradients = {
-'type-1plus1': '#3498db 0%, #2980b9',
-'type-3equals2': '#f39c12 0%, #e67e22',
-'type-discount': '#e74c3c 0%, #c0392b'
-};
-return gradients[color] || '#2ecc71 0%, #27ae60';
+  const gradients = {
+    'type-1plus1': '#3498db 0%, #2980b9',
+    'type-3equals2': '#f39c12 0%, #e67e22',
+    'type-discount': '#e74c3c 0%, #c0392b'
+  };
+  return gradients[color] || '#2ecc71 0%, #27ae60';
 }
+
 function filterPromotions(filter) {
-currentFilter = filter;
-document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-event.target.classList.add('active');
-renderPromotions(filter);
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  renderPromotions(filter);
 }
+
 function getFilterKey(filter) {
-const map = {
-'1plus1': '1+1',
-'3equals2': '3=2',
-'discount': '-50%'
-};
-return map[filter] || filter;
+  const map = {
+    '1plus1': '1+1',
+    '3equals2': '3=2',
+    'discount': '-50%'
+  };
+  return map[filter] || filter;
 }
+
 function updateStats() {
-const stats = allData.stats || {};
-let total = 0;
-Object.values(stats).forEach(s => total += s.count);
-document.getElementById('totalItems').textContent = total;
+  const stats = allData.stats || {};
+  let total = 0;
+  Object.values(stats).forEach(s => total += s.count);
+  document.getElementById('totalItems').textContent = total;
 }
+
 function showError(msg) {
-const errorDiv = document.getElementById('errorMessage');
-errorDiv.textContent = msg;
-errorDiv.style.display = 'block';
+  const errorDiv = document.getElementById('errorMessage');
+  errorDiv.textContent = msg;
+  errorDiv.style.display = 'block';
+  setTimeout(() => {
+    errorDiv.style.display = 'none';
+  }, 5000);
 }
+
+function showSuccess(msg) {
+  const successDiv = document.getElementById('successMessage');
+  successDiv.textContent = msg;
+  successDiv.style.display = 'block';
+  setTimeout(() => {
+    successDiv.style.display = 'none';
+  }, 3000);
+}
+
 function printPromotions() {
-window.print();
+  window.print();
 }
+
 function escapeHtml(text) {
-return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+
 function formatPrice(value) {
-if (!value || isNaN(value)) return '—';
-return Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+  if (!value || isNaN(value)) return '—';
+  return Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
 }
+
 document.addEventListener('DOMContentLoaded', loadData);
 </script>
 </body>
