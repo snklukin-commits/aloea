@@ -11,10 +11,11 @@
 --color-cream-100: rgba(255, 255, 253, 1);
 --color-slate-900: rgba(19, 52, 59, 1);
 --color-teal-500: rgba(33, 128, 141, 1);
+--color-green-600: rgba(22, 163, 74, 1);
 --color-background: var(--color-cream-50);
 --color-surface: var(--color-cream-100);
 --color-text: var(--color-slate-900);
---color-primary: var(--color-teal-500);
+--color-primary: var(--color-green-600);
 --color-btn-primary-text: var(--color-cream-50);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -33,6 +34,9 @@ position: sticky;
 top: 0;
 height: 100vh;
 overflow-y: auto;
+display: flex;
+flex-direction: column;
+align-items: center;
 }
 .logo {
 font-size: 18px;
@@ -40,18 +44,26 @@ font-weight: bold;
 margin-bottom: 32px;
 color: var(--color-primary);
 display: flex;
+flex-direction: column;
 align-items: center;
 justify-content: center;
+gap: 10px;
+text-align: center;
 }
 .logo img {
 height: 64px;
 width: 64px;
 object-fit: contain;
 }
+.logo span {
+font-size: 20px;
+line-height: 1.2;
+}
 .nav-buttons {
 display: flex;
 flex-direction: column;
 gap: 8px;
+width: 100%;
 }
 .nav-btn {
 padding: 12px 16px;
@@ -107,11 +119,21 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 font-size: 16px;
 font-weight: bold;
 color: white;
-background: linear-gradient(135deg, var(--color-primary) 0%, #1a7a8f 100%);
+background: linear-gradient(135deg, #4a4a4a 0%, #3a3a3a 100%);
 padding: 14px 20px;
 margin: -24px -24px 20px -24px;
 border-radius: 12px 12px 0 0;
-border-bottom: 2px solid var(--color-primary);
+border-bottom: 2px solid #3a3a3a;
+}
+
+.section-box-title.financial {
+background: linear-gradient(135deg, #4a4a4a 0%, #3a3a3a 100%);
+border-bottom: 2px solid #3a3a3a;
+}
+
+.section-box-title.products {
+background: linear-gradient(135deg, #1e3a5f 0%, #0f2438 100%);
+border-bottom: 2px solid #0f2438;
 }
 
 .cards-container {
@@ -166,10 +188,10 @@ background: linear-gradient(135deg, #c4ad94 0%, #b39a7f 100%);
 border-left: 4px solid #9d8b6f;
 }
 
-/* Фокусные позиции - голубая тема */
+/* Фокусные позиции - тёмно-голубая тема */
 .card.product .card-header {
-background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-border-left: 4px solid #0369a1;
+background: linear-gradient(135deg, #1e3a5f 0%, #0f2438 100%);
+border-left: 4px solid #0a1a28;
 }
 
 .card.product.excellent .card-header {
@@ -178,13 +200,13 @@ border-left: 4px solid #065f46;
 }
 
 .card.product.good .card-header {
-background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-border-left: 4px solid #0e7490;
+background: linear-gradient(135deg, #2a5a8f 0%, #1e3a5f 100%);
+border-left: 4px solid #0f2438;
 }
 
 .card.product.poor .card-header {
-background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
-border-left: 4px solid #0284c7;
+background: linear-gradient(135deg, #3a7aaf 0%, #2a5a8f 100%);
+border-left: 4px solid #1e3a5f;
 }
 
 .card-content {
@@ -294,7 +316,7 @@ border-radius: 20px;
 overflow: hidden;
 }
 th {
-background: linear-gradient(135deg, var(--color-primary) 0%, #1a7a8f 100%);
+background: linear-gradient(135deg, var(--color-primary) 0%, #15803d 100%);
 color: var(--color-btn-primary-text);
 padding: 14px 12px;
 text-align: left;
@@ -315,7 +337,7 @@ transition: background-color 0.15s ease;
 background-color: transparent;
 }
 tbody tr { transition: all 0.2s ease; }
-tbody tr:hover { background-color: rgba(33, 128, 141, 0.05); }
+tbody tr:hover { background-color: rgba(22, 163, 74, 0.05); }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:last-child td:first-child { border-bottom-left-radius: 20px; }
 tbody tr:last-child td:last-child { border-bottom-right-radius: 20px; }
@@ -352,7 +374,7 @@ transition: all 0.2s;
 .pharmacy-selector select:focus {
 outline: none;
 border-color: var(--color-primary);
-box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.1);
+box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
 }
 .loading {
 text-align: center;
@@ -432,6 +454,7 @@ grid-template-columns: 1fr;
 <aside class="sidebar">
 <div class="logo">
 <img src="https://uteka.ru/media/202302/129_3159.png" alt="Аптечная Сеть">
+<span>Аптечная Сеть<br>"Алоэ"</span>
 </div>
 <nav class="nav-buttons">
 <button class="nav-btn active" onclick="switchSection('dashboard')">📊 Общие данные</button>
@@ -444,12 +467,12 @@ grid-template-columns: 1fr;
 <div class="metrics-grid" id="general-metrics"></div>
 
 <div class="section-box">
-<div class="section-box-title">💰 ФИНАНСОВЫЕ ПОКАЗАТЕЛИ</div>
+<div class="section-box-title financial">💰 ФИНАНСОВЫЕ ПОКАЗАТЕЛИ</div>
 <div class="cards-container" id="financial-cards"></div>
 </div>
 
 <div class="section-box">
-<div class="section-box-title">🎯 ФОКУСНЫЕ ПОЗИЦИИ</div>
+<div class="section-box-title products">🎯 ФОКУСНЫЕ ПОЗИЦИИ</div>
 <div class="cards-container" id="products-cards"></div>
 </div>
 </section>
@@ -463,12 +486,12 @@ grid-template-columns: 1fr;
 <div class="metrics-grid" id="pharmacy-metrics"></div>
 
 <div class="section-box">
-<div class="section-box-title">💰 ФИНАНСОВЫЕ ПОКАЗАТЕЛИ</div>
+<div class="section-box-title financial">💰 ФИНАНСОВЫЕ ПОКАЗАТЕЛИ</div>
 <div class="cards-container" id="pharmacy-financial-cards"></div>
 </div>
 
 <div class="section-box">
-<div class="section-box-title">🎯 ФОКУСНЫЕ ПОЗИЦИИ</div>
+<div class="section-box-title products">🎯 ФОКУСНЫЕ ПОЗИЦИИ</div>
 <div class="cards-container" id="pharmacy-products-cards"></div>
 </div>
 </div>
