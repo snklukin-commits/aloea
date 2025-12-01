@@ -1,598 +1,787 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Данные Аптечной Сети</title>
-    <style>
-        :root {
-            --color-cream-50: rgba(252, 252, 249, 1);
-            --color-cream-100: rgba(255, 255, 253, 1);
-            --color-slate-900: rgba(19, 52, 59, 1);
-            --color-teal-500: rgba(33, 128, 141, 1);
-            --color-background: var(--color-cream-50);
-            --color-surface: var(--color-cream-100);
-            --color-text: var(--color-slate-900);
-            --color-primary: var(--color-teal-500);
-            --color-btn-primary-text: var(--color-cream-50);
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--color-background);
-            color: var(--color-text);
-        }
-        .app-container { display: flex; min-height: 100vh; }
-        .sidebar {
-            width: 260px;
-            background-color: var(--color-surface);
-            border-right: 1px solid #ddd;
-            padding: 24px;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        .logo {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 32px;
-            color: var(--color-primary);
-        }
-        .nav-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .nav-btn {
-            padding: 12px 16px;
-            background: transparent;
-            border: 1px solid transparent;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--color-text);
-            transition: all 0.2s;
-            text-align: left;
-        }
-        .nav-btn:hover { background-color: #f0f0f0; }
-        .nav-btn.active {
-            background-color: var(--color-primary);
-            color: var(--color-btn-primary-text);
-        }
-        .main-content {
-            flex: 1;
-            padding: 32px;
-            overflow-x: auto;
-        }
-        .section { display: none; }
-        .section.active { display: block; }
-        .section-title { font-size: 24px; font-weight: bold; margin-bottom: 24px; }
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-        .metric-card {
-            background-color: var(--color-surface);
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        }
-        .metric-label { font-size: 12px; color: #666; margin-bottom: 8px; font-weight: 500; }
-        .metric-value { font-size: 20px; font-weight: bold; color: var(--color-primary); }
-        .tables-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(calc(100% - 20px), 1fr));
-            gap: 24px;
-            margin: 0 auto;
-            width: 100%;
-            padding: 0 10px;
-        }
-        .table-wrapper {
-            background-color: var(--color-surface);
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            width: 100%;
-            max-width: calc(50% - 12px);
-            min-width: 300px;
-        }
-        .table-title { font-size: 16px; font-weight: bold; margin-bottom: 16px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Данные Аптечной Сети</title>
+<style>
+:root {
+--color-cream-50: rgba(252, 252, 249, 1);
+--color-cream-100: rgba(255, 255, 253, 1);
+--color-slate-900: rgba(19, 52, 59, 1);
+--color-teal-500: rgba(33, 128, 141, 1);
+--color-background: var(--color-cream-50);
+--color-surface: var(--color-cream-100);
+--color-text: var(--color-slate-900);
+--color-primary: var(--color-teal-500);
+--color-btn-primary-text: var(--color-cream-50);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+background-color: var(--color-background);
+color: var(--color-text);
+}
+.app-container { display: flex; min-height: 100vh; }
+.sidebar {
+width: 260px;
+background-color: var(--color-surface);
+border-right: 1px solid #ddd;
+padding: 24px;
+position: sticky;
+top: 0;
+height: 100vh;
+overflow-y: auto;
+}
+.logo {
+font-size: 18px;
+font-weight: bold;
+margin-bottom: 32px;
+color: var(--color-primary);
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.logo img {
+height: 64px;
+width: 64px;
+object-fit: contain;
+}
+.nav-buttons {
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+.nav-btn {
+padding: 12px 16px;
+background: transparent;
+border: 1px solid transparent;
+border-radius: 8px;
+cursor: pointer;
+font-size: 14px;
+font-weight: 500;
+color: var(--color-text);
+transition: all 0.2s;
+text-align: left;
+}
+.nav-btn:hover { background-color: #f0f0f0; }
+.nav-btn.active {
+background-color: var(--color-primary);
+color: var(--color-btn-primary-text);
+}
+.main-content {
+flex: 1;
+padding: 32px;
+overflow-x: auto;
+}
+.section { display: none; }
+.section.active { display: block; }
+.section-title { font-size: 24px; font-weight: bold; margin-bottom: 24px; }
+.metrics-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 16px;
+margin-bottom: 32px;
+}
+.metric-card {
+background-color: var(--color-surface);
+border: 1px solid #ddd;
+border-radius: 12px;
+padding: 20px;
+box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.metric-label { font-size: 12px; color: #666; margin-bottom: 8px; font-weight: 500; }
+.metric-value { font-size: 20px; font-weight: bold; color: var(--color-primary); }
 
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            font-size: 13px;
-            min-width: 450px;
-            border-radius: 20px;
-            overflow: hidden;
-        }
+.section-box {
+background-color: var(--color-surface);
+border: 1px solid #ddd;
+border-radius: 12px;
+padding: 24px;
+margin-bottom: 24px;
+box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
 
-        th {
-            background: linear-gradient(135deg, var(--color-primary) 0%, #1a7a8f 100%);
-            color: var(--color-btn-primary-text);
-            padding: 14px 12px;
-            text-align: left;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            border-bottom: 2px solid var(--color-primary);
-        }
+.section-box-title {
+font-size: 16px;
+font-weight: bold;
+color: white;
+background: linear-gradient(135deg, var(--color-primary) 0%, #1a7a8f 100%);
+padding: 14px 20px;
+margin: -24px -24px 20px -24px;
+border-radius: 12px 12px 0 0;
+border-bottom: 2px solid var(--color-primary);
+}
 
-        th:first-child { border-top-left-radius: 20px; }
-        th:last-child { border-top-right-radius: 20px; }
+.cards-container {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+gap: 16px;
+}
 
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #f0f0f0;
-            color: #222;
-            transition: background-color 0.15s ease;
-            background-color: transparent;
-        }
+.card {
+background-color: var(--color-surface);
+border-radius: 12px;
+padding: 0;
+box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+transition: all 0.2s ease;
+overflow: hidden;
+display: flex;
+flex-direction: column;
+}
 
-        tbody tr { transition: all 0.2s ease; }
-        tbody tr:hover { background-color: rgba(33, 128, 141, 0.05); }
-        tbody tr:last-child td { border-bottom: none; }
-        tbody tr:last-child td:first-child { border-bottom-left-radius: 20px; }
-        tbody tr:last-child td:last-child { border-bottom-right-radius: 20px; }
+.card:hover {
+box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+transform: translateY(-2px);
+}
 
-        .performance-excellent td { background-color: rgba(52, 211, 153, 0.12); }
-        .performance-excellent:hover td { background-color: rgba(52, 211, 153, 0.18); }
-        .performance-good td { background-color: rgba(251, 191, 36, 0.12); }
-        .performance-good:hover td { background-color: rgba(251, 191, 36, 0.18); }
-        .performance-poor td { background-color: rgba(239, 68, 68, 0.12); }
-        .performance-poor:hover td { background-color: rgba(239, 68, 68, 0.18); }
+.card-header {
+padding: 16px;
+font-weight: 600;
+color: white;
+font-size: 15px;
+word-break: break-word;
+text-align: center;
+}
 
-        .number {
-            text-align: center;
-            font-weight: 600;
-            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Courier New', monospace;
-            letter-spacing: 0.2px;
-            white-space: nowrap;
-            padding: 8px 4px;
-        }
+/* Финансовые показатели - приглушённо-жёлтая тема */
+.card.financial .card-header {
+background: linear-gradient(135deg, #9d8b6f 0%, #8a7a60 100%);
+border-left: 4px solid #6b5e4a;
+}
 
-        td.number strong { color: var(--color-primary); }
+.card.financial.excellent .card-header {
+background: linear-gradient(135deg, #059669 0%, #047857 100%);
+border-left: 4px solid #065f46;
+}
 
-        .pharmacy-selector { margin-bottom: 24px; }
-        .pharmacy-selector label { display: block; font-weight: 500; margin-bottom: 8px; }
-        .pharmacy-selector select {
-            width: 100%;
-            max-width: 400px;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: var(--color-surface);
-            color: var(--color-text);
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .pharmacy-selector select:hover { border-color: var(--color-primary); }
-        .pharmacy-selector select:focus {
-            outline: none;
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.1);
-        }
-        .loading {
-            text-align: center;
-            padding: 40px;
-            font-size: 16px;
-            color: #666;
-        }
-        @media (max-width: 768px) {
-            .app-container { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid #ddd; }
-            .nav-buttons { flex-direction: row; overflow-x: auto; }
-            .main-content { padding: 16px; }
-            .tables-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(calc(100% - 20px), 1fr));
-            gap: 24px;
-            margin: 0 auto;
-            width: 100%;
-            padding: 0 10px;
-        }
-        }
-    
-        /* Адаптивность для планшетов */
-        @media (max-width: 1024px) {
-            .table-wrapper {
-                max-width: calc(100% - 20px);
-                min-width: 100%;
-            }
-            .tables-container {
-                grid-template-columns: 1fr;
-            }
-        }
+.card.financial.good .card-header {
+background: linear-gradient(135deg, #b39a7f 0%, #9d8b6f 100%);
+border-left: 4px solid #8a7a60;
+}
 
-        /* Адаптивность для мобильных */
-        @media (max-width: 768px) {
-            .table-wrapper {
-                max-width: 100%;
-                min-width: 100%;
-            }
-            .tables-container {
-                grid-template-columns: 1fr;
-                gap: 16px;
-                padding: 0 8px;
-            }
-            table {
-                font-size: 12px;
-            }
-            table th, table td {
-                padding: 8px;
-            }
-        }
+.card.financial.poor .card-header {
+background: linear-gradient(135deg, #c4ad94 0%, #b39a7f 100%);
+border-left: 4px solid #9d8b6f;
+}
 
-        @media (max-width: 480px) {
-            .table-wrapper {
-                max-width: 100%;
-                padding: 12px;
-            }
-            .tables-container {
-                gap: 12px;
-                padding: 0 4px;
-            }
-            table {
-                font-size: 11px;
-                min-width: 500px;
-            }
-            table th, table td {
-                padding: 6px;
-            }
-        }
-    </style>
+/* Фокусные позиции - голубая тема */
+.card.product .card-header {
+background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+border-left: 4px solid #0369a1;
+}
+
+.card.product.excellent .card-header {
+background: linear-gradient(135deg, #059669 0%, #047857 100%);
+border-left: 4px solid #065f46;
+}
+
+.card.product.good .card-header {
+background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+border-left: 4px solid #0e7490;
+}
+
+.card.product.poor .card-header {
+background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+border-left: 4px solid #0284c7;
+}
+
+.card-content {
+padding: 16px;
+flex: 1;
+display: flex;
+flex-direction: column;
+gap: 12px;
+}
+
+.card-row {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+font-size: 13px;
+padding: 10px;
+background-color: rgba(0, 0, 0, 0.02);
+border-radius: 6px;
+border-left: 3px solid transparent;
+}
+
+.card-row:nth-child(1) { border-left-color: #3b82f6; }
+.card-row:nth-child(2) { border-left-color: #10b981; }
+.card-row:nth-child(3) { border-left-color: #f59e0b; }
+.card-row:nth-child(4) { border-left-color: #8b5cf6; }
+
+.card-label {
+color: #666;
+font-weight: 600;
+flex: 0 0 auto;
+min-width: 70px;
+}
+
+.card-value {
+color: var(--color-primary);
+font-weight: 700;
+font-family: 'SF Mono', 'Monaco', 'Menlo', 'Courier New', monospace;
+text-align: right;
+flex: 1;
+padding-left: 8px;
+word-break: break-word;
+display: flex;
+gap: 6px;
+align-items: center;
+justify-content: flex-end;
+}
+
+.card-number {
+color: var(--color-primary);
+font-weight: 700;
+font-family: 'SF Mono', 'Monaco', 'Menlo', 'Courier New', monospace;
+}
+
+.card-percent {
+background-color: #e0f2fe;
+color: #0369a1;
+padding: 2px 8px;
+border-radius: 4px;
+font-weight: 700;
+font-size: 12px;
+font-family: 'SF Mono', 'Monaco', 'Menlo', 'Courier New', monospace;
+}
+
+.card-percent.red {
+background-color: #fee2e2;
+color: #dc2626;
+}
+
+.card-percent.yellow {
+background-color: #fef3c7;
+color: #d97706;
+}
+
+.card-percent.green {
+background-color: #f5f1e8;
+color: #8a7a60;
+}
+
+.tables-container {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(calc(100% - 20px), 1fr));
+gap: 24px;
+margin: 0 auto;
+width: 100%;
+padding: 0 10px;
+}
+.table-wrapper {
+background-color: var(--color-surface);
+border: 1px solid #ddd;
+border-radius: 12px;
+padding: 20px;
+box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+overflow-x: auto;
+-webkit-overflow-scrolling: touch;
+width: 100%;
+max-width: calc(50% - 12px);
+min-width: 300px;
+}
+.table-title { font-size: 16px; font-weight: bold; margin-bottom: 16px; }
+table {
+width: 100%;
+border-collapse: separate;
+border-spacing: 0;
+font-size: 13px;
+min-width: 450px;
+border-radius: 20px;
+overflow: hidden;
+}
+th {
+background: linear-gradient(135deg, var(--color-primary) 0%, #1a7a8f 100%);
+color: var(--color-btn-primary-text);
+padding: 14px 12px;
+text-align: left;
+font-weight: 600;
+letter-spacing: 0.3px;
+position: sticky;
+top: 0;
+z-index: 10;
+border-bottom: 2px solid var(--color-primary);
+}
+th:first-child { border-top-left-radius: 20px; }
+th:last-child { border-top-right-radius: 20px; }
+td {
+padding: 12px;
+border-bottom: 1px solid #f0f0f0;
+color: #222;
+transition: background-color 0.15s ease;
+background-color: transparent;
+}
+tbody tr { transition: all 0.2s ease; }
+tbody tr:hover { background-color: rgba(33, 128, 141, 0.05); }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:last-child td:first-child { border-bottom-left-radius: 20px; }
+tbody tr:last-child td:last-child { border-bottom-right-radius: 20px; }
+.performance-excellent td { background-color: rgba(52, 211, 153, 0.12); }
+.performance-excellent:hover td { background-color: rgba(52, 211, 153, 0.18); }
+.performance-good td { background-color: rgba(251, 191, 36, 0.12); }
+.performance-good:hover td { background-color: rgba(251, 191, 36, 0.18); }
+.performance-poor td { background-color: rgba(245, 158, 11, 0.12); }
+.performance-poor:hover td { background-color: rgba(245, 158, 11, 0.18); }
+.number {
+text-align: center;
+font-weight: 600;
+font-family: 'SF Mono', 'Monaco', 'Menlo', 'Courier New', monospace;
+letter-spacing: 0.2px;
+white-space: nowrap;
+padding: 8px 4px;
+}
+td.number strong { color: var(--color-primary); }
+.pharmacy-selector { margin-bottom: 24px; }
+.pharmacy-selector label { display: block; font-weight: 500; margin-bottom: 8px; }
+.pharmacy-selector select {
+width: 100%;
+max-width: 400px;
+padding: 12px;
+border: 1px solid #ddd;
+border-radius: 8px;
+background-color: var(--color-surface);
+color: var(--color-text);
+font-size: 14px;
+cursor: pointer;
+transition: all 0.2s;
+}
+.pharmacy-selector select:hover { border-color: var(--color-primary); }
+.pharmacy-selector select:focus {
+outline: none;
+border-color: var(--color-primary);
+box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.1);
+}
+.loading {
+text-align: center;
+padding: 40px;
+font-size: 16px;
+color: #666;
+}
+@media (max-width: 768px) {
+.app-container { flex-direction: column; }
+.sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid #ddd; }
+.nav-buttons { flex-direction: row; overflow-x: auto; }
+.main-content { padding: 16px; }
+.tables-container {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(calc(100% - 20px), 1fr));
+gap: 24px;
+margin: 0 auto;
+width: 100%;
+padding: 0 10px;
+}
+.cards-container {
+grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+}
+/* Адаптивность для планшетов */
+@media (max-width: 1024px) {
+.table-wrapper {
+max-width: calc(100% - 20px);
+min-width: 100%;
+}
+.tables-container {
+grid-template-columns: 1fr;
+}
+}
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+.table-wrapper {
+max-width: 100%;
+min-width: 100%;
+}
+.tables-container {
+grid-template-columns: 1fr;
+gap: 16px;
+padding: 0 8px;
+}
+table {
+font-size: 12px;
+}
+table th, table td {
+padding: 8px;
+}
+}
+@media (max-width: 480px) {
+.table-wrapper {
+max-width: 100%;
+padding: 12px;
+}
+.tables-container {
+gap: 12px;
+padding: 0 4px;
+}
+table {
+font-size: 11px;
+min-width: 500px;
+}
+table th, table td {
+padding: 6px;
+}
+.cards-container {
+grid-template-columns: 1fr;
+}
+}
+</style>
 </head>
 <body>
 <div class="app-container">
-    <aside class="sidebar">
-        <div class="logo">🏥 Аптечная Сеть</div>
-        <nav class="nav-buttons">
-            <button class="nav-btn active" onclick="switchSection('dashboard')">📊 Общие данные</button>
-            <button class="nav-btn" onclick="switchSection('pharmacies')">🏪 Данные по аптекам</button>
-        </nav>
-    </aside>
-    <main class="main-content">
-        <section id="dashboard" class="section active">
-            <h1 class="section-title">📊 Общие данные</h1>
-            <div class="metrics-grid" id="general-metrics"></div>
-            <div class="tables-container">
-                <div class="table-wrapper">
-                    <h2 class="table-title">ФИНАНСОВЫЕ ПОКАЗАТЕЛИ</h2>
-                    <table id="financial-table"></table>
-                </div>
-                <div class="table-wrapper">
-                    <h2 class="table-title">ТОП ФОКУСНЫЕ ТОВАРЫ</h2>
-                    <table id="products-table"></table>
-                </div>
-            </div>
-        </section>
-        <section id="pharmacies" class="section">
-            <h1 class="section-title">🏪 Данные по аптекам</h1>
-            <div class="pharmacy-selector">
-                <label for="pharmacy-select">Выберите аптеку:</label>
-                <select id="pharmacy-select" onchange="loadPharmacyData(this.value)"></select>
-            </div>
-            <div id="pharmacy-content">
-                <div class="metrics-grid" id="pharmacy-metrics"></div>
-                <div class="tables-container">
-                    <div class="table-wrapper">
-                        <h2 class="table-title">ФИНАНСОВЫЕ ПОКАЗАТЕЛИ</h2>
-                        <table id="pharmacy-financial-table"></table>
-                    </div>
-                    <div class="table-wrapper">
-                        <h2 class="table-title">ФОКУСНЫЕ ТОВАРЫ</h2>
-                        <table id="pharmacy-products-table"></table>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+<aside class="sidebar">
+<div class="logo">
+<img src="https://uteka.ru/media/202302/129_3159.png" alt="Аптечная Сеть">
+</div>
+<nav class="nav-buttons">
+<button class="nav-btn active" onclick="switchSection('dashboard')">📊 Общие данные</button>
+<button class="nav-btn" onclick="switchSection('pharmacies')">🏪 Данные по аптекам</button>
+</nav>
+</aside>
+<main class="main-content">
+<section id="dashboard" class="section active">
+<h1 class="section-title">📊 Общие данные</h1>
+<div class="metrics-grid" id="general-metrics"></div>
+
+<div class="section-box">
+<div class="section-box-title">💰 ФИНАНСОВЫЕ ПОКАЗАТЕЛИ</div>
+<div class="cards-container" id="financial-cards"></div>
 </div>
 
+<div class="section-box">
+<div class="section-box-title">🎯 ФОКУСНЫЕ ПОЗИЦИИ</div>
+<div class="cards-container" id="products-cards"></div>
+</div>
+</section>
+<section id="pharmacies" class="section">
+<h1 class="section-title">🏪 Данные по аптекам</h1>
+<div class="pharmacy-selector">
+<label for="pharmacy-select">Выберите аптеку:</label>
+<select id="pharmacy-select" onchange="loadPharmacyData(this.value)"></select>
+</div>
+<div id="pharmacy-content">
+<div class="metrics-grid" id="pharmacy-metrics"></div>
+
+<div class="section-box">
+<div class="section-box-title">💰 ФИНАНСОВЫЕ ПОКАЗАТЕЛИ</div>
+<div class="cards-container" id="pharmacy-financial-cards"></div>
+</div>
+
+<div class="section-box">
+<div class="section-box-title">🎯 ФОКУСНЫЕ ПОЗИЦИИ</div>
+<div class="cards-container" id="pharmacy-products-cards"></div>
+</div>
+</div>
+</section>
+</main>
+</div>
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbwJjIMnkwXCh7NNizu0SNy3Qk8htbormVQf1jQH5Hid8RKIwwAsK-71CEFE6r4qpVBW/exec';
 let allData = null;
-
 function getDaysUntilMonthEnd() {
-    const today = new Date();
-    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    const daysRemaining = Math.ceil((lastDayOfMonth - today) / (1000 * 60 * 60 * 24));
-    return Math.max(0, daysRemaining);
+const today = new Date();
+const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+const daysRemaining = Math.ceil((lastDayOfMonth - today) / (1000 * 60 * 60 * 24));
+return Math.max(0, daysRemaining);
 }
-
 function getCurrentDayOfMonth() {
-    return new Date().getDate();
+return new Date().getDate();
 }
-
 function calculateAverageDailyRevenue(totalRevenue) {
-    const daysElapsed = getCurrentDayOfMonth();
-    return daysElapsed > 1 ? Math.round(totalRevenue / (daysElapsed - 1)) : totalRevenue;
+const daysElapsed = getCurrentDayOfMonth();
+return daysElapsed > 1 ? Math.round(totalRevenue / (daysElapsed - 1)) : totalRevenue;
 }
-
 function calculateAverageCheck(avgRevenue, avgPassthrough) {
-    return avgPassthrough > 0 ? Math.round(avgRevenue / avgPassthrough) : 0;
+return avgPassthrough > 0 ? Math.round(avgRevenue / avgPassthrough) : 0;
 }
-
 async function loadData() {
-    try {
-        console.log('🔄 Загрузка данных...');
-        const response = await fetch(API_URL);
-        const data = await response.json();
-
-        console.log('✅ Данные получены:', data);
-
-        allData = data;
-        renderDashboard();
-        renderPharmacySelector();
-    } catch (error) {
-        console.error('❌ Ошибка загрузки:', error);
-        document.querySelector('.main-content').innerHTML = '<div class="loading">❌ Ошибка загрузки данных. Проверьте консоль (F12)</div>';
-    }
+try {
+console.log('🔄 Загрузка данных...');
+const response = await fetch(API_URL);
+const data = await response.json();
+console.log('✅ Данные получены:', data);
+allData = data;
+renderDashboard();
+renderPharmacySelector();
+} catch (error) {
+console.error('❌ Ошибка загрузки:', error);
+document.querySelector('.main-content').innerHTML = '<div class="loading">❌ Ошибка загрузки данных. Проверьте консоль (F12)</div>';
 }
-
+}
 function formatNumber(num) {
-    return Number(num).toLocaleString('ru-RU');
+return Number(num).toLocaleString('ru-RU');
 }
-
 function calculatePercentage(part, whole) {
-    return whole === 0 ? 0 : ((part / whole) * 100).toFixed(1);
+return whole === 0 ? 0 : ((part / whole) * 100).toFixed(1);
 }
-
 function getPerformanceClass(percent) {
-    const p = parseFloat(percent);
-    if (p >= 95) return 'performance-excellent';
-    if (p >= 80) return 'performance-good';
-    return 'performance-poor';
+const p = parseFloat(percent);
+if (p >= 95) return 'excellent';
+if (p >= 80) return 'good';
+return 'poor';
 }
-
+function getPercentColor(percent) {
+const p = parseFloat(percent);
+if (p < 80) return 'red';
+if (p <= 99) return 'yellow';
+return 'green';
+}
 function switchSection(sectionId) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(sectionId).classList.add('active');
-    event.target.classList.add('active');
+document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+document.getElementById(sectionId).classList.add('active');
+event.target.classList.add('active');
 }
-
 function renderDashboard() {
-    if (!allData) return;
-
-    const pharmacies = allData.pharmacies || [];
-    const indicators = allData.indicators || [];
-    const topProducts = allData.topProducts || [];
-    const daysRemaining = getDaysUntilMonthEnd();
-
-    // ИСПРАВЛЕННЫЙ РАСЧЕТ: Среднее, а не сумма!
-    let totalPassthrough = 0;
-    let passthroughCount = 0;
-
-    pharmacies.forEach(pharmacy => {
-        if (pharmacy.t38) {
-            totalPassthrough += pharmacy.t38;
-            passthroughCount++;
-        }
-    });
-
-    // Среднее по аптекам
-    const avgPassthrough = passthroughCount > 0 ? Math.round(totalPassthrough / passthroughCount) : 0;
-
-    // Получаем выручку из indicators
-    const totalRevenueIndicator = indicators.find(ind => ind.name === 'Товарооборот');
-    const totalRevenue = totalRevenueIndicator ? totalRevenueIndicator.fact : 0;
-    const avgRevenue = calculateAverageDailyRevenue(totalRevenue);
-    const avgCheck = calculateAverageCheck(avgRevenue, totalPassthrough);
-
-    // Средние проценты по аптекам
-    const avgStm = pharmacies.length > 0 
-        ? Math.round(pharmacies.reduce((sum, p) => sum + (p.stmPercent || 0), 0) / pharmacies.length)
-        : 0;
-    const avgInternet = pharmacies.length > 0
-        ? Math.round(pharmacies.reduce((sum, p) => sum + (p.internetPercent || 0), 0) / pharmacies.length)
-        : 0;
-
-    console.log('Расчеты:', {
-        pharmaciesCount: pharmacies.length,
-        totalPassthrough,
-        passthroughCount,
-        avgPassthrough,
-        totalRevenue,
-        avgRevenue,
-        avgCheck
-    });
-
-    document.getElementById('general-metrics').innerHTML = `
-        <div class="metric-card">
-            <div class="metric-label">Количество аптек</div>
-            <div class="metric-value">${pharmacies.length}</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">📅 Осталось дней</div>
-            <div class="metric-value">${daysRemaining}</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">💵 Средняя выручка</div>
-            <div class="metric-value">${formatNumber(avgRevenue)}</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">📋 Средняя проходимость</div>
-            <div class="metric-value">${Math.round(avgPassthrough)}</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">🧾 Средний чек</div>
-            <div class="metric-value">${formatNumber(avgCheck)}</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">🏷️ Доля СТМ</div>
-            <div class="metric-value">${avgStm}%</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">🌐 Интернет</div>
-            <div class="metric-value">${avgInternet}%</div>
-        </div>
-    `;
-
-    // Таблица показателей
-    let financialHTML = '<thead><tr><th>Показатель</th><th class="number" style="text-align: center;">Прогноз</th><th class="number" style="text-align: center;">План</th><th class="number" style="text-align: center;">Факт</th><th class="number" style="text-align: center;">До плана</th></tr></thead><tbody>';
-
-    indicators.forEach(ind => {
-        const performance = calculatePercentage(ind.fact, ind.plan);
-        const forecastPercent = calculatePercentage(ind.forecast, ind.plan);
-        const toPlan = ind.plan - ind.fact;
-        const rowClass = getPerformanceClass(forecastPercent);
-
-        financialHTML += `
-            <tr class="${rowClass}">
-                <td><strong>${ind.name}</strong></td>
-                <td class="number" style="text-align: center;"><div>${formatNumber(ind.forecast)}</div><div style="color: #999; font-size: 0.9em; margin-top: 4px;">(${forecastPercent}%)</div></td>
-                <td class="number">${formatNumber(ind.plan)}</td>
-                <td class="number" style="text-align: center;"><div>${formatNumber(ind.fact)}</div><div style="color: #999; font-size: 0.9em; margin-top: 4px;"><strong>(${performance}%)</strong></div></td>
-                <td class="number">${toPlan < 0 ? '-' : formatNumber(toPlan)}</td>
-            </tr>
-        `;
-    });
-    financialHTML += '</tbody>';
-    document.getElementById('financial-table').innerHTML = financialHTML;
-
-    // Таблица товаров
-    let productsHTML = '<thead style="background-color: #722f37; color: white;"><tr><th>Товар</th><th class="number" style="text-align: center;">Прогноз</th><th class="number" style="text-align: center;">План</th><th class="number" style="text-align: center;">Продано</th><th class="number" style="text-align: center;">До плана</th></tr></thead><tbody>';
-
-    topProducts.forEach(prod => {
-        const performance = calculatePercentage(prod.sold, prod.plan);
-        const forecastPercent = calculatePercentage(prod.forecast, prod.plan);
-        const toPlan = prod.plan - prod.sold;
-        const rowClass = getPerformanceClass(forecastPercent);
-
-        productsHTML += `
-            <tr class="${rowClass}">
-                <td><strong>${prod.name}</strong></td>
-                <td class="number" style="text-align: center;"><div>${formatNumber(prod.forecast)}</div><div style="color: #999; font-size: 0.9em; margin-top: 4px;">(${forecastPercent}%)</div></td>
-                <td class="number">${formatNumber(prod.plan)}</td>
-                <td class="number" style="text-align: center;"><div>${formatNumber(prod.sold)}</div><div style="color: #999; font-size: 0.9em; margin-top: 4px;"><strong>(${performance}%)</strong></div></td>
-                <td class="number">${toPlan < 0 ? '-' : formatNumber(toPlan)}</td>
-            </tr>
-        `;
-    });
-    productsHTML += '</tbody>';
-    document.getElementById('products-table').innerHTML = productsHTML;
+if (!allData) return;
+const pharmacies = allData.pharmacies || [];
+const indicators = allData.indicators || [];
+const topProducts = allData.topProducts || [];
+const daysRemaining = getDaysUntilMonthEnd();
+let totalPassthrough = 0;
+let passthroughCount = 0;
+pharmacies.forEach(pharmacy => {
+if (pharmacy.t38) {
+totalPassthrough += pharmacy.t38;
+passthroughCount++;
 }
-
+});
+const avgPassthrough = passthroughCount > 0 ? Math.round(totalPassthrough / passthroughCount) : 0;
+const totalRevenueIndicator = indicators.find(ind => ind.name === 'Товарооборот');
+const totalRevenue = totalRevenueIndicator ? totalRevenueIndicator.fact : 0;
+const avgRevenue = calculateAverageDailyRevenue(totalRevenue);
+const avgCheck = calculateAverageCheck(avgRevenue, totalPassthrough);
+const avgStm = pharmacies.length > 0
+? Math.round(pharmacies.reduce((sum, p) => sum + (p.stmPercent || 0), 0) / pharmacies.length)
+: 0;
+const avgInternet = pharmacies.length > 0
+? Math.round(pharmacies.reduce((sum, p) => sum + (p.internetPercent || 0), 0) / pharmacies.length)
+: 0;
+console.log('Расчеты:', {
+pharmaciesCount: pharmacies.length,
+totalPassthrough,
+passthroughCount,
+avgPassthrough,
+totalRevenue,
+avgRevenue,
+avgCheck
+});
+document.getElementById('general-metrics').innerHTML = `
+<div class="metric-card">
+<div class="metric-label">Количество аптек</div>
+<div class="metric-value">${pharmacies.length}</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">📅 Осталось дней</div>
+<div class="metric-value">${daysRemaining}</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">💵 Средняя выручка</div>
+<div class="metric-value">${formatNumber(avgRevenue)}</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">📋 Средняя проходимость</div>
+<div class="metric-value">${Math.round(avgPassthrough)}</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">🧾 Средний чек</div>
+<div class="metric-value">${formatNumber(avgCheck)}</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">🏷️ Доля СТМ</div>
+<div class="metric-value">${avgStm}%</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">🌐 Интернет</div>
+<div class="metric-value">${avgInternet}%</div>
+</div>
+`;
+// Карточки показателей
+let financialCardsHTML = '';
+indicators.forEach(ind => {
+const performance = calculatePercentage(ind.fact, ind.plan);
+const forecastPercent = calculatePercentage(ind.forecast, ind.plan);
+const toPlan = ind.plan - ind.fact;
+const cardClass = getPerformanceClass(forecastPercent);
+const percentColor = getPercentColor(forecastPercent);
+financialCardsHTML += `
+<div class="card financial ${cardClass}">
+<div class="card-header">${ind.name}</div>
+<div class="card-content">
+<div class="card-row">
+<span class="card-label">Прогноз:</span>
+<span class="card-value"><span class="card-number">${formatNumber(ind.forecast)}</span> <span class="card-percent ${percentColor}">${forecastPercent}%</span></span>
+</div>
+<div class="card-row">
+<span class="card-label">План:</span>
+<span class="card-value"><span class="card-number">${formatNumber(ind.plan)}</span></span>
+</div>
+<div class="card-row">
+<span class="card-label">Факт:</span>
+<span class="card-value"><span class="card-number">${formatNumber(ind.fact)}</span> <span class="card-percent">${performance}%</span></span>
+</div>
+<div class="card-row">
+<span class="card-label">До плана:</span>
+<span class="card-value"><span class="card-number">${toPlan < 0 ? '-' : formatNumber(toPlan)}</span></span>
+</div>
+</div>
+</div>
+`;
+});
+document.getElementById('financial-cards').innerHTML = financialCardsHTML;
+// Карточки товаров
+let productsCardsHTML = '';
+topProducts.forEach(prod => {
+const performance = calculatePercentage(prod.sold, prod.plan);
+const forecastPercent = calculatePercentage(prod.forecast, prod.plan);
+const toPlan = prod.plan - prod.sold;
+const cardClass = getPerformanceClass(forecastPercent);
+const percentColor = getPercentColor(forecastPercent);
+productsCardsHTML += `
+<div class="card product ${cardClass}">
+<div class="card-header">${prod.name}</div>
+<div class="card-content">
+<div class="card-row">
+<span class="card-label">Прогноз:</span>
+<span class="card-value"><span class="card-number">${formatNumber(prod.forecast)}</span> <span class="card-percent ${percentColor}">${forecastPercent}%</span></span>
+</div>
+<div class="card-row">
+<span class="card-label">План:</span>
+<span class="card-value"><span class="card-number">${formatNumber(prod.plan)}</span></span>
+</div>
+<div class="card-row">
+<span class="card-label">Продано:</span>
+<span class="card-value"><span class="card-number">${formatNumber(prod.sold)}</span> <span class="card-percent">${performance}%</span></span>
+</div>
+<div class="card-row">
+<span class="card-label">До плана:</span>
+<span class="card-value"><span class="card-number">${toPlan < 0 ? '-' : formatNumber(toPlan)}</span></span>
+</div>
+</div>
+</div>
+`;
+});
+document.getElementById('products-cards').innerHTML = productsCardsHTML;
+}
 function renderPharmacySelector() {
-    if (!allData || !allData.pharmacies) return;
-
-    const select = document.getElementById('pharmacy-select');
-    select.innerHTML = '';
-    allData.pharmacies.forEach(p => {
-        const option = document.createElement('option');
-        option.value = p.id;
-        option.textContent = p.name;
-        select.appendChild(option);
-    });
-
-    if (allData.pharmacies.length > 0) {
-        loadPharmacyData(allData.pharmacies[0].id);
-    }
+if (!allData || !allData.pharmacies) return;
+const select = document.getElementById('pharmacy-select');
+select.innerHTML = '';
+allData.pharmacies.forEach(p => {
+const option = document.createElement('option');
+option.value = p.id;
+option.textContent = p.name;
+select.appendChild(option);
+});
+if (allData.pharmacies.length > 0) {
+loadPharmacyData(allData.pharmacies[0].id);
 }
-
+}
 function loadPharmacyData(pharmacyId) {
-    if (!allData) return;
-
-    const pharmacy = allData.pharmacies.find(p => p.id == pharmacyId);
-    if (!pharmacy) return;
-
-    // Получаем выручку из indicators аптеки
-    let pharmacyRevenue = 0;
-    if (pharmacy.indicators && Array.isArray(pharmacy.indicators)) {
-        const revenueInd = pharmacy.indicators.find(ind => ind.name === 'Товарооборот');
-        if (revenueInd) pharmacyRevenue = revenueInd.fact || 0;
-    }
-
-    // t38 уже целое число, но округляем для уверенности
-    const pharmacyPassthrough = Math.round(pharmacy.t38 || 0);
-    const pharmacyAvgRevenue = calculateAverageDailyRevenue(pharmacyRevenue);
-    const pharmacyAvgCheck = calculateAverageCheck(pharmacyAvgRevenue, pharmacyPassthrough);
-
-    document.getElementById('pharmacy-metrics').innerHTML = `
-        <div class="metric-card">
-            <div class="metric-label">💵 Средняя выручка</div>
-            <div class="metric-value">${formatNumber(pharmacyAvgRevenue)}</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">📋 Проходимость (чеки)</div>
-            <div class="metric-value">${pharmacyPassthrough}</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">🧾 Средний чек</div>
-            <div class="metric-value">${formatNumber(pharmacyAvgCheck)}</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">🏷️ Доля СТМ</div>
-            <div class="metric-value">${Math.round(pharmacy.stmPercent || 0)}%</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">🌐 Интернет</div>
-            <div class="metric-value">${Math.round(pharmacy.internetPercent || 0)}%</div>
-        </div>
-    `;
-
-    // Таблица показателей по аптеке
-    let financialHTML = '<thead><tr><th>Показатель</th><th class="number" style="text-align: center;">Прогноз</th><th class="number" style="text-align: center;">План</th><th class="number" style="text-align: center;">Факт</th><th class="number" style="text-align: center;">До плана</th></tr></thead><tbody>';
-
-    if (pharmacy.indicators && Array.isArray(pharmacy.indicators)) {
-        pharmacy.indicators.forEach(ind => {
-            const performance = calculatePercentage(ind.fact, ind.plan);
-            const forecastPercent = calculatePercentage(ind.forecast, ind.plan);
-            const toPlan = ind.plan - ind.fact;
-            const rowClass = getPerformanceClass(forecastPercent);
-
-            financialHTML += `
-                <tr class="${rowClass}">
-                    <td><strong>${ind.name}</strong></td>
-                    <td class="number" style="text-align: center;"><div>${formatNumber(ind.forecast)}</div><div style="color: #999; font-size: 0.9em; margin-top: 4px;">(${forecastPercent}%)</div></td>
-                <td class="number">${formatNumber(ind.plan)}</td>
-                <td class="number" style="text-align: center;"><div>${formatNumber(ind.fact)}</div><div style="color: #999; font-size: 0.9em; margin-top: 4px;"><strong>(${performance}%)</strong></div></td>
-                <td class="number">${toPlan < 0 ? '-' : formatNumber(toPlan)}</td>
-                </tr>
-            `;
-        });
-    }
-    financialHTML += '</tbody>';
-    document.getElementById('pharmacy-financial-table').innerHTML = financialHTML;
-
-    // Таблица товаров по аптеке
-    let productsHTML = '<thead style="background-color: #722f37; color: white;"><tr><th>Товар</th><th class="number" style="text-align: center;">Прогноз</th><th class="number" style="text-align: center;">План</th><th class="number" style="text-align: center;">Продано</th><th class="number" style="text-align: center;">До плана</th></tr></thead><tbody>';
-
-    if (pharmacy.products && Array.isArray(pharmacy.products)) {
-        pharmacy.products.forEach(prod => {
-            const performance = calculatePercentage(prod.sold, prod.plan);
-            const forecastPercent = calculatePercentage(prod.forecast, prod.plan);
-            const toPlan = prod.plan - prod.sold;
-            const rowClass = getPerformanceClass(forecastPercent);
-
-            productsHTML += `
-                <tr class="${rowClass}">
-                    <td><strong>${prod.name}</strong></td>
-                    <td class="number" style="text-align: center;"><div>${formatNumber(prod.forecast)}</div><div style="color: #999; font-size: 0.9em; margin-top: 4px;">(${forecastPercent}%)</div></td>
-                <td class="number">${formatNumber(prod.plan)}</td>
-                <td class="number" style="text-align: center;"><div>${formatNumber(prod.sold)}</div><div style="color: #999; font-size: 0.9em; margin-top: 4px;"><strong>(${performance}%)</strong></div></td>
-                <td class="number">${toPlan < 0 ? '-' : formatNumber(toPlan)}</td>
-                </tr>
-            `;
-        });
-    }
-    productsHTML += '</tbody>';
-    document.getElementById('pharmacy-products-table').innerHTML = productsHTML;
+if (!allData) return;
+const pharmacy = allData.pharmacies.find(p => p.id == pharmacyId);
+if (!pharmacy) return;
+let pharmacyRevenue = 0;
+if (pharmacy.indicators && Array.isArray(pharmacy.indicators)) {
+const revenueInd = pharmacy.indicators.find(ind => ind.name === 'Товарооборот');
+if (revenueInd) pharmacyRevenue = revenueInd.fact || 0;
 }
-
+const pharmacyPassthrough = Math.round(pharmacy.t38 || 0);
+const pharmacyAvgRevenue = calculateAverageDailyRevenue(pharmacyRevenue);
+const pharmacyAvgCheck = calculateAverageCheck(pharmacyAvgRevenue, pharmacyPassthrough);
+document.getElementById('pharmacy-metrics').innerHTML = `
+<div class="metric-card">
+<div class="metric-label">💵 Средняя выручка</div>
+<div class="metric-value">${formatNumber(pharmacyAvgRevenue)}</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">📋 Проходимость (чеки)</div>
+<div class="metric-value">${pharmacyPassthrough}</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">🧾 Средний чек</div>
+<div class="metric-value">${formatNumber(pharmacyAvgCheck)}</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">🏷️ Доля СТМ</div>
+<div class="metric-value">${Math.round(pharmacy.stmPercent || 0)}%</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">🌐 Интернет</div>
+<div class="metric-value">${Math.round(pharmacy.internetPercent || 0)}%</div>
+</div>
+`;
+// Карточки показателей по аптеке
+let financialCardsHTML = '';
+if (pharmacy.indicators && Array.isArray(pharmacy.indicators)) {
+pharmacy.indicators.forEach(ind => {
+const performance = calculatePercentage(ind.fact, ind.plan);
+const forecastPercent = calculatePercentage(ind.forecast, ind.plan);
+const toPlan = ind.plan - ind.fact;
+const cardClass = getPerformanceClass(forecastPercent);
+const percentColor = getPercentColor(forecastPercent);
+financialCardsHTML += `
+<div class="card financial ${cardClass}">
+<div class="card-header">${ind.name}</div>
+<div class="card-content">
+<div class="card-row">
+<span class="card-label">Прогноз:</span>
+<span class="card-value"><span class="card-number">${formatNumber(ind.forecast)}</span> <span class="card-percent ${percentColor}">${forecastPercent}%</span></span>
+</div>
+<div class="card-row">
+<span class="card-label">План:</span>
+<span class="card-value"><span class="card-number">${formatNumber(ind.plan)}</span></span>
+</div>
+<div class="card-row">
+<span class="card-label">Факт:</span>
+<span class="card-value"><span class="card-number">${formatNumber(ind.fact)}</span> <span class="card-percent">${performance}%</span></span>
+</div>
+<div class="card-row">
+<span class="card-label">До плана:</span>
+<span class="card-value"><span class="card-number">${toPlan < 0 ? '-' : formatNumber(toPlan)}</span></span>
+</div>
+</div>
+</div>
+`;
+});
+}
+document.getElementById('pharmacy-financial-cards').innerHTML = financialCardsHTML;
+// Карточки товаров по аптеке
+let productsCardsHTML = '';
+if (pharmacy.products && Array.isArray(pharmacy.products)) {
+pharmacy.products.forEach(prod => {
+const performance = calculatePercentage(prod.sold, prod.plan);
+const forecastPercent = calculatePercentage(prod.forecast, prod.plan);
+const toPlan = prod.plan - prod.sold;
+const cardClass = getPerformanceClass(forecastPercent);
+const percentColor = getPercentColor(forecastPercent);
+productsCardsHTML += `
+<div class="card product ${cardClass}">
+<div class="card-header">${prod.name}</div>
+<div class="card-content">
+<div class="card-row">
+<span class="card-label">Прогноз:</span>
+<span class="card-value"><span class="card-number">${formatNumber(prod.forecast)}</span> <span class="card-percent ${percentColor}">${forecastPercent}%</span></span>
+</div>
+<div class="card-row">
+<span class="card-label">План:</span>
+<span class="card-value"><span class="card-number">${formatNumber(prod.plan)}</span></span>
+</div>
+<div class="card-row">
+<span class="card-label">Продано:</span>
+<span class="card-value"><span class="card-number">${formatNumber(prod.sold)}</span> <span class="card-percent">${performance}%</span></span>
+</div>
+<div class="card-row">
+<span class="card-label">До плана:</span>
+<span class="card-value"><span class="card-number">${toPlan < 0 ? '-' : formatNumber(toPlan)}</span></span>
+</div>
+</div>
+</div>
+`;
+});
+}
+document.getElementById('pharmacy-products-cards').innerHTML = productsCardsHTML;
+}
 window.addEventListener('DOMContentLoaded', loadData);
 </script>
 </body>
