@@ -5,24 +5,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Аптечная сеть "Алоэ" | Управление аптеками</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-green: #6FB644;
-            --dark-green: #4CAF50;
-            --bg-color: #f4f9f5;
-            --text-color: #333;
-            --card-bg: #ffffff;
-            --shadow: 0 4px 15px rgba(76, 175, 80, 0.1);
-            --shadow-hover: 0 8px 25px rgba(76, 175, 80, 0.2);
-
-            --purple: #B39DDB;
-            --pink: #F8BBD0;
-            --cyan: #80DEEA;
-            --amber: #FFE0B2;
-            --teal: #80CBC4;
-            --red: #EF9A9A;
-            --indigo: #9FA8DA;
+            --primary: #10B981;
+            --primary-dark: #059669;
+            --primary-light: #D1FAE5;
+            --secondary: #8B5CF6;
+            --accent: #F59E0B;
+            --danger: #EF4444;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F9FAFB;
+            --bg-tertiary: #F3F4F6;
+            
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --text-tertiary: #9CA3AF;
+            
+            --border-color: #E5E7EB;
+            --border-dark: #D1D5DB;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         * {
@@ -31,293 +40,215 @@
             padding: 0;
         }
 
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            padding: 10px;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
         }
 
         .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
             display: flex;
             flex-direction: column;
             height: 100vh;
+            background: var(--bg-primary);
         }
 
+        /* HEADER */
         .header {
-            background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
-            color: white;
-            padding: 20px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 3px solid var(--primary-green);
-            flex-wrap: wrap;
-            gap: 10px;
-            position: relative;
+            box-shadow: var(--shadow-sm);
+            z-index: 50;
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
         }
 
         .logo-section {
             display: flex;
             align-items: center;
             gap: 12px;
-            flex: 1;
-            min-width: 200px;
         }
 
-        .logo-container {
-            width: 55px;
-            height: 55px;
+        .logo-image {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
+            font-size: 24px;
             flex-shrink: 0;
+            box-shadow: var(--shadow-md);
         }
 
-        .logo-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .header-text h1 {
-            font-size: 20px;
+        .header-title h1 {
+            font-size: 18px;
             font-weight: 700;
-            margin: 0 0 3px 0;
-            letter-spacing: -0.5px;
+            color: var(--text-primary);
         }
 
-        .header-text p {
+        .header-title p {
             font-size: 12px;
-            margin: 0;
-            opacity: 0.9;
+            color: var(--text-secondary);
         }
 
         .header-right {
             display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-settings {
+            display: inline-flex;
+            align-items: center;
             gap: 8px;
-            flex-wrap: wrap;
-            position: relative;
-            align-items: center;
-        }
-
-        .sync-status {
-            font-size: 16px;
-            cursor: help;
-            transition: all 0.2s;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-
-        .sync-status.syncing {
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
-        .btn-header {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 8px 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
             cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
+            transition: all 0.2s;
+            position: relative;
         }
 
-        .btn-header:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
+        .btn-settings:hover {
+            background: var(--bg-tertiary);
         }
 
-        .settings-menu {
+        .settings-dropdown {
             position: absolute;
-            top: 65px;
-            right: 20px;
-            background: var(--card-bg);
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             border-radius: 10px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-lg);
             display: none;
             flex-direction: column;
-            z-index: 999;
-            overflow: hidden;
-            min-width: 200px;
-            animation: slideDown 0.3s ease;
+            min-width: 180px;
+            z-index: 1000;
         }
 
-        .settings-menu.active {
+        .settings-dropdown.active {
             display: flex;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .settings-item {
             padding: 12px 16px;
-            border-bottom: 1px solid #e0e8e3;
+            border-bottom: 1px solid var(--border-color);
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
             font-size: 13px;
             font-weight: 500;
-            color: var(--text-color);
+            color: var(--text-primary);
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .settings-item:last-child {
             border-bottom: none;
         }
 
-        .settings-item:hover {
-            background: var(--bg-color);
+        .settings-item:hover,
+        .settings-item:active {
+            background: var(--bg-secondary);
         }
 
-        .settings-item.staff {
-            color: #D81B60;
-        }
-
-        .settings-item.labels {
-            color: #6A1B9A;
-        }
-
-        .settings-item.pharmacy {
-            color: var(--dark-green);
-        }
-
+        /* MAIN LAYOUT */
         .main-layout {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
 
+        /* SIDEBAR */
         .sidebar {
             width: 280px;
-            background: linear-gradient(180deg, #f9fdf8 0%, var(--bg-color) 100%);
-            border-right: 1px solid #e0e8e3;
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            padding: 0;
+            padding: 20px;
+            flex-shrink: 0;
         }
 
         .sidebar-section {
-            padding: 15px;
-            border-bottom: 1px solid #e0e8e3;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-section:last-child {
+            margin-bottom: 0;
         }
 
         .sidebar-title {
-            font-size: 10px;
-            text-transform: uppercase;
-            color: #999;
+            font-size: 11px;
             font-weight: 700;
-            margin-bottom: 10px;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
             letter-spacing: 0.5px;
+            margin-bottom: 12px;
         }
 
         .nav-list {
             list-style: none;
-        }
-
-        .nav-item {
-            margin-bottom: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .nav-button {
             width: 100%;
             padding: 10px 12px;
-            background: rgba(255, 255, 255, 0.6);
-            border: 1px solid #e0e8e3;
+            background: transparent;
+            border: 1px solid transparent;
             border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
             font-weight: 500;
-            color: var(--text-color);
-            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            transition: all 0.2s;
             display: flex;
             justify-content: space-between;
             align-items: center;
             text-align: left;
         }
 
-        .nav-button:hover {
-            border-color: #666;
-            background: rgba(100, 100, 100, 0.08);
-            color: #333;
-            transform: translateX(4px);
+        .nav-button:hover,
+        .nav-button:active {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
         }
 
         .nav-button.active {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: var(--primary);
             font-weight: 600;
-        }
-
-        .nav-button.active.color-purple {
-            background: linear-gradient(135deg, rgba(179, 157, 219, 0.2) 0%, rgba(179, 157, 219, 0.1) 100%);
-            color: #6A1B9A;
-            border-color: #B39DDB;
-        }
-
-        .nav-button.active.color-pink {
-            background: linear-gradient(135deg, rgba(248, 187, 208, 0.2) 0%, rgba(248, 187, 208, 0.1) 100%);
-            color: #C2185B;
-            border-color: #F8BBD0;
-        }
-
-        .nav-button.active.color-cyan {
-            background: linear-gradient(135deg, rgba(128, 222, 234, 0.2) 0%, rgba(128, 222, 234, 0.1) 100%);
-            color: #00ACC1;
-            border-color: #80DEEA;
-        }
-
-        .nav-button.active.color-amber {
-            background: linear-gradient(135deg, rgba(255, 224, 178, 0.2) 0%, rgba(255, 224, 178, 0.1) 100%);
-            color: #F57F17;
-            border-color: #FFE0B2;
-        }
-
-        .nav-button.active.color-teal {
-            background: linear-gradient(135deg, rgba(128, 203, 196, 0.2) 0%, rgba(128, 203, 196, 0.1) 100%);
-            color: #00695C;
-            border-color: #80CBC4;
-        }
-
-        .nav-button.active.color-red {
-            background: linear-gradient(135deg, rgba(239, 154, 154, 0.2) 0%, rgba(239, 154, 154, 0.1) 100%);
-            color: #C62828;
-            border-color: #EF9A9A;
-        }
-
-        .nav-button.active.color-indigo {
-            background: linear-gradient(135deg, rgba(159, 168, 218, 0.2) 0%, rgba(159, 168, 218, 0.1) 100%);
-            color: #3F51B5;
-            border-color: #9FA8DA;
         }
 
         .nav-delete {
@@ -325,7 +256,7 @@
             border: none;
             color: inherit;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             opacity: 0;
             transition: opacity 0.2s;
         }
@@ -334,6 +265,7 @@
             opacity: 1;
         }
 
+        /* CONTENT */
         .content {
             flex: 1;
             display: flex;
@@ -342,64 +274,67 @@
         }
 
         .content-header {
-            padding: 15px;
-            background: white;
-            border-bottom: 1px solid #e0e8e3;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
+            padding: 20px 24px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
         }
 
         .content-header h2 {
-            font-size: 18px;
-            color: var(--text-color);
+            font-size: 20px;
             font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .content-header-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
         }
 
         .filters-toggle {
-            background: linear-gradient(135deg, #A5D6D8 0%, #7CBCC4 100%);
-            border: none;
-            color: white;
-            padding: 10px 14px;
+            padding: 8px 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             cursor: pointer;
-            font-weight: 600;
             font-size: 13px;
-            display: flex;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: all 0.2s;
+            margin: 0 24px 8px 24px;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.3s ease;
-            margin: 15px;
-            margin-bottom: 0;
-            white-space: nowrap;
+            width: fit-content;
         }
 
-        .filters-toggle:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
+        .filters-toggle:hover,
+        .filters-toggle:active {
+            background: var(--bg-tertiary);
         }
 
         .filters-box {
-            background: linear-gradient(135deg, rgba(165, 214, 216, 0.08) 0%, rgba(124, 188, 196, 0.05) 100%);
-            border: 2px solid rgba(165, 214, 216, 0.2);
-            border-radius: 10px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
             padding: 0;
-            margin: 0 15px 15px 15px;
+            margin: 0 24px;
             max-height: 0;
             overflow: hidden;
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .filters-box.expanded {
-            padding: 15px;
+            padding: 16px;
             max-height: 500px;
+            margin-bottom: 16px;
         }
 
-        .filters-container {
+        .filters-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
         }
 
         .filter-group {
@@ -410,294 +345,262 @@
 
         .filter-label {
             font-size: 11px;
-            font-weight: 700;
-            color: var(--text-color);
+            font-weight: 600;
             text-transform: uppercase;
+            color: var(--text-secondary);
             letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
         }
 
         .filter-select {
             padding: 8px 10px;
-            border: 2px solid rgba(165, 214, 216, 0.25);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             font-size: 12px;
-            font-weight: 500;
-            background: white;
-            color: var(--text-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
             cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .filter-select:hover {
-            border-color: #7CBCC4;
-            background: rgba(165, 214, 216, 0.05);
+            transition: all 0.2s;
         }
 
         .filter-select:focus {
             outline: none;
-            border-color: #7CBCC4;
-            box-shadow: 0 0 0 3px rgba(165, 214, 216, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
 
         .filters-footer {
             display: flex;
             justify-content: flex-end;
-            margin-top: 10px;
+            gap: 8px;
+            margin-top: 12px;
         }
 
-        .filter-clear {
-            padding: 8px 12px;
-            background: #FFCDD2;
-            border: 2px solid #EF9A9A;
+        .btn-clear {
+            padding: 6px 12px;
+            background: var(--danger);
+            color: white;
+            border: none;
             border-radius: 6px;
-            color: #C62828;
-            cursor: pointer;
+            font-size: 12px;
             font-weight: 600;
-            font-size: 11px;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .filter-clear:hover {
-            background: #F1A9A0;
+        .btn-clear:hover,
+        .btn-clear:active {
+            background: #DC2626;
         }
 
         .content-area {
             flex: 1;
             overflow-y: auto;
-            padding: 0 15px 15px 15px;
-            background: var(--bg-color);
+            padding: 24px;
+            background: var(--bg-secondary);
         }
 
         .grid-layout {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
             height: 100%;
         }
 
-        .panel {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 15px;
+        /* CARDS */
+        .card {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            box-shadow: var(--shadow);
-            border: 1px solid #e0e8e3;
             overflow: hidden;
+            box-shadow: var(--shadow-sm);
         }
 
-        .panel-header {
+        .card-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid transparent;
             justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
         }
 
-        .panel.tasks .panel-header {
-            border-bottom-color: var(--primary-green);
-        }
-
-        .panel.notes .panel-header {
-            border-bottom-color: #FFE0B2;
-        }
-
-        .panel.all-tasks .panel-header {
-            border-bottom-color: #B39DDB;
-        }
-
-        .panel.all-notes .panel-header {
-            border-bottom-color: #80CBC4;
-        }
-
-        .panel-icon {
-            font-size: 20px;
-        }
-
-        .panel-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text-color);
-        }
-
-        .panel-header-left {
+        .card-title {
             display: flex;
             align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .card-title-icon {
+            font-size: 18px;
+        }
+
+        .card-header-actions {
+            display: flex;
             gap: 8px;
         }
 
-        .btn-add-item {
+        .btn-header-action {
+            padding: 4px 10px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-header-action:hover,
+        .btn-header-action:active {
+            background: var(--bg-tertiary);
+        }
+
+        .card-body {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            gap: 8px;
+            min-height: 0;
+        }
+
+        .btn-add {
             width: 100%;
             padding: 10px;
-            background: linear-gradient(135deg, #9FA8DA 0%, #B39DDB 100%);
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
+            border-radius: 8px;
+            font-size: 13px;
             font-weight: 600;
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
-        }
-
-        .btn-add-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(179, 157, 219, 0.2);
-        }
-
-        .btn-toggle-completed {
-            padding: 4px 8px;
-            background: rgba(179, 157, 219, 0.1);
-            border: 1px solid #B39DDB;
-            color: #6A1B9A;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .btn-toggle-completed:hover {
-            background: rgba(179, 157, 219, 0.2);
-        }
-
-        .items-container {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .item-card {
-            background: var(--bg-color);
-            padding: 10px;
-            border-radius: 6px;
-            border-left: 4px solid var(--primary-green);
-            transition: all 0.3s ease;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .item-card.note {
-            border-left-color: #FFE0B2;
-        }
-
-        .item-card:hover {
-            background: rgba(165, 214, 216, 0.05);
-            box-shadow: 0 2px 8px rgba(165, 214, 216, 0.1);
-            transform: translateX(2px);
-        }
-
-        .item-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-color);
-            margin-bottom: 4px;
-            word-break: break-word;
-        }
-
-        .item-meta {
-            font-size: 11px;
-            color: #888;
-            display: flex;
             gap: 6px;
-            flex-wrap: wrap;
-            align-items: center;
+            flex-shrink: 0;
         }
 
-        .tag {
-            display: inline-block;
-            padding: 2px 6px;
-            background: rgba(165, 214, 216, 0.1);
-            color: #7CBCC4;
-            border-radius: 3px;
-            font-weight: 600;
-            font-size: 9px;
-            border: 1px solid rgba(165, 214, 216, 0.2);
+        .btn-add:hover,
+        .btn-add:active {
+            background: var(--primary-dark);
         }
 
-        .tag.pharmacy {
-            background: rgba(128, 222, 234, 0.15);
-            color: #00ACC1;
-            border-color: #80DEEA;
-        }
-
-        .tag.staff {
-            background: rgba(248, 187, 208, 0.15);
-            color: #C2185B;
-            border-color: #F8BBD0;
-        }
-
-        .tag.deadline {
-            background: rgba(255, 224, 178, 0.15);
-            color: #F57F17;
-            border-color: #FFE0B2;
-        }
-
-        .tag.overdue {
-            background: rgba(239, 154, 154, 0.15);
-            color: #C62828;
-            border-color: #EF9A9A;
-        }
-
-        .item-delete {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: none;
-            border: none;
-            color: #ccc;
+        /* ITEMS */
+        .item {
+            padding: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
-            opacity: 0;
-            transition: opacity 0.2s, color 0.2s;
-            z-index: 10;
-        }
-
-        .item-card:hover .item-delete {
-            opacity: 1;
-            color: #EF9A9A;
-        }
-
-        .task-card {
+            transition: all 0.2s;
             display: flex;
-            gap: 8px;
+            gap: 10px;
             align-items: flex-start;
         }
 
-        .task-checkbox {
+        .item:hover,
+        .item:active {
+            background: var(--bg-tertiary);
+            border-color: var(--primary);
+        }
+
+        .item-checkbox {
             width: 16px;
             height: 16px;
             margin-top: 2px;
             cursor: pointer;
-            accent-color: var(--dark-green);
+            accent-color: var(--primary);
             flex-shrink: 0;
-            z-index: 10;
         }
 
-        .task-card.completed .item-title {
+        .item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+
+        .item.completed .item-title {
             text-decoration: line-through;
-            color: #ccc;
+            color: var(--text-tertiary);
+        }
+
+        .item-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-size: 11px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge.staff {
+            background: rgba(139, 92, 246, 0.1);
+            color: #7C3AED;
+        }
+
+        .badge.deadline {
+            background: rgba(245, 158, 11, 0.1);
+            color: #D97706;
+        }
+
+        .badge.overdue {
+            background: rgba(239, 68, 68, 0.1);
+            color: #DC2626;
+        }
+
+        .item-delete {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.2s, color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .item:hover .item-delete {
+            opacity: 1;
+            color: var(--danger);
         }
 
         .empty-state {
             text-align: center;
-            padding: 30px 15px;
-            color: #999;
-            font-size: 12px;
+            padding: 40px 20px;
+            color: var(--text-tertiary);
         }
 
+        .empty-state-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        /* MODALS */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -705,11 +608,11 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 1000;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
             align-items: center;
             justify-content: center;
-            padding: 10px;
+            padding: 16px;
         }
 
         .modal-overlay.active {
@@ -717,9 +620,9 @@
         }
 
         .modal {
-            background: var(--card-bg);
-            border-radius: 10px;
-            box-shadow: 0 20px 60px rgba(165, 214, 216, 0.2);
+            background: var(--bg-primary);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
             width: 100%;
             max-width: 500px;
             max-height: 90vh;
@@ -730,7 +633,7 @@
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(-30px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -739,158 +642,170 @@
         }
 
         .modal-header {
-            padding: 15px;
-            border-bottom: 1px solid #e0e8e3;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: linear-gradient(135deg, rgba(165, 214, 216, 0.05) 0%, rgba(124, 188, 196, 0.05) 100%);
+            flex-shrink: 0;
         }
 
         .modal-header h2 {
             font-size: 16px;
             font-weight: 700;
-            color: var(--text-color);
+            color: var(--text-primary);
         }
 
         .modal-close {
             background: none;
             border: none;
-            font-size: 24px;
+            font-size: 20px;
             cursor: pointer;
-            color: #999;
+            color: var(--text-tertiary);
             transition: color 0.2s;
         }
 
-        .modal-close:hover {
-            color: var(--text-color);
+        .modal-close:hover,
+        .modal-close:active {
+            color: var(--text-primary);
         }
 
         .modal-body {
-            padding: 15px;
+            padding: 20px;
         }
 
         .modal-footer {
-            padding: 12px 15px;
-            border-top: 1px solid #e0e8e3;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-secondary);
             display: flex;
             gap: 8px;
-            background: var(--bg-color);
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            flex-shrink: 0;
         }
 
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .form-label {
             display: block;
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: var(--text-color);
             font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .form-required::after {
             content: " *";
-            color: #EF9A9A;
+            color: var(--danger);
         }
 
         .form-input,
         .form-select,
         .form-textarea {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #e0e8e3;
-            border-radius: 6px;
-            font-size: 12px;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
             font-family: inherit;
-            transition: all 0.3s;
-            background: var(--bg-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.2s;
         }
 
         .form-input:focus,
         .form-select:focus,
         .form-textarea:focus {
             outline: none;
-            border-color: #7CBCC4;
-            box-shadow: 0 0 0 3px rgba(165, 214, 216, 0.1);
-            background: var(--card-bg);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
 
         .form-textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 100px;
         }
 
         .btn {
-            padding: 8px 14px;
+            padding: 10px 16px;
             border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
+            border-radius: 8px;
+            font-size: 13px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #9FA8DA 0%, #B39DDB 100%);
+            background: var(--primary);
             color: white;
             flex: 1;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(179, 157, 219, 0.2);
+        .btn-primary:hover,
+        .btn-primary:active {
+            background: var(--primary-dark);
         }
 
         .btn-secondary {
-            background: #e0e8e3;
-            color: var(--text-color);
-            border: 1px solid #d0d8d3;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
             flex: 1;
         }
 
-        .btn-secondary:hover {
-            background: #d0d8d3;
+        .btn-secondary:hover,
+        .btn-secondary:active {
+            background: var(--bg-tertiary);
         }
 
         .btn-danger {
-            background: #FFCDD2;
-            color: #C62828;
-            border: 2px solid #EF9A9A;
-            padding: 4px 8px;
-            font-size: 10px;
+            background: var(--danger);
+            color: white;
+            margin-left: auto;
         }
 
-        .btn-danger:hover {
-            background: #F1A9A0;
+        .btn-danger:hover,
+        .btn-danger:active {
+            background: #DC2626;
         }
 
         .table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 11px;
+            font-size: 12px;
         }
 
         .table th {
-            background: linear-gradient(135deg, rgba(165, 214, 216, 0.1) 0%, rgba(124, 188, 196, 0.08) 100%);
-            padding: 8px;
+            background: var(--bg-secondary);
+            padding: 10px;
             text-align: left;
-            font-weight: 700;
-            color: #7CBCC4;
-            border-bottom: 2px solid #e0e8e3;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
         }
 
         .table td {
-            padding: 8px;
-            border-bottom: 1px solid #e0e8e3;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .table tr:hover {
-            background: rgba(165, 214, 216, 0.05);
+            background: var(--bg-secondary);
         }
 
-        .labels-container {
+        .label-badges {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
@@ -900,14 +815,14 @@
         .label-badge {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 4px 8px;
-            background: rgba(165, 214, 216, 0.1);
-            color: #7CBCC4;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            border: 1px solid rgba(165, 214, 216, 0.15);
+            gap: 6px;
+            padding: 4px 10px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
         }
 
         .label-remove {
@@ -915,16 +830,12 @@
             border: none;
             color: inherit;
             cursor: pointer;
-            font-size: 12px;
-            transition: color 0.2s;
-        }
-
-        .label-remove:hover {
-            color: #C62828;
+            font-size: 14px;
         }
 
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
+            height: 8px;
         }
 
         ::-webkit-scrollbar-track {
@@ -932,144 +843,519 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(165, 214, 216, 0.3);
-            border-radius: 3px;
+            background: var(--border-dark);
+            border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(165, 214, 216, 0.5);
+            background: var(--text-tertiary);
         }
 
-        @media (max-width: 1024px) {
-            .filters-container {
-                grid-template-columns: 1fr;
+        /* TABLET */
+        @media (max-width: 1400px) {
+            .filters-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
+        }
+
+        /* LARGE MOBILE */
+        @media (max-width: 1024px) {
             .grid-layout {
                 grid-template-columns: 1fr;
             }
+            
+            .filters-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
+        /* MOBILE */
         @media (max-width: 768px) {
             .app-container {
-                height: calc(100vh - 20px);
+                height: calc(100vh - 12px);
             }
+
             .header {
-                padding: 12px;
+                padding: 12px 16px;
+                gap: 8px;
             }
+
+            .header-left {
+                gap: 12px;
+                min-width: 0;
+            }
+
             .logo-section {
-                width: 100%;
+                gap: 8px;
             }
-            .header-right {
-                width: 100%;
-                justify-content: flex-start;
+
+            .logo-image {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
             }
+
+            .header-title h1 {
+                font-size: 16px;
+            }
+
+            .header-title p {
+                font-size: 11px;
+            }
+
+            .btn-settings {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
             .main-layout {
                 flex-direction: column;
             }
+
             .sidebar {
                 width: 100%;
                 height: auto;
                 border-right: none;
-                border-bottom: 2px solid #e0e8e3;
-                padding: 12px;
-                padding-bottom: 0;
-            }
-            .sidebar-section {
-                border-bottom: none;
-                padding: 8px 0;
-            }
-            .sidebar-section:nth-child(2) {
+                border-bottom: 1px solid var(--border-color);
+                padding: 8px;
+                flex-direction: row;
+                overflow-x: auto;
+                overflow-y: hidden;
+                gap: 0;
                 display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-                padding: 0;
+                grid-template-columns: auto auto;
+                padding-bottom: 4px;
             }
-            .sidebar-section:nth-child(2) .sidebar-title {
-                grid-column: 1 / -1;
-            }
-            .sidebar-section:nth-child(2) .nav-list {
-                display: contents;
-            }
-            .sidebar-section:nth-child(2) .nav-item {
+
+            .sidebar-section {
                 margin-bottom: 0;
+                white-space: nowrap;
+                display: flex;
+                gap: 4px;
+                align-items: center;
+                border-right: 1px solid var(--border-color);
+                padding-right: 12px;
+                padding-left: 4px;
             }
+
+            .sidebar-section:nth-child(2) {
+                grid-column: 2 / 3;
+                border-right: none;
+                border-left: 1px solid var(--border-color);
+                padding-left: 12px;
+                padding-right: 0;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+
+            .sidebar-title {
+                display: none;
+            }
+
+            .nav-list {
+                flex-direction: row;
+                gap: 3px;
+            }
+
+            .nav-button {
+                padding: 6px 10px;
+                font-size: 11px;
+                height: fit-content;
+                white-space: nowrap;
+            }
+
+            .nav-delete {
+                display: none;
+            }
+
+            .content {
+                flex: 1;
+            }
+
             .content-header {
-                padding: 12px;
+                padding: 12px 16px;
+                gap: 8px;
             }
+
             .content-header h2 {
                 font-size: 16px;
             }
+
+            .content-header-subtitle {
+                font-size: 11px;
+            }
+
             .filters-toggle {
-                margin: 12px 12px 8px 12px;
+                margin: 12px 16px 0 16px;
+                padding: 6px 12px;
+                font-size: 12px;
             }
+
             .filters-box {
-                margin: 0 12px 12px 12px;
+                margin: 0 16px;
             }
-            .filters-container {
-                grid-template-columns: 1fr;
+
+            .filters-box.expanded {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr 1fr;
                 gap: 8px;
             }
+
+            .filter-label {
+                font-size: 10px;
+            }
+
+            .filter-select {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+
+            .content-area {
+                padding: 12px;
+                gap: 12px;
+            }
+
             .grid-layout {
                 gap: 12px;
             }
-            .panel {
+
+            .card {
+                border-radius: 10px;
+            }
+
+            .card-header {
                 padding: 12px;
+                gap: 8px;
             }
+
+            .card-title {
+                gap: 6px;
+                font-size: 13px;
+            }
+
+            .card-title-icon {
+                font-size: 16px;
+            }
+
+            .card-body {
+                padding: 12px;
+                gap: 6px;
+            }
+
+            .btn-add {
+                padding: 8px;
+                font-size: 12px;
+                margin-bottom: 10px;
+            }
+
+            .item {
+                padding: 10px;
+                gap: 8px;
+            }
+
+            .item-title {
+                font-size: 12px;
+                margin-bottom: 4px;
+            }
+
+            .item-meta {
+                gap: 4px;
+                font-size: 10px;
+            }
+
+            .badge {
+                padding: 2px 6px;
+                font-size: 10px;
+            }
+
+            .empty-state {
+                padding: 24px 12px;
+            }
+
+            .empty-state-icon {
+                font-size: 28px;
+                margin-bottom: 8px;
+            }
+
+            .empty-state p {
+                font-size: 12px;
+            }
+
             .modal {
-                border-radius: 8px;
+                max-width: 95vw;
+                border-radius: 10px;
             }
-            .settings-menu {
-                top: 50px;
-                right: 12px;
+
+            .modal-header {
+                padding: 14px 16px;
+            }
+
+            .modal-header h2 {
+                font-size: 15px;
+            }
+
+            .modal-body {
+                padding: 14px 16px;
+            }
+
+            .modal-footer {
+                padding: 12px 16px;
+                gap: 6px;
+            }
+
+            .form-group {
+                margin-bottom: 12px;
+            }
+
+            .form-label {
+                font-size: 11px;
+                margin-bottom: 4px;
+            }
+
+            .form-input,
+            .form-select,
+            .form-textarea {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .form-textarea {
+                min-height: 80px;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 12px;
+                gap: 4px;
+            }
+
+            .table {
+                font-size: 11px;
+            }
+
+            .table th {
+                padding: 8px;
+                font-size: 10px;
+            }
+
+            .table td {
+                padding: 8px;
+            }
+
+            .label-badge {
+                padding: 2px 8px;
+                font-size: 11px;
+            }
+
+            .label-remove {
+                font-size: 12px;
+            }
+        }
+
+        /* SMALL MOBILE */
+        @media (max-width: 480px) {
+            .header {
+                padding: 10px 12px;
+            }
+
+            .logo-image {
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+            }
+
+            .header-title h1 {
+                font-size: 14px;
+            }
+
+            .header-title p {
+                font-size: 10px;
+            }
+
+            .btn-settings {
+                padding: 5px 8px;
+                font-size: 11px;
+            }
+
+            .settings-item {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+
+            .sidebar {
+                gap: 0;
+            }
+
+            .sidebar-section {
+                padding-right: 8px;
+            }
+
+            .sidebar-section:nth-child(2) {
+                padding-left: 8px;
+            }
+
+            .nav-button {
+                padding: 5px 8px;
+                font-size: 10px;
+            }
+
+            .content-header {
+                padding: 10px 12px;
+            }
+
+            .content-header h2 {
+                font-size: 14px;
+            }
+
+            .filters-toggle {
+                margin: 10px 12px 0 12px;
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+
+            .filters-box {
+                margin: 0 12px;
+            }
+
+            .filters-box.expanded {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .filter-label {
+                font-size: 9px;
+            }
+
+            .filter-select {
+                padding: 5px 6px;
+                font-size: 10px;
+            }
+
+            .content-area {
+                padding: 10px;
+            }
+
+            .grid-layout {
+                gap: 10px;
+            }
+
+            .card-header {
+                padding: 10px;
+            }
+
+            .card-title {
+                font-size: 12px;
+            }
+
+            .card-body {
+                padding: 10px;
+            }
+
+            .btn-add {
+                padding: 6px;
+                font-size: 11px;
+                margin-bottom: 8px;
+            }
+
+            .item {
+                padding: 8px;
+            }
+
+            .item-title {
+                font-size: 11px;
+            }
+
+            .item-meta {
+                font-size: 9px;
+            }
+
+            .badge {
+                padding: 1px 5px;
+                font-size: 9px;
+            }
+
+            .modal-header {
+                padding: 12px 14px;
+            }
+
+            .modal-header h2 {
+                font-size: 14px;
+            }
+
+            .modal-body {
+                padding: 12px 14px;
+            }
+
+            .modal-footer {
+                padding: 10px 14px;
+            }
+
+            .form-input,
+            .form-select,
+            .form-textarea {
+                padding: 7px 8px;
+                font-size: 11px;
+            }
+
+            .form-textarea {
+                min-height: 70px;
+            }
+
+            .btn {
+                padding: 7px 10px;
+                font-size: 11px;
             }
         }
     </style>
 </head>
 <body>
 <div class="app-container">
+    <!-- HEADER -->
     <div class="header">
-        <div class="logo-section">
-            <div class="logo-container">
-                <img src="https://aloeapteka.ru/local/templates/aloe/favicon-600.png" alt="Логотип Алоэ">
-            </div>
-            <div class="header-text">
-                <h1>Аптечная сеть «Алоэ»</h1>
-                <p>Управление аптеками</p>
+        <div class="header-left">
+            <div class="logo-section">
+                <div class="logo-image">🏥</div>
+                <div class="header-title">
+                    <h1>Алоэ</h1>
+                    <p>Управление аптеками</p>
+                </div>
             </div>
         </div>
         <div class="header-right">
-            <div class="sync-status" id="syncStatus" title="Статус синхронизации">🔄</div>
-            <button class="btn-header" id="settingsBtn" onclick="toggleSettings(event)">
-                ⚙️ Настройки
-            </button>
-            <div class="settings-menu" id="settingsMenu">
-                <div class="settings-item staff" onclick="openStaffModal()">
-                    👥 Сотрудники
-                </div>
-                <div class="settings-item labels" onclick="openLabelsModal()">
-                    🏷️ Ярлыки
-                </div>
-                <div class="settings-item pharmacy" onclick="openPharmacyManagementModal()">
-                    🏥 Аптеки
+            <div style="position: relative;">
+                <button class="btn-settings" id="settingsBtn" onclick="toggleSettings(event)">
+                    ⚙️ Настройки
+                </button>
+                <div class="settings-dropdown" id="settingsMenu">
+                    <div class="settings-item" onclick="openStaffModal()">👥 Сотрудники</div>
+                    <div class="settings-item" onclick="openLabelsModal()">🏷️ Ярлыки</div>
+                    <div class="settings-item" onclick="openPharmacyManagementModal()">🏢 Аптеки</div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- MAIN LAYOUT -->
     <div class="main-layout">
+        <!-- SIDEBAR -->
         <div class="sidebar">
             <div class="sidebar-section">
                 <h3 class="sidebar-title">Навигация</h3>
                 <ul class="nav-list">
-                    <li class="nav-item">
-                        <button class="nav-button" onclick="showDashboard()">
-                            📊 Рабочий стол
-                        </button>
+                    <li>
+                        <button class="nav-button" onclick="showDashboard()">Стол</button>
                     </li>
-                    <li class="nav-item">
-                        <button class="nav-button" onclick="selectPharmacy('common')">
-                            📌 Общие задачи
-                        </button>
+                    <li>
+                        <button class="nav-button" onclick="selectPharmacy('common')">Общие</button>
                     </li>
                 </ul>
             </div>
@@ -1079,25 +1365,25 @@
             </div>
         </div>
 
+        <!-- CONTENT -->
         <div class="content">
             <div class="content-header">
                 <h2 id="contentTitle">📊 Рабочий стол</h2>
+                <div class="content-header-subtitle" id="contentSubtitle"></div>
             </div>
 
-            <button class="filters-toggle collapsed" onclick="toggleFilters()">
-                ⚙️ Фильтры
-            </button>
+            <button class="filters-toggle" onclick="toggleFilters()">⚙️ Фильтры</button>
 
             <div class="filters-box" id="filtersBox">
-                <div class="filters-container">
+                <div class="filters-grid">
                     <div class="filter-group">
-                        <label class="filter-label">🏥 Аптека</label>
+                        <label class="filter-label">Аптека</label>
                         <select class="filter-select" id="filterPharmacy" onchange="applyFilters()">
                             <option value="">Все</option>
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label class="filter-label">👤 Сотруд.</label>
+                        <label class="filter-label">Сотруд.</label>
                         <select class="filter-select" id="filterStaff" onchange="applyFilters()">
                             <option value="">Все</option>
                         </select>
@@ -1109,7 +1395,7 @@
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label class="filter-label">📅 Срок</label>
+                        <label class="filter-label">Срок</label>
                         <select class="filter-select" id="filterDeadline" onchange="applyFilters()">
                             <option value="">Все</option>
                             <option value="today">Сегодня</option>
@@ -1120,60 +1406,60 @@
                     </div>
                 </div>
                 <div class="filters-footer">
-                    <button class="filter-clear" onclick="clearFilters()">Очистить</button>
+                    <button class="btn-clear" onclick="clearFilters()">Очистить</button>
                 </div>
             </div>
 
             <div class="content-area">
                 <div id="dashboardView">
                     <div class="grid-layout">
-                        <div class="panel all-tasks">
-                            <div class="panel-header">
-                                <div class="panel-header-left">
-                                    <span class="panel-icon">✓</span>
-                                    <h3 class="panel-title">Задачи</h3>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-title-icon">✓</span>
+                                    <span>Задачи</span>
                                 </div>
-                                <button class="btn-toggle-completed" onclick="toggleShowCompleted('dashboard')">
-                                    Выполненные
-                                </button>
+                                <div class="card-header-actions">
+                                    <button class="btn-header-action" onclick="toggleShowCompleted('dashboard')">Выполненные</button>
+                                </div>
                             </div>
-                            <div class="items-container" id="allTasksList"></div>
+                            <div class="card-body" id="allTasksList"></div>
                         </div>
-                        <div class="panel all-notes">
-                            <div class="panel-header">
-                                <div class="panel-header-left">
-                                    <span class="panel-icon">📝</span>
-                                    <h3 class="panel-title">Заметки</h3>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-title-icon">📝</span>
+                                    <span>Заметки</span>
                                 </div>
                             </div>
-                            <div class="items-container" id="allNotesList"></div>
+                            <div class="card-body" id="allNotesList"></div>
                         </div>
                     </div>
                 </div>
 
                 <div id="pharmacyView" class="grid-layout" style="display: none;">
-                    <div class="panel tasks">
-                        <div class="panel-header">
-                            <div class="panel-header-left">
-                                <span class="panel-icon">✓</span>
-                                <h3 class="panel-title">Задачи</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-title-icon">✓</span>
+                                <span>Задачи</span>
                             </div>
-                            <button class="btn-toggle-completed" onclick="toggleShowCompleted('pharmacy')">
-                                Выполненные
-                            </button>
+                            <div class="card-header-actions">
+                                <button class="btn-header-action" onclick="toggleShowCompleted('pharmacy')">Выполненные</button>
+                            </div>
                         </div>
-                        <button class="btn-add-item" onclick="openAddTask()">+ Задача</button>
-                        <div class="items-container" id="pharmacyTasksList"></div>
+                        <button class="btn-add" onclick="openAddTask()">+ Задача</button>
+                        <div class="card-body" id="pharmacyTasksList"></div>
                     </div>
-                    <div class="panel notes">
-                        <div class="panel-header">
-                            <div class="panel-header-left">
-                                <span class="panel-icon">📝</span>
-                                <h3 class="panel-title">Заметки</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-title-icon">📝</span>
+                                <span>Заметки</span>
                             </div>
                         </div>
-                        <button class="btn-add-item" onclick="openAddNote()">+ Заметка</button>
-                        <div class="items-container" id="pharmacyNotesList"></div>
+                        <button class="btn-add" onclick="openAddNote()">+ Заметка</button>
+                        <div class="card-body" id="pharmacyNotesList"></div>
                     </div>
                 </div>
             </div>
@@ -1189,9 +1475,7 @@
             <button class="modal-close" onclick="closeModal('pharmacyManagementModal')">×</button>
         </div>
         <div class="modal-body">
-            <button class="btn btn-primary" style="width: 100%; margin-bottom: 15px;" onclick="openCreatePharmacy()">
-                + Новая аптека
-            </button>
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 16px;" onclick="openCreatePharmacy()">+ Новая аптека</button>
             <div id="pharmacyManagementList"></div>
         </div>
         <div class="modal-footer">
@@ -1213,12 +1497,12 @@
             </div>
             <div class="form-group">
                 <label class="form-label form-required">Адрес</label>
-                <input type="text" id="pharmacyAddressInput" class="form-input" placeholder="ул. Большая Покровская, д. 1">
+                <input type="text" id="pharmacyAddressInput" class="form-input" placeholder="ул. Покровская, д. 1">
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" onclick="createPharmacy()">Создать</button>
             <button class="btn btn-secondary" onclick="closeModal('createPharmacyModal')">Отмена</button>
+            <button class="btn btn-primary" onclick="createPharmacy()">Создать</button>
         </div>
     </div>
 </div>
@@ -1240,8 +1524,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" onclick="saveEditedPharmacy()">Сохранить</button>
             <button class="btn btn-secondary" onclick="closeModal('editPharmacyModal')">Отмена</button>
+            <button class="btn btn-primary" onclick="saveEditedPharmacy()">Сохранить</button>
         </div>
     </div>
 </div>
@@ -1259,9 +1543,9 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" onclick="saveNote()">Сохранить</button>
             <button class="btn btn-secondary" onclick="closeModal('addNoteModal')">Отмена</button>
-            <button class="btn btn-danger" id="deleteNoteBtn" style="display: none; margin-left: auto;" onclick="deleteNoteModal()">Удалить</button>
+            <button class="btn btn-primary" onclick="saveNote()">Сохранить</button>
+            <button class="btn btn-danger" id="deleteNoteBtn" style="display: none;" onclick="deleteNoteModal()">Удалить</button>
         </div>
     </div>
 </div>
@@ -1275,7 +1559,7 @@
         <div class="modal-body">
             <div class="form-group">
                 <label class="form-label form-required">Задача</label>
-                <input type="text" id="taskTitleInput" class="form-input" placeholder="Название...">
+                <input type="text" id="taskTitleInput" class="form-input" placeholder="Описание...">
             </div>
             <div class="form-group">
                 <label class="form-label">Ярлык</label>
@@ -1295,9 +1579,9 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" onclick="saveTask()">Создать</button>
             <button class="btn btn-secondary" onclick="closeModal('addTaskModal')">Отмена</button>
-            <button class="btn btn-danger" id="deleteTaskBtn" style="display: none; margin-left: auto;" onclick="deleteTaskModal()">Удалить</button>
+            <button class="btn btn-primary" onclick="saveTask()">Создать</button>
+            <button class="btn btn-danger" id="deleteTaskBtn" style="display: none;" onclick="deleteTaskModal()">Удалить</button>
         </div>
     </div>
 </div>
@@ -1309,61 +1593,33 @@
             <button class="modal-close" onclick="closeModal('staffModal')">×</button>
         </div>
         <div class="modal-body">
-            <h3 style="font-size: 13px; margin-bottom: 10px; color: var(--text-color); font-weight: 700;">Добавить</h3>
-            <div class="form-group">
-                <label class="form-label form-required">ФИО</label>
-                <input type="text" id="staffNameInput" class="form-input" placeholder="ФИО">
+            <div style="margin-bottom: 16px;">
+                <h3 style="font-size: 13px; margin-bottom: 12px; font-weight: 600;">Добавить</h3>
+                <div class="form-group">
+                    <label class="form-label form-required">ФИО</label>
+                    <input type="text" id="staffNameInput" class="form-input" placeholder="Имя">
+                </div>
+                <div class="form-group">
+                    <label class="form-label form-required">Должность</label>
+                    <input type="text" id="staffPositionInput" class="form-input" placeholder="Должность">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Телефон</label>
+                    <input type="tel" id="staffPhoneInput" class="form-input" placeholder="+7 (900) 000-00-00">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="staffEmailInput" class="form-input" placeholder="email@example.com">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="addStaff()">Добавить</button>
             </div>
-            <div class="form-group">
-                <label class="form-label form-required">Должность</label>
-                <input type="text" id="staffPositionInput" class="form-input" placeholder="Должность">
+            <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+                <h3 style="font-size: 13px; margin-bottom: 12px; font-weight: 600;">Список</h3>
+                <div id="staffTableContainer"></div>
             </div>
-            <div class="form-group">
-                <label class="form-label">Телефон</label>
-                <input type="tel" id="staffPhoneInput" class="form-input" placeholder="+7 (900) 123-45-67">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Email</label>
-                <input type="email" id="staffEmailInput" class="form-input" placeholder="email@example.com">
-            </div>
-            <button class="btn btn-primary" style="width: 100%; margin-bottom: 15px;" onclick="addStaff()">Добавить</button>
-
-            <h3 style="font-size: 13px; margin-bottom: 10px; color: var(--text-color); font-weight: 700;">Список</h3>
-            <div id="staffTableContainer"></div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeModal('staffModal')">Закрыть</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="editStaffModal" onclick="closeModalOnBackdrop(event, 'editStaffModal')">
-    <div class="modal">
-        <div class="modal-header">
-            <h2>Редактировать сотрудника</h2>
-            <button class="modal-close" onclick="closeModal('editStaffModal')">×</button>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label class="form-label form-required">ФИО</label>
-                <input type="text" id="editStaffNameInput" class="form-input">
-            </div>
-            <div class="form-group">
-                <label class="form-label form-required">Должность</label>
-                <input type="text" id="editStaffPositionInput" class="form-input">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Телефон</label>
-                <input type="tel" id="editStaffPhoneInput" class="form-input">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Email</label>
-                <input type="email" id="editStaffEmailInput" class="form-input">
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-primary" onclick="saveEditedStaff()">Сохранить</button>
-            <button class="btn btn-secondary" onclick="closeModal('editStaffModal')">Отмена</button>
         </div>
     </div>
 </div>
@@ -1375,14 +1631,17 @@
             <button class="modal-close" onclick="closeModal('labelsModal')">×</button>
         </div>
         <div class="modal-body">
-            <h3 style="font-size: 13px; margin-bottom: 10px; color: var(--text-color); font-weight: 700;">Добавить</h3>
-            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
-                <input type="text" id="newLabelInput" class="form-input" placeholder="Название..." style="flex: 1;">
-                <button class="btn btn-primary" style="flex: 0 0 80px; font-size: 11px;" onclick="addLabel()">Добавить</button>
+            <div style="margin-bottom: 16px;">
+                <h3 style="font-size: 13px; margin-bottom: 12px; font-weight: 600;">Добавить</h3>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="newLabelInput" class="form-input" placeholder="Название..." style="flex: 1;">
+                    <button class="btn btn-primary" style="flex: 0 0 auto;" onclick="addLabel()">Добавить</button>
+                </div>
             </div>
-
-            <h3 style="font-size: 13px; margin-bottom: 10px; color: var(--text-color); font-weight: 700;">Текущие</h3>
-            <div class="labels-container" id="labelsListContainer"></div>
+            <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+                <h3 style="font-size: 13px; margin-bottom: 12px; font-weight: 600;">Текущие</h3>
+                <div class="label-badges" id="labelsListContainer"></div>
+            </div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeModal('labelsModal')">Закрыть</button>
@@ -1422,42 +1681,27 @@
             { id: 'staff_3', name: 'Клюкин С.Н.', position: 'Территориальный менеджер', phone: '+7 (904) 041-00-17', email: 's.klyukin@aloea.ru' },
             { id: 'staff_4', name: 'Востокова Ю.В.', position: 'Менеджер по персоналу', phone: '+7 (919) 025-15-98', email: 'y.vostokova@aloea.ru' },
             { id: 'staff_5', name: 'Павлов А.Ф.', position: 'Системный администратор', phone: '+7 (920) 916-97-09', email: 'a.pavlov@aloea.ru' },
-            { id: 'staff_6', name: 'Гарвин Р.', position: 'Сотрудник АХО', phone: '+7 (904) 857-73-73', email: 'r.gavrin@aloea.ru' },
-            { id: 'staff_7', name: 'Горошилова Н.Н.', position: 'Супервайзер', phone: '+7 (953) 343-59-36', email: 'n.goroshilova@aloea.ru' },
-            { id: 'staff_8', name: 'Машеричева М.А.', position: 'Маркетолог', phone: '+7 (999) 799-36-06', email: 'm.evstrat@aloea.ru' }
         ],
-        labels: ['Срочно', 'Важно', 'Регулярно', 'Реклама', 'АХО', 'Отдел кадров'],
+        labels: ['Срочно', 'Важно', 'Регулярно', 'Реклама', 'АХО'],
         common: { notes: [], tasks: [] }
     };
 
+    const labelColors = {
+        'Срочно': { bg: 'linear-gradient(135deg, #EF9A9A 0%, #EF9A9A 100%)', color: '#C62828' },
+        'Важно': { bg: 'linear-gradient(135deg, #B39DDB 0%, #B39DDB 100%)', color: '#3F51B5' },
+        'Регулярно': { bg: 'linear-gradient(135deg, #FFE0B2 0%, #FFE0B2 100%)', color: '#F57F17' },
+        'Реклама': { bg: 'linear-gradient(135deg, #A5D6E8 0%, #A5D6E8 100%)', color: '#7CBCC4' },
+        'АХО': { bg: 'linear-gradient(135deg, #F8BBD0 0%, #F8BBD0 100%)', color: '#C2185B' }
+    };
+
+    function getColorForLabel(labelName) {
+        return labelColors[labelName] || { bg: 'var(--primary-light)', color: 'var(--primary-dark)' };
+    }
+
     let currentFilters = { pharmacy: '', staff: '', label: '', deadline: '' };
     let showCompletedTasks = { dashboard: false, pharmacy: false };
-    const pharmacyColors = ['color-purple', 'color-pink', 'color-cyan', 'color-amber', 'color-teal', 'color-red', 'color-indigo'];
-    let editingPharmacyId = null, editingStaffId = null;
+    let editingPharmacyId = null;
     let editingTask = null, editingNote = null;
-
-    function setSyncStatus(msg, type) {
-        const el = document.getElementById('syncStatus');
-        if (!el) return;
-        
-        let icon = '🔄';
-        if (type === 'syncing') {
-            icon = '⏳';
-            el.classList.add('syncing');
-        } else if (type === 'success') {
-            icon = '✅';
-            el.classList.remove('syncing');
-        } else if (type === 'error') {
-            icon = '❌';
-            el.classList.remove('syncing');
-        } else if (type === 'loading') {
-            icon = '🔄';
-            el.classList.add('syncing');
-        }
-        
-        el.innerHTML = icon;
-        el.title = msg;
-    }
 
     function toggleSettings(e) {
         e.stopPropagation();
@@ -1473,15 +1717,23 @@
     });
 
     function toggleFilters() {
-        const filtersBox = document.getElementById('filtersBox');
-        const button = document.querySelector('.filters-toggle');
-        filtersBox.classList.toggle('expanded');
-        button.classList.toggle('collapsed');
+        document.getElementById('filtersBox').classList.toggle('expanded');
+    }
+
+    function toggleShowCompleted(view) {
+        showCompletedTasks[view] = !showCompletedTasks[view];
+        if (view === 'dashboard') {
+            renderDashboard();
+        } else {
+            if (appData.currentPharmacy === 'common') {
+                renderCommon();
+            } else {
+                renderPharmacy();
+            }
+        }
     }
 
     function initFirebaseSync() {
-        setSyncStatus('Подключение...', 'loading');
-        
         DOC_REF.onSnapshot((doc) => {
             if (doc.exists) {
                 const loaded = doc.data();
@@ -1490,10 +1742,6 @@
                 appData.labels = loaded.labels || [];
                 appData.staff = loaded.staff || [];
                 appData.common = loaded.common || { notes: [], tasks: [] };
-                
-                setSyncStatus('Синхронизировано', 'success');
-            } else {
-                setSyncStatus('Готово', 'success');
             }
             
             renderPharmacies();
@@ -1508,14 +1756,11 @@
                 renderPharmacy();
             }
         }, (error) => {
-            setSyncStatus('Ошибка синхронизации', 'error');
             console.error('Firestore listener error:', error);
         });
     }
 
     function saveData() {
-        setSyncStatus('Сохранение...', 'syncing');
-        
         const dataToSave = {
             pharmacies: appData.pharmacies,
             currentPharmacy: appData.currentPharmacy,
@@ -1524,12 +1769,9 @@
             common: appData.common
         };
 
-        DOC_REF.set(dataToSave, { merge: true })
-            .then(() => setSyncStatus('Синхронизировано', 'success'))
-            .catch(err => {
-                setSyncStatus('Ошибка сохранения', 'error');
-                console.error('Firestore save error:', err);
-            });
+        DOC_REF.set(dataToSave, { merge: true }).catch(err => {
+            console.error('Firestore save error:', err);
+        });
     }
 
     function openModal(id) {
@@ -1546,19 +1788,6 @@
         }
     }
 
-    function toggleShowCompleted(view) {
-        showCompletedTasks[view] = !showCompletedTasks[view];
-        if (view === 'dashboard') {
-            renderDashboard();
-        } else {
-            if (appData.currentPharmacy === 'common') {
-                renderCommon();
-            } else {
-                renderPharmacy();
-            }
-        }
-    }
-
     // PHARMACIES
     function openPharmacyManagementModal() {
         renderPharmacyManagementList();
@@ -1569,18 +1798,20 @@
     function renderPharmacyManagementList() {
         const container = document.getElementById('pharmacyManagementList');
         if (!appData.pharmacies.length) {
-            container.innerHTML = '<div class="empty-state">Нет аптек</div>';
+            container.innerHTML = '<div class="empty-state"><p>Нет аптек</p></div>';
             return;
         }
 
         let html = '<table class="table"><thead><tr><th>№</th><th>Адрес</th><th></th></tr></thead><tbody>';
-        appData.pharmacies.forEach(p => {
-            html += `<tr>
-                <td>${p.number}</td>
+        appData.pharmacies.forEach((p, idx) => {
+            const hue = (idx * 50) % 360;
+            const bgColor = `hsl(${hue}, 70%, 92%)`;
+            html += `<tr style="background-color: ${bgColor};">
+                <td><strong>№${p.number}</strong></td>
                 <td>${p.address}</td>
                 <td style="text-align: right;">
-                    <button class="btn btn-danger" onclick="openEditPharmacy(${p.id})" style="margin-right: 4px;">✎</button>
-                    <button class="btn btn-danger" onclick="deletePharmacy(${p.id})">✕</button>
+                    <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 10px; margin-right: 4px;" onclick="openEditPharmacy(${p.id})">✎</button>
+                    <button class="btn btn-danger" style="padding: 4px 8px; font-size: 10px;" onclick="deletePharmacy(${p.id})">✕</button>
                 </td>
             </tr>`;
         });
@@ -1592,7 +1823,6 @@
         document.getElementById('pharmacyNumberInput').value = '';
         document.getElementById('pharmacyAddressInput').value = '';
         openModal('createPharmacyModal');
-        document.getElementById('pharmacyNumberInput').focus();
     }
 
     function createPharmacy() {
@@ -1606,7 +1836,6 @@
 
         appData.pharmacies.push({
             id: Date.now(),
-            name: `Аптека №${number}`,
             number,
             address,
             notes: [],
@@ -1632,22 +1861,10 @@
 
     function saveEditedPharmacy() {
         const pharmacy = appData.pharmacies.find(p => p.id === editingPharmacyId);
-        if (!pharmacy) {
-            alert('Аптека не найдена');
-            return;
-        }
+        if (!pharmacy) return;
 
-        const number = document.getElementById('editPharmacyNumberInput').value.trim();
-        const address = document.getElementById('editPharmacyAddressInput').value.trim();
-
-        if (!number || !address) {
-            alert('Заполните номер и адрес аптеки');
-            return;
-        }
-
-        pharmacy.number = number;
-        pharmacy.address = address;
-        pharmacy.name = `Аптека №${number}`;
+        pharmacy.number = document.getElementById('editPharmacyNumberInput').value.trim();
+        pharmacy.address = document.getElementById('editPharmacyAddressInput').value.trim();
 
         renderPharmacies();
         renderPharmacyManagementList();
@@ -1657,7 +1874,6 @@
         }
         saveData();
         closeModal('editPharmacyModal');
-        editingPharmacyId = null;
     }
 
     function deletePharmacy(id) {
@@ -1684,17 +1900,47 @@
     function renderPharmacies() {
         const list = document.getElementById('pharmaciesList');
         list.innerHTML = '';
+
         appData.pharmacies.forEach((p, idx) => {
-            const colorClass = pharmacyColors[idx % pharmacyColors.length];
             const isActive = appData.currentPharmacy === p.id;
+            const hue = (idx * 50) % 360;
+            const baseColor = `hsl(${hue}, 70%, 92%)`;
+            const borderColor = `hsl(${hue}, 70%, 75%)`;
+            const textColor = `hsl(${hue}, 45%, 30%)`;
+
             const li = document.createElement('li');
-            li.className = 'nav-item';
             li.innerHTML = `
-                <button class="nav-button ${isActive ? 'active ' + colorClass : ''}" onclick="selectPharmacy(${p.id})">
+                <button 
+                    class="nav-button ${isActive ? 'active' : ''}" 
+                    onclick="selectPharmacy(${p.id})" 
+                    title="${p.address}"
+                    style="
+                        ${isActive ? `
+                            background: ${baseColor};
+                            border-color: ${borderColor};
+                            color: ${textColor};
+                            font-weight: 600;
+                        ` : ''}
+                    "
+                >
                     <span>№${p.number}</span>
-                    <button class="nav-delete" onclick="deletePharmacy(${p.id}); event.stopPropagation();">✕</button>
+                    <button class="nav-delete" onclick="deletePharmacy(${p.id}); event.stopPropagation();" title="Удалить">✕</button>
                 </button>
             `;
+
+            if (!isActive) {
+                li.querySelector('.nav-button').addEventListener('mouseenter', function() {
+                    this.style.background = baseColor;
+                    this.style.borderColor = borderColor;
+                    this.style.color = textColor;
+                });
+                li.querySelector('.nav-button').addEventListener('mouseleave', function() {
+                    this.style.background = 'transparent';
+                    this.style.borderColor = 'transparent';
+                    this.style.color = 'var(--text-secondary)';
+                });
+            }
+
             list.appendChild(li);
         });
     }
@@ -1710,28 +1956,20 @@
         document.getElementById('deleteNoteBtn').style.display = 'none';
         document.getElementById('noteTextInput').value = '';
         openModal('addNoteModal');
-        document.getElementById('noteTextInput').focus();
     }
 
     function openEditNote(noteIdx) {
-        let target;
-        if (appData.currentPharmacy === 'common') {
-            target = appData.common;
-        } else {
-            target = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
-        }
+        let target = appData.currentPharmacy === 'common' 
+            ? appData.common 
+            : appData.pharmacies.find(p => p.id === appData.currentPharmacy);
 
-        if (!target || !target.notes || !target.notes[noteIdx]) {
-            alert('Заметка не найдена');
-            return;
-        }
+        if (!target || !target.notes || !target.notes[noteIdx]) return;
 
         editingNote = { index: noteIdx, pharmacyId: appData.currentPharmacy };
         document.getElementById('noteModalTitle').textContent = 'Редактировать заметку';
         document.getElementById('deleteNoteBtn').style.display = 'block';
         document.getElementById('noteTextInput').value = target.notes[noteIdx].text;
         openModal('addNoteModal');
-        document.getElementById('noteTextInput').focus();
     }
 
     function saveNote() {
@@ -1741,28 +1979,18 @@
             return;
         }
 
-        let target;
-        if (appData.currentPharmacy === 'common') {
-            if (!appData.common) appData.common = { notes: [], tasks: [] };
-            target = appData.common;
-        } else {
-            target = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
-        }
+        let target = appData.currentPharmacy === 'common' 
+            ? appData.common 
+            : appData.pharmacies.find(p => p.id === appData.currentPharmacy);
 
-        if (!target) {
-            alert('Не выбрана аптека');
-            return;
-        }
+        if (!target) return;
 
         target.notes = target.notes || [];
         
         if (editingNote) {
             target.notes[editingNote.index].text = text;
         } else {
-            target.notes.unshift({
-                text,
-                date: new Date().toISOString()
-            });
+            target.notes.unshift({ text, date: new Date().toISOString() });
         }
 
         if (appData.currentPharmacy === 'common') {
@@ -1778,20 +2006,14 @@
 
     function deleteNoteModal() {
         if (!editingNote) return;
-        let target;
-        if (editingNote.pharmacyId === 'common') {
-            target = appData.common;
-        } else {
-            target = appData.pharmacies.find(p => p.id === editingNote.pharmacyId);
-        }
+        let target = editingNote.pharmacyId === 'common' 
+            ? appData.common 
+            : appData.pharmacies.find(p => p.id === editingNote.pharmacyId);
 
         if (target && target.notes) {
             target.notes.splice(editingNote.index, 1);
-            if (editingNote.pharmacyId === 'common') {
-                renderCommon();
-            } else {
-                renderPharmacy();
-            }
+            if (editingNote.pharmacyId === 'common') renderCommon();
+            else renderPharmacy();
             renderDashboard();
             saveData();
             closeModal('addNoteModal');
@@ -1800,22 +2022,15 @@
     }
 
     function deleteNote(noteIdx) {
-        if (!confirm('Удалить?')) return;
-
-        let target;
-        if (appData.currentPharmacy === 'common') {
-            target = appData.common;
-        } else {
-            target = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
-        }
+        if (!confirm('Удалить заметку?')) return;
+        let target = appData.currentPharmacy === 'common' 
+            ? appData.common 
+            : appData.pharmacies.find(p => p.id === appData.currentPharmacy);
 
         if (target && target.notes) {
             target.notes.splice(noteIdx, 1);
-            if (appData.currentPharmacy === 'common') {
-                renderCommon();
-            } else {
-                renderPharmacy();
-            }
+            if (appData.currentPharmacy === 'common') renderCommon();
+            else renderPharmacy();
             renderDashboard();
             saveData();
         }
@@ -1836,21 +2051,14 @@
         document.getElementById('taskDeadlineInput').value = '';
         updateTaskSelects();
         openModal('addTaskModal');
-        document.getElementById('taskTitleInput').focus();
     }
 
     function openEditTask(taskIdx) {
-        let target;
-        if (appData.currentPharmacy === 'common') {
-            target = appData.common;
-        } else {
-            target = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
-        }
+        let target = appData.currentPharmacy === 'common' 
+            ? appData.common 
+            : appData.pharmacies.find(p => p.id === appData.currentPharmacy);
 
-        if (!target || !target.tasks || !target.tasks[taskIdx]) {
-            alert('Задача не найдена');
-            return;
-        }
+        if (!target || !target.tasks || !target.tasks[taskIdx]) return;
 
         const task = target.tasks[taskIdx];
         editingTask = { index: taskIdx, pharmacyId: appData.currentPharmacy };
@@ -1862,7 +2070,6 @@
         document.getElementById('taskDeadlineInput').value = task.deadline || '';
         updateTaskSelects();
         openModal('addTaskModal');
-        document.getElementById('taskTitleInput').focus();
     }
 
     function saveTask() {
@@ -1872,18 +2079,11 @@
             return;
         }
 
-        let target;
-        if (appData.currentPharmacy === 'common') {
-            if (!appData.common) appData.common = { notes: [], tasks: [] };
-            target = appData.common;
-        } else {
-            target = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
-        }
+        let target = appData.currentPharmacy === 'common' 
+            ? appData.common 
+            : appData.pharmacies.find(p => p.id === appData.currentPharmacy);
 
-        if (!target) {
-            alert('Не выбрана аптека');
-            return;
-        }
+        if (!target) return;
 
         target.tasks = target.tasks || [];
         
@@ -1902,11 +2102,8 @@
             target.tasks.unshift(taskData);
         }
 
-        if (appData.currentPharmacy === 'common') {
-            renderCommon();
-        } else {
-            renderPharmacy();
-        }
+        if (appData.currentPharmacy === 'common') renderCommon();
+        else renderPharmacy();
         renderDashboard();
         saveData();
         closeModal('addTaskModal');
@@ -1915,20 +2112,14 @@
 
     function deleteTaskModal() {
         if (!editingTask) return;
-        let target;
-        if (editingTask.pharmacyId === 'common') {
-            target = appData.common;
-        } else {
-            target = appData.pharmacies.find(p => p.id === editingTask.pharmacyId);
-        }
+        let target = editingTask.pharmacyId === 'common' 
+            ? appData.common 
+            : appData.pharmacies.find(p => p.id === editingTask.pharmacyId);
 
         if (target && target.tasks) {
             target.tasks.splice(editingTask.index, 1);
-            if (editingTask.pharmacyId === 'common') {
-                renderCommon();
-            } else {
-                renderPharmacy();
-            }
+            if (editingTask.pharmacyId === 'common') renderCommon();
+            else renderPharmacy();
             renderDashboard();
             saveData();
             closeModal('addTaskModal');
@@ -1937,42 +2128,30 @@
     }
 
     function toggleTask(taskIdx) {
-        let target;
-        if (appData.currentPharmacy === 'common') {
-            target = appData.common;
-        } else {
-            target = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
-        }
+        let target = appData.currentPharmacy === 'common' 
+            ? appData.common 
+            : appData.pharmacies.find(p => p.id === appData.currentPharmacy);
 
         if (target && target.tasks && target.tasks[taskIdx]) {
             target.tasks[taskIdx].completed = !target.tasks[taskIdx].completed;
-            if (appData.currentPharmacy === 'common') {
-                renderCommon();
-            } else {
-                renderPharmacy();
-            }
+            if (appData.currentPharmacy === 'common') renderCommon();
+            else renderPharmacy();
             renderDashboard();
             saveData();
         }
     }
 
     function deleteTask(taskIdx) {
-        if (!confirm('Удалить?')) return;
+        if (!confirm('Удалить задачу?')) return;
 
-        let target;
-        if (appData.currentPharmacy === 'common') {
-            target = appData.common;
-        } else {
-            target = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
-        }
+        let target = appData.currentPharmacy === 'common' 
+            ? appData.common 
+            : appData.pharmacies.find(p => p.id === appData.currentPharmacy);
 
         if (target && target.tasks) {
             target.tasks.splice(taskIdx, 1);
-            if (appData.currentPharmacy === 'common') {
-                renderCommon();
-            } else {
-                renderPharmacy();
-            }
+            if (appData.currentPharmacy === 'common') renderCommon();
+            else renderPharmacy();
             renderDashboard();
             saveData();
         }
@@ -2009,50 +2188,8 @@
         document.getElementById('staffEmailInput').value = '';
     }
 
-    function openEditStaff(id) {
-        const staff = appData.staff.find(s => s.id === id);
-        if (!staff) return;
-
-        editingStaffId = id;
-        document.getElementById('editStaffNameInput').value = staff.name || '';
-        document.getElementById('editStaffPositionInput').value = staff.position || '';
-        document.getElementById('editStaffPhoneInput').value = staff.phone || '';
-        document.getElementById('editStaffEmailInput').value = staff.email || '';
-        openModal('editStaffModal');
-    }
-
-    function saveEditedStaff() {
-        const staff = appData.staff.find(s => s.id === editingStaffId);
-        if (!staff) {
-            alert('Сотрудник не найден');
-            return;
-        }
-
-        const name = document.getElementById('editStaffNameInput').value.trim();
-        const position = document.getElementById('editStaffPositionInput').value.trim();
-
-        if (!name || !position) {
-            alert('ФИО и Должность обязательны');
-            return;
-        }
-
-        staff.name = name;
-        staff.position = position;
-        staff.phone = document.getElementById('editStaffPhoneInput').value.trim();
-        staff.email = document.getElementById('editStaffEmailInput').value.trim();
-
-        renderStaffTable();
-        updateTaskSelects();
-        updateFilterOptions();
-        renderPharmacy();
-        renderDashboard();
-        saveData();
-        closeModal('editStaffModal');
-        editingStaffId = null;
-    }
-
     function deleteStaff(id) {
-        if (!confirm('Удалить?')) return;
+        if (!confirm('Удалить сотрудника?')) return;
         appData.staff = appData.staff.filter(s => s.id !== id);
         renderStaffTable();
         updateTaskSelects();
@@ -2065,18 +2202,16 @@
     function renderStaffTable() {
         const container = document.getElementById('staffTableContainer');
         if (!appData.staff.length) {
-            container.innerHTML = '<div class="empty-state">Нет сотрудников</div>';
+            container.innerHTML = '<div class="empty-state"><p>Нет сотрудников</p></div>';
             return;
         }
-        let html = '<table class="table"><thead><tr><th>ФИО</th><th>Должность</th><th>Тел.</th><th></th></tr></thead><tbody>';
+        let html = '<table class="table"><thead><tr><th>ФИО</th><th>Должность</th><th></th></tr></thead><tbody>';
         appData.staff.forEach(s => {
             html += `<tr>
                 <td>${s.name}</td>
                 <td>${s.position}</td>
-                <td><a href="tel:${s.phone}" style="color: #7CBCC4; text-decoration: none; font-size: 10px;">${s.phone}</a></td>
                 <td style="text-align: right;">
-                    <button class="btn btn-danger" onclick="openEditStaff('${s.id}')" style="margin-right: 4px;">✎</button>
-                    <button class="btn btn-danger" onclick="deleteStaff('${s.id}')">X</button>
+                    <button class="btn btn-danger" style="padding: 4px 8px; font-size: 10px;" onclick="deleteStaff('${s.id}')">✕</button>
                 </td>
             </tr>`;
         });
@@ -2093,12 +2228,8 @@
 
     function addLabel() {
         const name = document.getElementById('newLabelInput').value.trim();
-        if (!name) {
-            alert('Введите название');
-            return;
-        }
-        if (appData.labels.includes(name)) {
-            alert('Такой ярлык уже существует');
+        if (!name || appData.labels.includes(name)) {
+            alert('Введите новый ярлык');
             return;
         }
         appData.labels.push(name);
@@ -2110,7 +2241,7 @@
     }
 
     function deleteLabel(name) {
-        if (!confirm('Удалить?')) return;
+        if (!confirm('Удалить ярлык?')) return;
         appData.labels = appData.labels.filter(l => l !== name);
         renderLabelsList();
         updateTaskSelects();
@@ -2121,12 +2252,13 @@
     function renderLabelsList() {
         const container = document.getElementById('labelsListContainer');
         if (!appData.labels.length) {
-            container.innerHTML = '<div class="empty-state">Нет ярлыков</div>';
+            container.innerHTML = '<div class="empty-state"><p>Нет ярлыков</p></div>';
             return;
         }
         let html = '';
         appData.labels.forEach(l => {
-            html += `<div class="label-badge">${l}<button class="label-remove" onclick="deleteLabel('${l}')">✕</button></div>`;
+            const color = getColorForLabel(l);
+            html += `<div class="label-badge" style="background: ${color.bg}; color: ${color.color};">${l}<button class="label-remove" onclick="deleteLabel('${l}')" style="color: ${color.color};">✕</button></div>`;
         });
         container.innerHTML = html;
     }
@@ -2144,9 +2276,9 @@
     // FILTERS
     function updateFilterOptions() {
         let pharmacyHtml = '<option value="">Все</option>';
-        pharmacyHtml += `<option value="common">Общие задачи</option>`;
+        pharmacyHtml += `<option value="common">Общие</option>`;
         appData.pharmacies.forEach(p => {
-            pharmacyHtml += `<option value="${p.id}">№${p.number} — ${p.address}</option>`;
+            pharmacyHtml += `<option value="${p.id}">№${p.number}</option>`;
         });
         document.getElementById('filterPharmacy').innerHTML = pharmacyHtml;
 
@@ -2202,7 +2334,7 @@
                     return deadline.getMonth() === today.getMonth() &&
                            deadline.getFullYear() === today.getFullYear();
                 case 'overdue':
-                    return deadline < today && !task.completed;
+                    return deadline < today;
             }
         }
         return true;
@@ -2213,123 +2345,125 @@
         const pharmacy = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
         if (!pharmacy) return;
 
-        document.getElementById('contentTitle').textContent = `📦 Аптека №${pharmacy.number} — ${pharmacy.address}`;
+        document.getElementById('contentTitle').textContent = `📦 №${pharmacy.number}`;
+        document.getElementById('contentSubtitle').textContent = pharmacy.address;
 
         let notesHtml = '';
         if (!pharmacy.notes || !pharmacy.notes.length) {
-            notesHtml = '<div class="empty-state">Нет заметок</div>';
+            notesHtml = '<div class="empty-state"><p>Нет заметок</p></div>';
         } else {
-            pharmacy.notes.forEach((note, idx) => {
-                notesHtml += `
-                    <div class="item-card note" onclick="openEditNote(${idx})">
+            notesHtml = pharmacy.notes.map((note, idx) => {
+                const noteDate = new Date(note.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: '2-digit' });
+                return `
+                <div class="item" onclick="openEditNote(${idx})">
+                    <div class="item-content">
                         <div class="item-title">${note.text}</div>
                         <div class="item-meta">
-                            ${new Date(note.date).toLocaleDateString('ru-RU', {
-                                day: 'numeric',
-                                month: 'short',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })}
+                            <span style="color: var(--text-tertiary);">📅 ${noteDate}</span>
                         </div>
-                        <button class="item-delete" onclick="event.stopPropagation(); deleteNote(${idx})">✕</button>
                     </div>
-                `;
-            });
+                    <button class="item-delete" onclick="event.stopPropagation(); deleteNote(${idx})">✕</button>
+                </div>
+            `;
+            }).join('');
         }
         document.getElementById('pharmacyNotesList').innerHTML = notesHtml;
 
         let tasksHtml = '';
-        const visibleTasks = pharmacy.tasks ? pharmacy.tasks.filter(t => !t.completed || showCompletedTasks.pharmacy) : [];
+        const allTasks = pharmacy.tasks || [];
+        const visibleTasks = showCompletedTasks.pharmacy ? allTasks : allTasks.filter(t => !t.completed);
 
         if (!visibleTasks.length) {
-            tasksHtml = '<div class="empty-state">Нет задач</div>';
+            tasksHtml = '<div class="empty-state"><p>Нет задач</p></div>';
         } else {
-            visibleTasks.forEach((task, idx) => {
-                const actualIdx = pharmacy.tasks.indexOf(task);
+            tasksHtml = visibleTasks.map((task, visIdx) => {
+                const actualIdx = allTasks.indexOf(task);
                 const staff = appData.staff.find(s => s.id === task.staffId);
-                const deadline = task.deadline ? new Date(task.deadline) : null;
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const isOverdue = deadline && deadline < today && !task.completed;
+                let badgesHtml = '';
+                if (task.label) {
+                    const color = getColorForLabel(task.label);
+                    badgesHtml += `<span class="badge" style="background: ${color.bg}; color: ${color.color};">${task.label}</span>`;
+                }
+                if (staff) badgesHtml += `<span class="badge staff">${staff.name}</span>`;
+                if (task.deadline) {
+                    const deadline = new Date(task.deadline);
+                    const dateStr = deadline.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+                    badgesHtml += `<span class="badge">📅 ${dateStr}</span>`;
+                }
 
-                let tagsHtml = '';
-                if (task.label) tagsHtml += `<span class="tag">${task.label}</span>`;
-                if (staff) tagsHtml += `<span class="tag staff">${staff.name}</span>`;
-                if (deadline) tagsHtml += `<span class="tag ${isOverdue ? 'overdue' : 'deadline'}">📅 ${deadline.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</span>`;
-
-                tasksHtml += `
-                    <div class="item-card task-card ${task.completed ? 'completed' : ''}" onclick="openEditTask(${actualIdx})">
-                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="event.stopPropagation(); toggleTask(${actualIdx})">
-                        <div style="flex: 1;">
+                return `
+                    <div class="item ${task.completed ? 'completed' : ''}" onclick="openEditTask(${actualIdx}); event.stopPropagation();">
+                        <input type="checkbox" class="item-checkbox" ${task.completed ? 'checked' : ''} onchange="event.stopPropagation(); toggleTask(${actualIdx})">
+                        <div class="item-content">
                             <div class="item-title">${task.title}</div>
-                            <div class="item-meta">${tagsHtml}</div>
+                            <div class="item-meta">${badgesHtml}</div>
                         </div>
                         <button class="item-delete" onclick="event.stopPropagation(); deleteTask(${actualIdx})">✕</button>
                     </div>
                 `;
-            });
+            }).join('');
         }
         document.getElementById('pharmacyTasksList').innerHTML = tasksHtml;
     }
 
     function renderCommon() {
         document.getElementById('contentTitle').textContent = '📌 Общие задачи';
-
-        if (!appData.common) appData.common = { notes: [], tasks: [] };
+        document.getElementById('contentSubtitle').textContent = '';
 
         let notesHtml = '';
         if (!appData.common.notes || !appData.common.notes.length) {
-            notesHtml = '<div class="empty-state">Нет заметок</div>';
+            notesHtml = '<div class="empty-state"><p>Нет заметок</p></div>';
         } else {
-            appData.common.notes.forEach((note, idx) => {
-                notesHtml += `
-                    <div class="item-card note" onclick="openEditNote(${idx})">
+            notesHtml = appData.common.notes.map((note, idx) => {
+                const noteDate = new Date(note.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: '2-digit' });
+                return `
+                <div class="item" onclick="openEditNote(${idx})">
+                    <div class="item-content">
                         <div class="item-title">${note.text}</div>
                         <div class="item-meta">
-                            ${new Date(note.date).toLocaleDateString('ru-RU', {
-                                day: 'numeric',
-                                month: 'short',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })}
+                            <span style="color: var(--text-tertiary);">📅 ${noteDate}</span>
                         </div>
-                        <button class="item-delete" onclick="event.stopPropagation(); deleteNote(${idx})">✕</button>
                     </div>
-                `;
-            });
+                    <button class="item-delete" onclick="event.stopPropagation(); deleteNote(${idx})">✕</button>
+                </div>
+            `;
+            }).join('');
         }
         document.getElementById('pharmacyNotesList').innerHTML = notesHtml;
 
         let tasksHtml = '';
-        const visibleTasks = appData.common.tasks ? appData.common.tasks.filter(t => !t.completed || showCompletedTasks.pharmacy) : [];
+        const allTasks = appData.common.tasks || [];
+        const visibleTasks = showCompletedTasks.pharmacy ? allTasks : allTasks.filter(t => !t.completed);
 
         if (!visibleTasks.length) {
-            tasksHtml = '<div class="empty-state">Нет задач</div>';
+            tasksHtml = '<div class="empty-state"><p>Нет задач</p></div>';
         } else {
-            visibleTasks.forEach((task, idx) => {
-                const actualIdx = appData.common.tasks.indexOf(task);
+            tasksHtml = visibleTasks.map((task, visIdx) => {
+                const actualIdx = allTasks.indexOf(task);
                 const staff = appData.staff.find(s => s.id === task.staffId);
-                const deadline = task.deadline ? new Date(task.deadline) : null;
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const isOverdue = deadline && deadline < today && !task.completed;
+                let badgesHtml = '';
+                if (task.label) {
+                    const color = getColorForLabel(task.label);
+                    badgesHtml += `<span class="badge" style="background: ${color.bg}; color: ${color.color};">${task.label}</span>`;
+                }
+                if (staff) badgesHtml += `<span class="badge staff">${staff.name}</span>`;
+                if (task.deadline) {
+                    const deadline = new Date(task.deadline);
+                    const dateStr = deadline.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+                    badgesHtml += `<span class="badge">📅 ${dateStr}</span>`;
+                }
 
-                let tagsHtml = '';
-                if (task.label) tagsHtml += `<span class="tag">${task.label}</span>`;
-                if (staff) tagsHtml += `<span class="tag staff">${staff.name}</span>`;
-                if (deadline) tagsHtml += `<span class="tag ${isOverdue ? 'overdue' : 'deadline'}">📅 ${deadline.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</span>`;
-
-                tasksHtml += `
-                    <div class="item-card task-card ${task.completed ? 'completed' : ''}" onclick="openEditTask(${actualIdx})">
-                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="event.stopPropagation(); toggleTask(${actualIdx})">
-                        <div style="flex: 1;">
+                return `
+                    <div class="item ${task.completed ? 'completed' : ''}" onclick="openEditTask(${actualIdx}); event.stopPropagation();">
+                        <input type="checkbox" class="item-checkbox" ${task.completed ? 'checked' : ''} onchange="event.stopPropagation(); toggleTask(${actualIdx})">
+                        <div class="item-content">
                             <div class="item-title">${task.title}</div>
-                            <div class="item-meta">${tagsHtml}</div>
+                            <div class="item-meta">${badgesHtml}</div>
                         </div>
                         <button class="item-delete" onclick="event.stopPropagation(); deleteTask(${actualIdx})">✕</button>
                     </div>
                 `;
-            });
+            }).join('');
         }
         document.getElementById('pharmacyTasksList').innerHTML = tasksHtml;
     }
@@ -2339,91 +2473,93 @@
 
         if (appData.common && appData.common.tasks) {
             appData.common.tasks.forEach((t, idx) => {
-                allTasks.push({ ...t, pharmacyId: 'common', pharmacyName: 'Общие задачи', taskIdx: idx });
+                allTasks.push({ ...t, pharmacyId: 'common', pharmacyName: 'Общие', taskIdx: idx });
             });
         }
 
         appData.pharmacies.forEach(p => {
-            if (!p.tasks) return;
-            p.tasks.forEach((t, idx) => {
-                allTasks.push({ ...t, pharmacyId: p.id, pharmacyName: `№${p.number} — ${p.address}`, taskIdx: idx });
-            });
+            if (p.tasks) {
+                p.tasks.forEach((t, idx) => {
+                    allTasks.push({ ...t, pharmacyId: p.id, pharmacyName: `№${p.number}`, taskIdx: idx });
+                });
+            }
         });
 
         const filteredTasks = allTasks.filter(t => matchesFilters(t) && (!t.completed || showCompletedTasks.dashboard));
+
         let tasksHtml = '';
         if (!filteredTasks.length) {
-            tasksHtml = '<div class="empty-state">Нет задач</div>';
+            tasksHtml = '<div class="empty-state"><p>Нет задач</p></div>';
         } else {
-            filteredTasks.forEach(t => {
+            tasksHtml = filteredTasks.map(t => {
                 const staff = appData.staff.find(s => s.id === t.staffId);
-                const deadline = t.deadline ? new Date(t.deadline) : null;
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const isOverdue = deadline && deadline < today && !t.completed;
+                const idx = appData.pharmacies.findIndex(p => p.id === t.pharmacyId);
+                const hue = (Math.max(0, idx) * 50) % 360;
+                let badgesHtml = `<span class="badge" style="background: hsl(${hue}, 70%, 92%); color: hsl(${hue}, 45%, 30%);">${t.pharmacyName}</span>`;
+                if (t.label) {
+                    const color = getColorForLabel(t.label);
+                    badgesHtml += `<span class="badge" style="background: ${color.bg}; color: ${color.color};">${t.label}</span>`;
+                }
+                if (staff) badgesHtml += `<span class="badge staff">${staff.name}</span>`;
+                if (t.deadline) {
+                    const deadline = new Date(t.deadline);
+                    const dateStr = deadline.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+                    badgesHtml += `<span class="badge">📅 ${dateStr}</span>`;
+                }
 
-                let tagsHtml = `<span class="tag pharmacy">${t.pharmacyName}</span>`;
-                if (t.label) tagsHtml += `<span class="tag">${t.label}</span>`;
-                if (staff) tagsHtml += `<span class="tag staff">${staff.name}</span>`;
-                if (deadline) tagsHtml += `<span class="tag ${isOverdue ? 'overdue' : 'deadline'}">📅 ${deadline.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</span>`;
-
-                tasksHtml += `
-                    <div class="item-card task-card ${t.completed ? 'completed' : ''}">
-                        <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="toggleAllTask('${t.pharmacyId}', ${t.taskIdx})">
-                        <div style="flex: 1;">
+                return `
+                    <div class="item ${t.completed ? 'completed' : ''}">
+                        <input type="checkbox" class="item-checkbox" ${t.completed ? 'checked' : ''} onchange="toggleAllTask('${t.pharmacyId}', ${t.taskIdx})">
+                        <div class="item-content">
                             <div class="item-title">${t.title}</div>
-                            <div class="item-meta">${tagsHtml}</div>
+                            <div class="item-meta">${badgesHtml}</div>
                         </div>
                     </div>
                 `;
-            });
+            }).join('');
         }
         document.getElementById('allTasksList').innerHTML = tasksHtml;
 
         let allNotes = [];
 
         if (appData.common && appData.common.notes) {
-            appData.common.notes.forEach(n => {
-                allNotes.push({ ...n, pharmacyName: 'Общие задачи', pharmacyId: 'common' });
-            });
+            allNotes.push(...appData.common.notes.map(n => ({ ...n, pharmacyName: 'Общие', pharmacyId: 'common' })));
         }
 
         appData.pharmacies.forEach(p => {
-            if (!p.notes) return;
-            p.notes.forEach(n => {
-                allNotes.push({ ...n, pharmacyName: `№${p.number} — ${p.address}`, pharmacyId: p.id });
-            });
+            if (p.notes) {
+                allNotes.push(...p.notes.map(n => ({ ...n, pharmacyName: `№${p.number}`, pharmacyId: p.id })));
+            }
         });
 
         let notesHtml = '';
         if (!allNotes.length) {
-            notesHtml = '<div class="empty-state">Нет заметок</div>';
+            notesHtml = '<div class="empty-state"><p>Нет заметок</p></div>';
         } else {
-            allNotes.forEach(n => {
-                const match = !currentFilters.pharmacy || String(n.pharmacyId) === String(currentFilters.pharmacy);
-                if (match) {
-                    notesHtml += `
-                        <div class="item-card note">
-                            <div class="item-title">${n.text}</div>
-                            <div class="item-meta">
-                                <span class="tag pharmacy">${n.pharmacyName}</span>
-                                ${new Date(n.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}
-                            </div>
+            notesHtml = allNotes.map(n => {
+                const idx = appData.pharmacies.findIndex(p => p.id === n.pharmacyId);
+                const hue = (Math.max(0, idx) * 50) % 360;
+                const noteDate = new Date(n.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: '2-digit' });
+                return `
+                <div class="item">
+                    <div class="item-content">
+                        <div class="item-title">${n.text}</div>
+                        <div class="item-meta">
+                            <span class="badge" style="background: hsl(${hue}, 70%, 92%); color: hsl(${hue}, 45%, 30%);">${n.pharmacyName}</span>
+                            <span style="color: var(--text-tertiary);">📅 ${noteDate}</span>
                         </div>
-                    `;
-                }
-            });
+                    </div>
+                </div>
+            `;
+            }).join('');
         }
         document.getElementById('allNotesList').innerHTML = notesHtml;
     }
 
     function toggleAllTask(pharmacyId, taskIdx) {
-        let target;
-        if (pharmacyId === 'common') {
-            target = appData.common;
-        } else {
-            target = appData.pharmacies.find(p => String(p.id) === String(pharmacyId));
-        }
+        let target = pharmacyId === 'common' 
+            ? appData.common 
+            : appData.pharmacies.find(p => String(p.id) === String(pharmacyId));
 
         if (target && target.tasks && target.tasks[taskIdx]) {
             target.tasks[taskIdx].completed = !target.tasks[taskIdx].completed;
@@ -2434,13 +2570,9 @@
 
     function showDashboard() {
         document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
-        const firstNavBtn = document.querySelector('.sidebar-section:first-child .nav-button');
-        if (firstNavBtn) firstNavBtn.classList.add('active');
-
+        document.querySelector('.sidebar-section:first-child .nav-button:first-child').classList.add('active');
         document.getElementById('dashboardView').style.display = '';
         document.getElementById('pharmacyView').style.display = 'none';
-        document.getElementById('contentTitle').textContent = '📊 Рабочий стол';
-        updateFilterOptions();
         renderDashboard();
     }
 
@@ -2456,7 +2588,6 @@
         renderCommon();
     }
 
-    // INIT
     window.addEventListener('DOMContentLoaded', initFirebaseSync);
 </script>
 </body>
