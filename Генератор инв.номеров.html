@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Генератор инвентарных этикеток</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+    .header { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 30px; background: white; padding: 15px 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .header-text h1 { color: #009e49; font-size: 20px; margin: 0; }
+    button { background-color: #009e49; color: white; padding: 8px 12px; font-size: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+    button:hover { background-color: #007a3e; }
+    button.add-btn { background-color: #4CAF50; }
+    button.clear-btn { background-color: #f44336; }
+    button.delete-btn { background-color: #ff6b6b; padding: 4px 8px; font-size: 11px; height: 100%; }
+
+    .wrapper { display: grid; grid-template-columns: 420px 1fr; gap: 20px; }
+
+    .sidebar { width: 420px; background: white; padding: 15px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); height: fit-content; }
+    .sidebar h2 { color: #009e49; margin-bottom: 15px; font-size: 15px; }
+
+    .size-controls { background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #009e49; }
+    .size-input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .size-input-group label, .control-row label { display: block; font-size: 11px; color: #555; margin-bottom: 3px; font-weight: bold; }
+    .size-input-group input, .control-row input { width: 100%; padding: 5px 6px; border: 1px solid #ddd; border-radius: 3px; font-size: 11px; }
+
+    .paste-hint { font-size: 11px; color: #666; margin-bottom: 6px; line-height: 1.4; }
+
+    .two-cols-input { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+    .two-cols-input textarea { width: 100%; height: 120px; padding: 6px; border: 1px solid #009e49; border-radius: 4px; font-family: monospace; font-size: 11px; resize: vertical; background: #f0fdf4; }
+    .two-cols-input div label { font-size: 11px; color: #555; font-weight: bold; margin-bottom: 3px; display: block; }
+
+    .paste-button { width: 100%; background-color: #2196F3; margin-bottom: 10px; }
+
+    .items-container { max-height: 360px; overflow-y: auto; margin: 10px 0 15px 0; border-top: 1px solid #eee; padding-top: 8px; }
+    .item-row { display: grid; grid-template-columns: 1fr 1fr 26px; gap: 4px; margin-bottom: 6px; background: #f9f9f9; padding: 4px; border-radius: 3px; }
+    .item-row input { padding: 4px 5px; border: 1px solid #ddd; border-radius: 3px; font-size: 11px; width: 100%; }
+    .item-row input.inv { font-weight: bold; color: #009e49; }
+
+    .labels-grid { display: grid; gap: 6px; background: white; padding: 15px; border-radius: 5px; justify-content: center; align-content: start; min-height: 400px; }
+
+    .label-box { display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden; border: 0.5px solid #ddd; background: white; }
+    .label-top { background-color: #009e49; color: white; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; padding: 1px 3px; height: 45%; line-height: 1.0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .label-bottom { background-color: white; color: #009e49; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1px 3px; height: 55%; word-wrap: break-word; line-height: 1.0; border-top: none; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    @media print {
+        @page { size: A4 landscape; margin: 5mm; }
+        body { padding: 0; background: white; margin: 0; }
+        .header, .sidebar { display: none !important; }
+        .wrapper { display: block !important; grid-template-columns: 1fr; }
+        .labels-grid { display: grid !important; gap: 2mm; padding: 0 !important; margin: 0 !important; justify-content: start; }
+        .label-box { page-break-inside: avoid; border: 0.5px solid #ccc; box-shadow: none !important; }
+    }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-text">
+        <h1>Инвентарные этикетки</h1>
+    </div>
+    <button onclick="window.print()">🖨️ Печать / PDF</button>
+</div>
+
+<div class="wrapper">
+    <div class="sidebar">
+        <h2>Настройки</h2>
+
+        <div class="size-controls">
+            <div class="size-input-group">
+                <div>
+                    <label>Ширина (см):</label>
+                    <input type="number" id="labelWidth" value="5" min="1" max="30" step="0.1" onchange="updateLabels()">
+                </div>
+                <div>
+                    <label>Высота (см):</label>
+                    <input type="number" id="labelHeight" value="1.5" min="0.5" max="30" step="0.1" onchange="updateLabels()">
+                </div>
+            </div>
+            <div class="control-row">
+                <label>Размер шрифта (pt):</label>
+                <input type="number" id="fontSize" value="10" min="4" max="72" step="1" onchange="updateLabels()">
+            </div>
+        </div>
+
+        <p class="paste-hint">Вставьте данные двумя столбцами (по строкам): слева инвентарные номера, справа номенклатура.</p>
+
+        <div class="two-cols-input">
+            <div>
+                <label>Инвентарные номера</label>
+                <textarea id="invArea" placeholder="ПР-00003116&#10;ПР-00003120&#10;00000000271"></textarea>
+            </div>
+            <div>
+                <label>Номенклатура</label>
+                <textarea id="nameArea" placeholder="Кассовый аппарат 10.09,&#10;Кассовый аппарат 10.09,&#10;Облучатель бактерицидный (до 10000р.),"></textarea>
+            </div>
+        </div>
+
+        <button class="paste-button" onclick="importFromTwoCols()">Загрузить из двух столбцов</button>
+
+        <div class="controls-sidebar">
+            <button class="clear-btn" style="width: 100%; margin-bottom: 8px;" onclick="clearAll()">Очистить всё</button>
+        </div>
+
+        <div class="items-container" id="itemsList"></div>
+        <button class="add-btn" style="width: 100%;" onclick="addItem()">+ Добавить строку</button>
+    </div>
+
+    <div class="main">
+        <div class="labels-grid" id="labelsGrid"></div>
+    </div>
+</div>
+
+<script>
+    let items = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Пример для наглядности
+        document.getElementById('invArea').value = "ПР-00003116\nПР-00003120\n00000000271";
+        document.getElementById('nameArea').value = "Кассовый аппарат 10.09,\nКассовый аппарат 10.09,\nОблучатель бактерицидный (до 10000р.),";
+        importFromTwoCols();
+    });
+
+    function updateLabels() { generateLabels(); }
+
+    function getLabelParams() {
+        const width = parseFloat(document.getElementById('labelWidth').value);
+        const height = parseFloat(document.getElementById('labelHeight').value);
+        const fontSize = parseInt(document.getElementById('fontSize').value);
+        return { width, height, fontSize };
+    }
+
+    function renderItems() {
+        const list = document.getElementById('itemsList');
+        list.innerHTML = '';
+
+        items.forEach((item, index) => {
+            const row = document.createElement('div');
+            row.className = 'item-row';
+
+            const invInput = document.createElement('input');
+            invInput.type = 'text';
+            invInput.className = 'inv';
+            invInput.placeholder = 'Инвентарный №';
+            invInput.value = item.inv;
+            invInput.onchange = e => updateItem(index, 'inv', e.target.value);
+
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.placeholder = 'Номенклатура';
+            nameInput.value = item.name;
+            nameInput.onchange = e => updateItem(index, 'name', e.target.value);
+
+            const delBtn = document.createElement('button');
+            delBtn.className = 'delete-btn';
+            delBtn.textContent = '✕';
+            delBtn.onclick = () => deleteItem(index);
+
+            row.appendChild(invInput);
+            row.appendChild(nameInput);
+            row.appendChild(delBtn);
+            list.appendChild(row);
+        });
+    }
+
+    function updateItem(index, field, value) {
+        items[index][field] = value;
+        generateLabels();
+    }
+
+    function deleteItem(index) {
+        items.splice(index, 1);
+        renderItems();
+        generateLabels();
+    }
+
+    function addItem() {
+        items.push({ inv: '', name: '' });
+        renderItems();
+        generateLabels();
+    }
+
+    function clearAll() {
+        if (confirm('Удалить все этикетки?')) {
+            items = [];
+            document.getElementById('invArea').value = '';
+            document.getElementById('nameArea').value = '';
+            renderItems();
+            generateLabels();
+        }
+    }
+
+    function importFromTwoCols() {
+        const invText = document.getElementById('invArea').value;
+        const nameText = document.getElementById('nameArea').value;
+
+        const invLines = invText.split('\n').map(l => l.trim()).filter(l => l);
+        const nameLines = nameText.split('\n').map(l => l.trim()).filter(l => l);
+
+        const maxLen = Math.max(invLines.length, nameLines.length);
+        const newItems = [];
+
+        for (let i = 0; i < maxLen; i++) {
+            let inv = invLines[i] || '';
+            let name = nameLines[i] || '';
+
+            if (name.endsWith(',')) name = name.slice(0, -1);
+
+            if (inv || name) newItems.push({ inv, name });
+        }
+
+        items = newItems;
+        renderItems();
+        generateLabels();
+    }
+
+    function generateLabels() {
+        const grid = document.getElementById('labelsGrid');
+        const { width, height, fontSize } = getLabelParams();
+
+        grid.style.gridTemplateColumns = `repeat(auto-fill, ${width}cm)`;
+        grid.style.gridAutoRows = `${height}cm`;
+        grid.innerHTML = '';
+
+        items.forEach(item => {
+            if (!item.inv && !item.name) return;
+
+            const labelBox = document.createElement('div');
+            labelBox.className = 'label-box';
+            labelBox.style.width = `${width}cm`;
+            labelBox.style.height = `${height}cm`;
+
+            const topPart = document.createElement('div');
+            topPart.className = 'label-top';
+            topPart.style.fontSize = `${fontSize}pt`;
+            topPart.textContent = item.inv;
+
+            const bottomPart = document.createElement('div');
+            bottomPart.className = 'label-bottom';
+            bottomPart.style.fontSize = `${fontSize - 2}pt`; // Чуть меньше для описания
+            bottomPart.textContent = item.name;
+
+            labelBox.appendChild(topPart);
+            labelBox.appendChild(bottomPart);
+            grid.appendChild(labelBox);
+        });
+    }
+</script>
+
+</body>
+</html>
