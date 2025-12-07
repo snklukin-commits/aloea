@@ -15,21 +15,14 @@
             --card-bg: #ffffff;
             --shadow: 0 4px 15px rgba(76, 175, 80, 0.1);
             --shadow-hover: 0 8px 25px rgba(76, 175, 80, 0.2);
-            
+
             --purple: #B39DDB;
-            --purple-light: rgba(179, 157, 219, 0.1);
             --pink: #F8BBD0;
-            --pink-light: rgba(248, 187, 208, 0.1);
             --cyan: #80DEEA;
-            --cyan-light: rgba(128, 222, 234, 0.1);
             --amber: #FFE0B2;
-            --amber-light: rgba(255, 224, 178, 0.1);
             --teal: #80CBC4;
-            --teal-light: rgba(128, 203, 196, 0.1);
             --red: #EF9A9A;
-            --red-light: rgba(239, 154, 154, 0.1);
             --indigo: #9FA8DA;
-            --indigo-light: rgba(159, 168, 218, 0.1);
         }
 
         * {
@@ -58,7 +51,6 @@
             height: 100vh;
         }
 
-        /* ===== HEADER ===== */
         .header {
             background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
             color: white;
@@ -116,6 +108,24 @@
             gap: 8px;
             flex-wrap: wrap;
             position: relative;
+            align-items: center;
+        }
+
+        .sync-status {
+            font-size: 16px;
+            cursor: help;
+            transition: all 0.2s;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .sync-status.syncing {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
 
         .btn-header {
@@ -139,7 +149,6 @@
             transform: translateY(-2px);
         }
 
-        /* ===== SETTINGS MENU ===== */
         .settings-menu {
             position: absolute;
             top: 65px;
@@ -203,14 +212,12 @@
             color: var(--dark-green);
         }
 
-        /* ===== MAIN LAYOUT ===== */
         .main-layout {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
 
-        /* ===== SIDEBAR ===== */
         .sidebar {
             width: 280px;
             background: linear-gradient(180deg, #f9fdf8 0%, var(--bg-color) 100%);
@@ -327,7 +334,6 @@
             opacity: 1;
         }
 
-        /* ===== CONTENT ===== */
         .content {
             flex: 1;
             display: flex;
@@ -367,8 +373,6 @@
             margin: 15px;
             margin-bottom: 0;
             white-space: nowrap;
-            overflow: hidden;
-            max-width: 100%;
         }
 
         .filters-toggle:hover {
@@ -392,16 +396,6 @@
             max-height: 500px;
         }
 
-        .filters-title {
-            font-size: 11px;
-            text-transform: uppercase;
-            color: #7CBCC4;
-            font-weight: 700;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-            display: none;
-        }
-
         .filters-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -423,10 +417,6 @@
             display: flex;
             align-items: center;
             gap: 4px;
-        }
-
-        .filter-label-icon {
-            font-size: 14px;
         }
 
         .filter-select {
@@ -506,6 +496,7 @@
             margin-bottom: 12px;
             padding-bottom: 10px;
             border-bottom: 3px solid transparent;
+            justify-content: space-between;
         }
 
         .panel.tasks .panel-header {
@@ -534,6 +525,12 @@
             color: var(--text-color);
         }
 
+        .panel-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .btn-add-item {
             width: 100%;
             padding: 10px;
@@ -557,6 +554,23 @@
             box-shadow: 0 8px 25px rgba(179, 157, 219, 0.2);
         }
 
+        .btn-toggle-completed {
+            padding: 4px 8px;
+            background: rgba(179, 157, 219, 0.1);
+            border: 1px solid #B39DDB;
+            color: #6A1B9A;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-toggle-completed:hover {
+            background: rgba(179, 157, 219, 0.2);
+        }
+
         .items-container {
             flex: 1;
             overflow-y: auto;
@@ -572,30 +586,11 @@
             border-left: 4px solid var(--primary-green);
             transition: all 0.3s ease;
             position: relative;
+            cursor: pointer;
         }
 
         .item-card.note {
             border-left-color: #FFE0B2;
-        }
-
-        .item-card.purple-theme {
-            border-left-color: #B39DDB;
-        }
-
-        .item-card.pink-theme {
-            border-left-color: #F8BBD0;
-        }
-
-        .item-card.cyan-theme {
-            border-left-color: #80DEEA;
-        }
-
-        .item-card.teal-theme {
-            border-left-color: #80CBC4;
-        }
-
-        .item-card.red-theme {
-            border-left-color: #EF9A9A;
         }
 
         .item-card:hover {
@@ -656,24 +651,6 @@
             border-color: #EF9A9A;
         }
 
-        .tag.label1 {
-            background: rgba(179, 157, 219, 0.15);
-            color: #6A1B9A;
-            border-color: #B39DDB;
-        }
-
-        .tag.label2 {
-            background: rgba(159, 168, 218, 0.15);
-            color: #3F51B5;
-            border-color: #9FA8DA;
-        }
-
-        .tag.label3 {
-            background: rgba(128, 203, 196, 0.15);
-            color: #00695C;
-            border-color: #80CBC4;
-        }
-
         .item-delete {
             position: absolute;
             top: 8px;
@@ -685,6 +662,7 @@
             font-size: 16px;
             opacity: 0;
             transition: opacity 0.2s, color 0.2s;
+            z-index: 10;
         }
 
         .item-card:hover .item-delete {
@@ -705,6 +683,7 @@
             cursor: pointer;
             accent-color: var(--dark-green);
             flex-shrink: 0;
+            z-index: 10;
         }
 
         .task-card.completed .item-title {
@@ -719,7 +698,6 @@
             font-size: 12px;
         }
 
-        /* ===== MODAL ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -932,42 +910,6 @@
             border: 1px solid rgba(165, 214, 216, 0.15);
         }
 
-        .label-badge.color1 {
-            background: rgba(179, 157, 219, 0.15);
-            color: #6A1B9A;
-            border-color: #B39DDB;
-        }
-
-        .label-badge.color2 {
-            background: rgba(248, 187, 208, 0.15);
-            color: #C2185B;
-            border-color: #F8BBD0;
-        }
-
-        .label-badge.color3 {
-            background: rgba(128, 222, 234, 0.15);
-            color: #00ACC1;
-            border-color: #80DEEA;
-        }
-
-        .label-badge.color4 {
-            background: rgba(255, 224, 178, 0.15);
-            color: #F57F17;
-            border-color: #FFE0B2;
-        }
-
-        .label-badge.color5 {
-            background: rgba(128, 203, 196, 0.15);
-            color: #00695C;
-            border-color: #80CBC4;
-        }
-
-        .label-badge.color6 {
-            background: rgba(159, 168, 218, 0.15);
-            color: #3F51B5;
-            border-color: #9FA8DA;
-        }
-
         .label-remove {
             background: none;
             border: none;
@@ -998,7 +940,6 @@
             background: rgba(165, 214, 216, 0.5);
         }
 
-        /* ===== MOBILE ===== */
         @media (max-width: 1024px) {
             .filters-container {
                 grid-template-columns: 1fr;
@@ -1012,24 +953,19 @@
             .app-container {
                 height: calc(100vh - 20px);
             }
-
             .header {
                 padding: 12px;
             }
-
             .logo-section {
                 width: 100%;
             }
-
             .header-right {
                 width: 100%;
                 justify-content: flex-start;
             }
-
             .main-layout {
                 flex-direction: column;
             }
-
             .sidebar {
                 width: 100%;
                 height: auto;
@@ -1038,1246 +974,1490 @@
                 padding: 12px;
                 padding-bottom: 0;
             }
-
             .sidebar-section {
                 border-bottom: none;
                 padding: 8px 0;
             }
-
             .sidebar-section:nth-child(2) {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
                 gap: 8px;
                 padding: 0;
             }
-
             .sidebar-section:nth-child(2) .sidebar-title {
                 grid-column: 1 / -1;
             }
-
             .sidebar-section:nth-child(2) .nav-list {
                 display: contents;
             }
-
             .sidebar-section:nth-child(2) .nav-item {
                 margin-bottom: 0;
             }
-
             .content-header {
                 padding: 12px;
             }
-
             .content-header h2 {
                 font-size: 16px;
             }
-
             .filters-toggle {
                 margin: 12px 12px 8px 12px;
             }
-
             .filters-box {
                 margin: 0 12px 12px 12px;
             }
-
             .filters-container {
                 grid-template-columns: 1fr;
                 gap: 8px;
             }
-
             .grid-layout {
                 gap: 12px;
             }
-
             .panel {
                 padding: 12px;
             }
-
             .modal {
                 border-radius: 8px;
             }
-
-            .table {
-                font-size: 10px;
-            }
-
-            .table th,
-            .table td {
-                padding: 6px;
-            }
-
             .settings-menu {
                 top: 50px;
                 right: 12px;
             }
         }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 5px;
-            }
-
-            .app-container {
-                height: calc(100vh - 10px);
-                border-radius: 8px;
-            }
-
-            .header {
-                padding: 10px;
-            }
-
-            .header-text h1 {
-                font-size: 16px;
-            }
-
-            .header-text p {
-                font-size: 10px;
-            }
-
-            .logo-container {
-                width: 45px;
-                height: 45px;
-            }
-
-            .btn-header {
-                padding: 6px 8px;
-                font-size: 10px;
-            }
-
-            .sidebar {
-                padding: 10px;
-                padding-bottom: 0;
-            }
-
-            .sidebar-section {
-                padding: 6px 0;
-            }
-
-            .content-header {
-                padding: 10px;
-            }
-
-            .content-header h2 {
-                font-size: 14px;
-            }
-
-            .content-area {
-                padding: 0 8px 8px 8px;
-            }
-
-            .filters-toggle {
-                margin: 10px 8px 6px 8px;
-                padding: 10px 12px;
-                font-size: 12px;
-            }
-
-            .filters-box {
-                margin: 0 8px 10px 8px;
-                padding: 0;
-            }
-
-            .filters-box.expanded {
-                padding: 10px;
-            }
-
-            .filters-container {
-                grid-template-columns: 1fr;
-                gap: 6px;
-            }
-
-            .filter-select {
-                padding: 6px 8px;
-                font-size: 11px;
-            }
-
-            .filter-label {
-                font-size: 10px;
-            }
-
-            .filter-clear {
-                padding: 6px 10px;
-                font-size: 10px;
-            }
-
-            .grid-layout {
-                gap: 10px;
-            }
-
-            .panel {
-                padding: 10px;
-            }
-
-            .panel-icon {
-                font-size: 18px;
-            }
-
-            .panel-title {
-                font-size: 13px;
-            }
-
-            .btn-add-item {
-                padding: 8px;
-                font-size: 11px;
-            }
-
-            .item-card {
-                padding: 8px;
-            }
-
-            .item-title {
-                font-size: 12px;
-            }
-
-            .item-meta {
-                font-size: 10px;
-                gap: 4px;
-            }
-
-            .tag {
-                padding: 1px 4px;
-                font-size: 8px;
-            }
-
-            .empty-state {
-                padding: 20px 10px;
-                font-size: 11px;
-            }
-
-            .modal-header {
-                padding: 12px;
-            }
-
-            .modal-header h2 {
-                font-size: 14px;
-            }
-
-            .modal-body {
-                padding: 12px;
-            }
-
-            .modal-footer {
-                padding: 10px;
-                gap: 6px;
-            }
-
-            .form-label {
-                font-size: 11px;
-                margin-bottom: 3px;
-            }
-
-            .form-input,
-            .form-select,
-            .form-textarea {
-                padding: 6px;
-                font-size: 11px;
-            }
-
-            .btn {
-                padding: 6px 10px;
-                font-size: 11px;
-            }
-
-            .table {
-                font-size: 9px;
-            }
-
-            .table th,
-            .table td {
-                padding: 4px;
-            }
-
-            .label-badge {
-                padding: 3px 6px;
-                font-size: 9px;
-            }
-
-            .settings-menu {
-                top: 40px;
-                right: 8px;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- HEADER -->
-        <div class="header">
-            <div class="logo-section">
-                <div class="logo-container">
-                    <img src="https://aloeapteka.ru/local/templates/aloe/favicon-600.png" alt="Логотип Алоэ">
-                </div>
-                <div class="header-text">
-                    <h1>Аптечная сеть «Алоэ»</h1>
-                    <p>Управление аптеками</p>
-                </div>
+<div class="app-container">
+    <div class="header">
+        <div class="logo-section">
+            <div class="logo-container">
+                <img src="https://aloeapteka.ru/local/templates/aloe/favicon-600.png" alt="Логотип Алоэ">
             </div>
-            <div class="header-right">
-                <button class="btn-header" id="settingsBtn" onclick="toggleSettings(event)">
-                    ⚙️ Настройки
-                </button>
-                
-                <!-- SETTINGS MENU -->
-                <div class="settings-menu" id="settingsMenu">
-                    <div class="settings-item staff" onclick="openStaffModal()">
-                        👥 Сотрудники
-                    </div>
-                    <div class="settings-item labels" onclick="openLabelsModal()">
-                        🏷️ Ярлыки
-                    </div>
-                    <div class="settings-item pharmacy" onclick="openPharmacyManagementModal()">
-                        🏥 Аптеки
-                    </div>
+            <div class="header-text">
+                <h1>Аптечная сеть «Алоэ»</h1>
+                <p>Управление аптеками</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="sync-status" id="syncStatus" title="Статус синхронизации">🔄</div>
+            <button class="btn-header" id="settingsBtn" onclick="toggleSettings(event)">
+                ⚙️ Настройки
+            </button>
+            <div class="settings-menu" id="settingsMenu">
+                <div class="settings-item staff" onclick="openStaffModal()">
+                    👥 Сотрудники
+                </div>
+                <div class="settings-item labels" onclick="openLabelsModal()">
+                    🏷️ Ярлыки
+                </div>
+                <div class="settings-item pharmacy" onclick="openPharmacyManagementModal()">
+                    🏥 Аптеки
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="main-layout">
-            <!-- SIDEBAR -->
-            <div class="sidebar">
-                <div class="sidebar-section">
-                    <h3 class="sidebar-title">Навигация</h3>
-                    <ul class="nav-list">
-                        <li class="nav-item">
-                            <button class="nav-button" onclick="showDashboard()">
-                                📊 Рабочий стол
-                            </button>
-                        </li>
-                    </ul>
+    <div class="main-layout">
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Навигация</h3>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <button class="nav-button" onclick="showDashboard()">
+                            📊 Рабочий стол
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-button" onclick="selectPharmacy('common')">
+                            📌 Общие задачи
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Аптеки</h3>
+                <ul class="nav-list" id="pharmaciesList"></ul>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="content-header">
+                <h2 id="contentTitle">📊 Рабочий стол</h2>
+            </div>
+
+            <button class="filters-toggle collapsed" onclick="toggleFilters()">
+                ⚙️ Фильтры
+            </button>
+
+            <div class="filters-box" id="filtersBox">
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label class="filter-label">🏥 Аптека</label>
+                        <select class="filter-select" id="filterPharmacy" onchange="applyFilters()">
+                            <option value="">Все</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">👤 Сотруд.</label>
+                        <select class="filter-select" id="filterStaff" onchange="applyFilters()">
+                            <option value="">Все</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">🏷️ Ярлык</label>
+                        <select class="filter-select" id="filterLabel" onchange="applyFilters()">
+                            <option value="">Все</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">📅 Срок</label>
+                        <select class="filter-select" id="filterDeadline" onchange="applyFilters()">
+                            <option value="">Все</option>
+                            <option value="today">Сегодня</option>
+                            <option value="week">Неделя</option>
+                            <option value="month">Месяц</option>
+                            <option value="overdue">Проср.</option>
+                        </select>
+                    </div>
                 </div>
-
-                <div class="sidebar-section">
-                    <h3 class="sidebar-title">Аптеки</h3>
-                    <ul class="nav-list" id="pharmaciesList"></ul>
+                <div class="filters-footer">
+                    <button class="filter-clear" onclick="clearFilters()">Очистить</button>
                 </div>
             </div>
 
-            <!-- CONTENT -->
-            <div class="content">
-                <div class="content-header">
-                    <h2 id="contentTitle">📊 Рабочий стол</h2>
-                </div>
-
-                <button class="filters-toggle collapsed" onclick="toggleFilters()">
-                    ⚙️ Фильтры
-                </button>
-
-                <div class="filters-box" id="filtersBox">
-                    <div class="filters-container">
-                        <div class="filter-group">
-                            <label class="filter-label">
-                                <span class="filter-label-icon">🏥</span>
-                                Аптека
-                            </label>
-                            <select class="filter-select" id="filterPharmacy" onchange="applyFilters()">
-                                <option value="">Все</option>
-                            </select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label class="filter-label">
-                                <span class="filter-label-icon">👤</span>
-                                Сотруд.
-                            </label>
-                            <select class="filter-select" id="filterStaff" onchange="applyFilters()">
-                                <option value="">Все</option>
-                            </select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label class="filter-label">
-                                <span class="filter-label-icon">🏷️</span>
-                                Ярлык
-                            </label>
-                            <select class="filter-select" id="filterLabel" onchange="applyFilters()">
-                                <option value="">Все</option>
-                            </select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label class="filter-label">
-                                <span class="filter-label-icon">📅</span>
-                                Срок
-                            </label>
-                            <select class="filter-select" id="filterDeadline" onchange="applyFilters()">
-                                <option value="">Все</option>
-                                <option value="today">Сегодня</option>
-                                <option value="week">Неделя</option>
-                                <option value="month">Месяц</option>
-                                <option value="overdue">Проср.</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="filters-footer">
-                        <button class="filter-clear" onclick="clearFilters()">Очистить</button>
-                    </div>
-                </div>
-
-                <div class="content-area">
-                    <!-- DASHBOARD VIEW WITH FILTERS -->
-                    <div id="dashboardView">
-                        <div class="grid-layout">
-                            <div class="panel all-tasks">
-                                <div class="panel-header">
+            <div class="content-area">
+                <div id="dashboardView">
+                    <div class="grid-layout">
+                        <div class="panel all-tasks">
+                            <div class="panel-header">
+                                <div class="panel-header-left">
                                     <span class="panel-icon">✓</span>
                                     <h3 class="panel-title">Задачи</h3>
                                 </div>
-                                <div class="items-container" id="allTasksList"></div>
+                                <button class="btn-toggle-completed" onclick="toggleShowCompleted('dashboard')">
+                                    Выполненные
+                                </button>
                             </div>
-                            <div class="panel all-notes">
-                                <div class="panel-header">
+                            <div class="items-container" id="allTasksList"></div>
+                        </div>
+                        <div class="panel all-notes">
+                            <div class="panel-header">
+                                <div class="panel-header-left">
                                     <span class="panel-icon">📝</span>
                                     <h3 class="panel-title">Заметки</h3>
                                 </div>
-                                <div class="items-container" id="allNotesList"></div>
                             </div>
+                            <div class="items-container" id="allNotesList"></div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- PHARMACY VIEW -->
-                    <div id="pharmacyView" class="grid-layout" style="display: none;">
-                        <div class="panel notes">
-                            <div class="panel-header">
-                                <span class="panel-icon">📝</span>
-                                <h3 class="panel-title">Заметки</h3>
-                            </div>
-                            <button class="btn-add-item" onclick="openAddNote()">
-                                + Заметка
-                            </button>
-                            <div class="items-container" id="pharmacyNotesList"></div>
-                        </div>
-
-                        <div class="panel tasks">
-                            <div class="panel-header">
+                <div id="pharmacyView" class="grid-layout" style="display: none;">
+                    <div class="panel tasks">
+                        <div class="panel-header">
+                            <div class="panel-header-left">
                                 <span class="panel-icon">✓</span>
                                 <h3 class="panel-title">Задачи</h3>
                             </div>
-                            <button class="btn-add-item" onclick="openAddTask()">
-                                + Задача
+                            <button class="btn-toggle-completed" onclick="toggleShowCompleted('pharmacy')">
+                                Выполненные
                             </button>
-                            <div class="items-container" id="pharmacyTasksList"></div>
                         </div>
+                        <button class="btn-add-item" onclick="openAddTask()">+ Задача</button>
+                        <div class="items-container" id="pharmacyTasksList"></div>
+                    </div>
+                    <div class="panel notes">
+                        <div class="panel-header">
+                            <div class="panel-header-left">
+                                <span class="panel-icon">📝</span>
+                                <h3 class="panel-title">Заметки</h3>
+                            </div>
+                        </div>
+                        <button class="btn-add-item" onclick="openAddNote()">+ Заметка</button>
+                        <div class="items-container" id="pharmacyNotesList"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- ===== MODALS ===== -->
-    <div class="modal-overlay" id="pharmacyManagementModal" onclick="if(event.target===this) closeModal('pharmacyManagementModal')">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>Управление Аптеками</h2>
-                <button class="modal-close" onclick="closeModal('pharmacyManagementModal')">×</button>
-            </div>
-            <div class="modal-body">
-                <button class="btn btn-primary" style="width: 100%; margin-bottom: 15px;" onclick="openCreatePharmacy()">
-                    + Новая аптека
-                </button>
-                <div id="pharmacyManagementList"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('pharmacyManagementModal')">Закрыть</button>
-            </div>
+<!-- MODALS -->
+<div class="modal-overlay" id="pharmacyManagementModal" onclick="closeModalOnBackdrop(event, 'pharmacyManagementModal')">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Управление аптеками</h2>
+            <button class="modal-close" onclick="closeModal('pharmacyManagementModal')">×</button>
+        </div>
+        <div class="modal-body">
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 15px;" onclick="openCreatePharmacy()">
+                + Новая аптека
+            </button>
+            <div id="pharmacyManagementList"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('pharmacyManagementModal')">Закрыть</button>
         </div>
     </div>
+</div>
 
-    <div class="modal-overlay" id="createPharmacyModal" onclick="if(event.target===this) closeModal('createPharmacyModal')">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>Создать Аптеку</h2>
-                <button class="modal-close" onclick="closeModal('createPharmacyModal')">×</button>
+<div class="modal-overlay" id="createPharmacyModal" onclick="closeModalOnBackdrop(event, 'createPharmacyModal')">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Создать аптеку</h2>
+            <button class="modal-close" onclick="closeModal('createPharmacyModal')">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label form-required">Номер аптеки</label>
+                <input type="text" id="pharmacyNumberInput" class="form-input" placeholder="1">
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label form-required">Номер аптеки</label>
-                    <input type="text" id="pharmacyNumberInput" class="form-input" placeholder="1">
-                </div>
-                <div class="form-group">
-                    <label class="form-label form-required">Адрес</label>
-                    <input type="text" id="pharmacyAddressInput" class="form-input" placeholder="ул. Большая Покровская, д. 1">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="createPharmacy()">Создать</button>
-                <button class="btn btn-secondary" onclick="closeModal('createPharmacyModal')">Отмена</button>
+            <div class="form-group">
+                <label class="form-label form-required">Адрес</label>
+                <input type="text" id="pharmacyAddressInput" class="form-input" placeholder="ул. Большая Покровская, д. 1">
             </div>
         </div>
-    </div>
-
-    <div class="modal-overlay" id="editPharmacyModal" onclick="if(event.target===this) closeModal('editPharmacyModal')">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>Редактировать Аптеку</h2>
-                <button class="modal-close" onclick="closeModal('editPharmacyModal')">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label form-required">Номер аптеки</label>
-                    <input type="text" id="editPharmacyNumberInput" class="form-input">
-                </div>
-                <div class="form-group">
-                    <label class="form-label form-required">Адрес</label>
-                    <input type="text" id="editPharmacyAddressInput" class="form-input">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="saveEditedPharmacy()">Сохранить</button>
-                <button class="btn btn-secondary" onclick="closeModal('editPharmacyModal')">Отмена</button>
-            </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="createPharmacy()">Создать</button>
+            <button class="btn btn-secondary" onclick="closeModal('createPharmacyModal')">Отмена</button>
         </div>
     </div>
+</div>
 
-    <div class="modal-overlay" id="addNoteModal" onclick="if(event.target===this) closeModal('addNoteModal')">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>Новая Заметка</h2>
-                <button class="modal-close" onclick="closeModal('addNoteModal')">×</button>
+<div class="modal-overlay" id="editPharmacyModal" onclick="closeModalOnBackdrop(event, 'editPharmacyModal')">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Редактировать аптеку</h2>
+            <button class="modal-close" onclick="closeModal('editPharmacyModal')">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label form-required">Номер аптеки</label>
+                <input type="text" id="editPharmacyNumberInput" class="form-input">
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label form-required">Текст</label>
-                    <textarea id="noteTextInput" class="form-textarea" placeholder="Введите текст..."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="saveNote()">Сохранить</button>
-                <button class="btn btn-secondary" onclick="closeModal('addNoteModal')">Отмена</button>
+            <div class="form-group">
+                <label class="form-label form-required">Адрес</label>
+                <input type="text" id="editPharmacyAddressInput" class="form-input">
             </div>
         </div>
-    </div>
-
-    <div class="modal-overlay" id="addTaskModal" onclick="if(event.target===this) closeModal('addTaskModal')">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>Новая Задача</h2>
-                <button class="modal-close" onclick="closeModal('addTaskModal')">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label form-required">Задача</label>
-                    <input type="text" id="taskTitleInput" class="form-input" placeholder="Название...">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Ярлык</label>
-                    <select id="taskLabelInput" class="form-select">
-                        <option value="">Выберите</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Ответств.</label>
-                    <select id="taskStaffInput" class="form-select">
-                        <option value="">Выберите</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Срок</label>
-                    <input type="date" id="taskDeadlineInput" class="form-input">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="saveTask()">Создать</button>
-                <button class="btn btn-secondary" onclick="closeModal('addTaskModal')">Отмена</button>
-            </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="saveEditedPharmacy()">Сохранить</button>
+            <button class="btn btn-secondary" onclick="closeModal('editPharmacyModal')">Отмена</button>
         </div>
     </div>
+</div>
 
-    <div class="modal-overlay" id="staffModal" onclick="if(event.target===this) closeModal('staffModal')">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>Сотрудники</h2>
-                <button class="modal-close" onclick="closeModal('staffModal')">×</button>
-            </div>
-            <div class="modal-body">
-                <h3 style="font-size: 13px; margin-bottom: 10px; color: var(--text-color); font-weight: 700;">Добавить</h3>
-                <div class="form-group">
-                    <label class="form-label form-required">ФИО</label>
-                    <input type="text" id="staffNameInput" class="form-input" placeholder="ФИО">
-                </div>
-                <div class="form-group">
-                    <label class="form-label form-required">Должность</label>
-                    <input type="text" id="staffPositionInput" class="form-input" placeholder="Должность">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Телефон</label>
-                    <input type="tel" id="staffPhoneInput" class="form-input" placeholder="+7 (900) 123-45-67">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" id="staffEmailInput" class="form-input" placeholder="email@example.com">
-                </div>
-                <button class="btn btn-primary" style="width: 100%; margin-bottom: 15px;" onclick="addStaff()">Добавить</button>
-
-                <h3 style="font-size: 13px; margin-bottom: 10px; color: var(--text-color); font-weight: 700;">Список</h3>
-                <div id="staffTableContainer"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('staffModal')">Закрыть</button>
+<div class="modal-overlay" id="addNoteModal" onclick="closeModalOnBackdrop(event, 'addNoteModal')">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="noteModalTitle">Новая заметка</h2>
+            <button class="modal-close" onclick="closeModal('addNoteModal')">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label form-required">Текст</label>
+                <textarea id="noteTextInput" class="form-textarea" placeholder="Введите текст..."></textarea>
             </div>
         </div>
-    </div>
-
-    <div class="modal-overlay" id="labelsModal" onclick="if(event.target===this) closeModal('labelsModal')">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>Ярлыки</h2>
-                <button class="modal-close" onclick="closeModal('labelsModal')">×</button>
-            </div>
-            <div class="modal-body">
-                <h3 style="font-size: 13px; margin-bottom: 10px; color: var(--text-color); font-weight: 700;">Добавить</h3>
-                <div style="display: flex; gap: 8px; margin-bottom: 15px;">
-                    <input type="text" id="newLabelInput" class="form-input" placeholder="Название..." style="flex: 1;">
-                    <button class="btn btn-primary" style="flex: 0 0 80px; font-size: 11px;" onclick="addLabel()">Добавить</button>
-                </div>
-
-                <h3 style="font-size: 13px; margin-bottom: 10px; color: var(--text-color); font-weight: 700;">Текущие</h3>
-                <div class="labels-container" id="labelsListContainer"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('labelsModal')">Закрыть</button>
-            </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="saveNote()">Сохранить</button>
+            <button class="btn btn-secondary" onclick="closeModal('addNoteModal')">Отмена</button>
+            <button class="btn btn-danger" id="deleteNoteBtn" style="display: none; margin-left: auto;" onclick="deleteNoteModal()">Удалить</button>
         </div>
     </div>
+</div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-analytics.js";
-        import { getDatabase, ref, set, get, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+<div class="modal-overlay" id="addTaskModal" onclick="closeModalOnBackdrop(event, 'addTaskModal')">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="taskModalTitle">Новая задача</h2>
+            <button class="modal-close" onclick="closeModal('addTaskModal')">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label form-required">Задача</label>
+                <input type="text" id="taskTitleInput" class="form-input" placeholder="Название...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Ярлык</label>
+                <select id="taskLabelInput" class="form-select">
+                    <option value="">Выберите</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Ответств.</label>
+                <select id="taskStaffInput" class="form-select">
+                    <option value="">Выберите</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Срок</label>
+                <input type="date" id="taskDeadlineInput" class="form-input">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="saveTask()">Создать</button>
+            <button class="btn btn-secondary" onclick="closeModal('addTaskModal')">Отмена</button>
+            <button class="btn btn-danger" id="deleteTaskBtn" style="display: none; margin-left: auto;" onclick="deleteTaskModal()">Удалить</button>
+        </div>
+    </div>
+</div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCXU_qtA65zudpgUsdNdbndOSpuGRbEJ2c",
-            authDomain: "pharmacy-manager-d7802.firebaseapp.com",
-            projectId: "pharmacy-manager-d7802",
-            storageBucket: "pharmacy-manager-d7802.firebasestorage.app",
-            messagingSenderId: "60028648458",
-            appId: "1:60028648458:web:45e2a124ea3b7d7c46f3f3",
-            measurementId: "G-JSR0JKT31B",
-            databaseURL: "https://pharmacy-manager-d7802-default-rtdb.firebaseio.com"
+<div class="modal-overlay" id="staffModal" onclick="closeModalOnBackdrop(event, 'staffModal')">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Сотрудники</h2>
+            <button class="modal-close" onclick="closeModal('staffModal')">×</button>
+        </div>
+        <div class="modal-body">
+            <h3 style="font-size: 13px; margin-bottom: 10px; color: var(--text-color); font-weight: 700;">Добавить</h3>
+            <div class="form-group">
+                <label class="form-label form-required">ФИО</label>
+                <input type="text" id="staffNameInput" class="form-input" placeholder="ФИО">
+            </div>
+            <div class="form-group">
+                <label class="form-label form-required">Должность</label>
+                <input type="text" id="staffPositionInput" class="form-input" placeholder="Должность">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Телефон</label>
+                <input type="tel" id="staffPhoneInput" class="form-input" placeholder="+7 (900) 123-45-67">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" id="staffEmailInput" class="form-input" placeholder="email@example.com">
+            </div>
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 15px;" onclick="addStaff()">Добавить</button>
+
+            <h3 style="font-size: 13px; margin-bottom: 10px; color: var(--text-color); font-weight: 700;">Список</h3>
+            <div id="staffTableContainer"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('staffModal')">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="editStaffModal" onclick="closeModalOnBackdrop(event, 'editStaffModal')">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Редактировать сотрудника</h2>
+            <button class="modal-close" onclick="closeModal('editStaffModal')">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label form-required">ФИО</label>
+                <input type="text" id="editStaffNameInput" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label form-required">Должность</label>
+                <input type="text" id="editStaffPositionInput" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Телефон</label>
+                <input type="tel" id="editStaffPhoneInput" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" id="editStaffEmailInput" class="form-input">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="saveEditedStaff()">Сохранить</button>
+            <button class="btn btn-secondary" onclick="closeModal('editStaffModal')">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="labelsModal" onclick="closeModalOnBackdrop(event, 'labelsModal')">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Ярлыки</h2>
+            <button class="modal-close" onclick="closeModal('labelsModal')">×</button>
+        </div>
+        <div class="modal-body">
+            <h3 style="font-size: 13px; margin-bottom: 10px; color: var(--text-color); font-weight: 700;">Добавить</h3>
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <input type="text" id="newLabelInput" class="form-input" placeholder="Название..." style="flex: 1;">
+                <button class="btn btn-primary" style="flex: 0 0 80px; font-size: 11px;" onclick="addLabel()">Добавить</button>
+            </div>
+
+            <h3 style="font-size: 13px; margin-bottom: 10px; color: var(--text-color); font-weight: 700;">Текущие</h3>
+            <div class="labels-container" id="labelsListContainer"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('labelsModal')">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCXU_qtA65zudpgUsdNdbndOSpuGRbEJ2c",
+        authDomain: "pharmacy-manager-d7802.firebaseapp.com",
+        projectId: "pharmacy-manager-d7802",
+        storageBucket: "pharmacy-manager-d7802.firebasestorage.app",
+        messagingSenderId: "60028648458",
+        appId: "1:60028648458:web:45e2a124ea3b7d7c46f3f3",
+    };
+
+    try {
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+    } catch(e) { 
+        console.error("Firebase Init Fail", e); 
+    }
+
+    const DOC_REF = db.collection("pharmacy_app").doc("pharmacy_tasks");
+
+    let appData = {
+        pharmacies: [],
+        currentPharmacy: null,
+        staff: [
+            { id: 'staff_1', name: 'Бочарова А.В.', position: 'Директор региона', phone: '+7 (904) 252-31-00', email: 'a.bocharova@aloea.ru' },
+            { id: 'staff_2', name: 'Кошелева Е.А.', position: 'Директор Региона', phone: '+7 (904) 653-29-38', email: 'e.kosheleva@aloea.ru' },
+            { id: 'staff_3', name: 'Клюкин С.Н.', position: 'Территориальный менеджер', phone: '+7 (904) 041-00-17', email: 's.klyukin@aloea.ru' },
+            { id: 'staff_4', name: 'Востокова Ю.В.', position: 'Менеджер по персоналу', phone: '+7 (919) 025-15-98', email: 'y.vostokova@aloea.ru' },
+            { id: 'staff_5', name: 'Павлов А.Ф.', position: 'Системный администратор', phone: '+7 (920) 916-97-09', email: 'a.pavlov@aloea.ru' },
+            { id: 'staff_6', name: 'Гарвин Р.', position: 'Сотрудник АХО', phone: '+7 (904) 857-73-73', email: 'r.gavrin@aloea.ru' },
+            { id: 'staff_7', name: 'Горошилова Н.Н.', position: 'Супервайзер', phone: '+7 (953) 343-59-36', email: 'n.goroshilova@aloea.ru' },
+            { id: 'staff_8', name: 'Машеричева М.А.', position: 'Маркетолог', phone: '+7 (999) 799-36-06', email: 'm.evstrat@aloea.ru' }
+        ],
+        labels: ['Срочно', 'Важно', 'Регулярно', 'Реклама', 'АХО', 'Отдел кадров'],
+        common: { notes: [], tasks: [] }
+    };
+
+    let currentFilters = { pharmacy: '', staff: '', label: '', deadline: '' };
+    let showCompletedTasks = { dashboard: false, pharmacy: false };
+    const pharmacyColors = ['color-purple', 'color-pink', 'color-cyan', 'color-amber', 'color-teal', 'color-red', 'color-indigo'];
+    let editingPharmacyId = null, editingStaffId = null;
+    let editingTask = null, editingNote = null;
+
+    function setSyncStatus(msg, type) {
+        const el = document.getElementById('syncStatus');
+        if (!el) return;
+        
+        let icon = '🔄';
+        if (type === 'syncing') {
+            icon = '⏳';
+            el.classList.add('syncing');
+        } else if (type === 'success') {
+            icon = '✅';
+            el.classList.remove('syncing');
+        } else if (type === 'error') {
+            icon = '❌';
+            el.classList.remove('syncing');
+        } else if (type === 'loading') {
+            icon = '🔄';
+            el.classList.add('syncing');
+        }
+        
+        el.innerHTML = icon;
+        el.title = msg;
+    }
+
+    function toggleSettings(e) {
+        e.stopPropagation();
+        document.getElementById('settingsMenu').classList.toggle('active');
+    }
+
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('settingsMenu');
+        const btn = document.getElementById('settingsBtn');
+        if (!menu.contains(e.target) && !btn.contains(e.target)) {
+            menu.classList.remove('active');
+        }
+    });
+
+    function toggleFilters() {
+        const filtersBox = document.getElementById('filtersBox');
+        const button = document.querySelector('.filters-toggle');
+        filtersBox.classList.toggle('expanded');
+        button.classList.toggle('collapsed');
+    }
+
+    function initFirebaseSync() {
+        setSyncStatus('Подключение...', 'loading');
+        
+        DOC_REF.onSnapshot((doc) => {
+            if (doc.exists) {
+                const loaded = doc.data();
+                appData.pharmacies = loaded.pharmacies || [];
+                appData.currentPharmacy = loaded.currentPharmacy || null;
+                appData.labels = loaded.labels || [];
+                appData.staff = loaded.staff || [];
+                appData.common = loaded.common || { notes: [], tasks: [] };
+                
+                setSyncStatus('Синхронизировано', 'success');
+            } else {
+                setSyncStatus('Готово', 'success');
+            }
+            
+            renderPharmacies();
+            updateTaskSelects();
+            updateFilterOptions();
+            
+            if (document.getElementById('dashboardView').style.display !== 'none') {
+                renderDashboard();
+            } else if (appData.currentPharmacy === 'common') {
+                renderCommon();
+            } else if (appData.currentPharmacy) {
+                renderPharmacy();
+            }
+        }, (error) => {
+            setSyncStatus('Ошибка синхронизации', 'error');
+            console.error('Firestore listener error:', error);
+        });
+    }
+
+    function saveData() {
+        setSyncStatus('Сохранение...', 'syncing');
+        
+        const dataToSave = {
+            pharmacies: appData.pharmacies,
+            currentPharmacy: appData.currentPharmacy,
+            labels: appData.labels,
+            staff: appData.staff,
+            common: appData.common
         };
 
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const database = getDatabase(app);
+        DOC_REF.set(dataToSave, { merge: true })
+            .then(() => setSyncStatus('Синхронизировано', 'success'))
+            .catch(err => {
+                setSyncStatus('Ошибка сохранения', 'error');
+                console.error('Firestore save error:', err);
+            });
+    }
 
-        window.firebaseDB = {
-            database,
-            ref,
-            set,
-            get,
-            remove,
-            onValue
-        };
-    </script>
+    function openModal(id) {
+        document.getElementById(id).classList.add('active');
+    }
 
-    <script>
-        let appData = {
-            pharmacies: [],
-            currentPharmacy: null,
-            staff: [
-                { id: 'staff_1', name: 'Бочарова А.В.', position: 'Директор региона', phone: '+7 (904) 252-31-00', email: 'a.bocharova@aloea.ru' },
-                { id: 'staff_2', name: 'Кошелева Е.А.', position: 'Директор Региона', phone: '+7 (904) 653-29-38', email: 'e.kosheleva@aloea.ru' },
-                { id: 'staff_3', name: 'Клюкин С.Н.', position: 'Территориальный менеджер', phone: '+7 (904) 041-00-17', email: 's.klyukin@aloea.ru' },
-                { id: 'staff_4', name: 'Востокова Ю.В.', position: 'Менеджер по персоналу', phone: '+7 (919) 025-15-98', email: 'y.vostokova@aloea.ru' },
-                { id: 'staff_5', name: 'Павлов А.Ф.', position: 'Системный администратор', phone: '+7 (920) 916-97-09', email: 'a.pavlov@aloea.ru' },
-                { id: 'staff_6', name: 'Гарвин Р.', position: 'Сотрудник АХО', phone: '+7 (904) 857-73-73', email: 'r.gavrin@aloea.ru' },
-                { id: 'staff_7', name: 'Горошилова Н.Н.', position: 'Супервайзер', phone: '+7 (953) 343-59-36', email: 'n.goroshilova@aloea.ru' },
-                { id: 'staff_8', name: 'Машеричева М.А.', position: 'Маркетолог', phone: '+7 (999) 799-36-06', email: 'm.evstrat@aloea.ru' }
-            ],
-            labels: ['Срочно', 'Важно', 'Регулярно', 'Реклама', 'АХО', 'Отдел кадров']
-        };
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+    }
 
-        let currentFilters = {
-            pharmacy: '',
-            staff: '',
-            label: '',
-            deadline: ''
-        };
+    function closeModalOnBackdrop(event, modalId) {
+        if (event.target.id === modalId) {
+            closeModal(modalId);
+        }
+    }
 
-        const colorClasses = ['color1', 'color2', 'color3', 'color4', 'color5', 'color6'];
-        const pharmacyColors = ['color-purple', 'color-pink', 'color-cyan', 'color-amber', 'color-teal', 'color-red', 'color-indigo'];
-        const labelClasses = ['label1', 'label2', 'label3', 'label1', 'label2', 'label3'];
+    function toggleShowCompleted(view) {
+        showCompletedTasks[view] = !showCompletedTasks[view];
+        if (view === 'dashboard') {
+            renderDashboard();
+        } else {
+            if (appData.currentPharmacy === 'common') {
+                renderCommon();
+            } else {
+                renderPharmacy();
+            }
+        }
+    }
 
-        let editingPharmacyId = null;
+    // PHARMACIES
+    function openPharmacyManagementModal() {
+        renderPharmacyManagementList();
+        openModal('pharmacyManagementModal');
+        document.getElementById('settingsMenu').classList.remove('active');
+    }
 
-        function toggleSettings(e) {
-            e.stopPropagation();
-            const menu = document.getElementById('settingsMenu');
-            menu.classList.toggle('active');
+    function renderPharmacyManagementList() {
+        const container = document.getElementById('pharmacyManagementList');
+        if (!appData.pharmacies.length) {
+            container.innerHTML = '<div class="empty-state">Нет аптек</div>';
+            return;
         }
 
-        document.addEventListener('click', function(e) {
-            const menu = document.getElementById('settingsMenu');
-            const btn = document.getElementById('settingsBtn');
-            if (!menu.contains(e.target) && !btn.contains(e.target)) {
-                menu.classList.remove('active');
-            }
+        let html = '<table class="table"><thead><tr><th>№</th><th>Адрес</th><th></th></tr></thead><tbody>';
+        appData.pharmacies.forEach(p => {
+            html += `<tr>
+                <td>${p.number}</td>
+                <td>${p.address}</td>
+                <td style="text-align: right;">
+                    <button class="btn btn-danger" onclick="openEditPharmacy(${p.id})" style="margin-right: 4px;">✎</button>
+                    <button class="btn btn-danger" onclick="deletePharmacy(${p.id})">✕</button>
+                </td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    function openCreatePharmacy() {
+        document.getElementById('pharmacyNumberInput').value = '';
+        document.getElementById('pharmacyAddressInput').value = '';
+        openModal('createPharmacyModal');
+        document.getElementById('pharmacyNumberInput').focus();
+    }
+
+    function createPharmacy() {
+        const number = document.getElementById('pharmacyNumberInput').value.trim();
+        const address = document.getElementById('pharmacyAddressInput').value.trim();
+
+        if (!number || !address) {
+            alert('Заполните номер и адрес аптеки');
+            return;
+        }
+
+        appData.pharmacies.push({
+            id: Date.now(),
+            name: `Аптека №${number}`,
+            number,
+            address,
+            notes: [],
+            tasks: []
         });
 
-        function toggleFilters() {
-            const filtersBox = document.getElementById('filtersBox');
-            const button = document.querySelector('.filters-toggle');
-            
-            filtersBox.classList.toggle('expanded');
-            button.classList.toggle('collapsed');
-            button.classList.toggle('expanded');
+        renderPharmacies();
+        renderPharmacyManagementList();
+        updateFilterOptions();
+        saveData();
+        closeModal('createPharmacyModal');
+    }
+
+    function openEditPharmacy(id) {
+        const pharmacy = appData.pharmacies.find(p => p.id === id);
+        if (!pharmacy) return;
+
+        editingPharmacyId = id;
+        document.getElementById('editPharmacyNumberInput').value = pharmacy.number || '';
+        document.getElementById('editPharmacyAddressInput').value = pharmacy.address || '';
+        openModal('editPharmacyModal');
+    }
+
+    function saveEditedPharmacy() {
+        const pharmacy = appData.pharmacies.find(p => p.id === editingPharmacyId);
+        if (!pharmacy) {
+            alert('Аптека не найдена');
+            return;
         }
 
-        function loadData() {
-            const saved = localStorage.getItem('pharmacyAppData');
-            if (saved) {
-                const loaded = JSON.parse(saved);
-                appData.pharmacies = loaded.pharmacies || appData.pharmacies;
-                appData.currentPharmacy = loaded.currentPharmacy || appData.currentPharmacy;
-                appData.labels = loaded.labels || appData.labels;
-                appData.staff = loaded.staff || appData.staff;
-            }
+        const number = document.getElementById('editPharmacyNumberInput').value.trim();
+        const address = document.getElementById('editPharmacyAddressInput').value.trim();
+
+        if (!number || !address) {
+            alert('Заполните номер и адрес аптеки');
+            return;
         }
 
-        function saveData() {
-            const dataToSave = {
-                pharmacies: appData.pharmacies,
-                currentPharmacy: appData.currentPharmacy,
-                labels: appData.labels,
-                staff: appData.staff
-            };
-            localStorage.setItem('pharmacyAppData', JSON.stringify(dataToSave));
-        }
+        pharmacy.number = number;
+        pharmacy.address = address;
+        pharmacy.name = `Аптека №${number}`;
 
-        function openModal(id) {
-            document.getElementById(id).classList.add('active');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-
-        // PHARMACIES
-        function openPharmacyManagementModal() {
-            renderPharmacyManagementList();
-            openModal('pharmacyManagementModal');
-            document.getElementById('settingsMenu').classList.remove('active');
-        }
-
-        function renderPharmacyManagementList() {
-            const container = document.getElementById('pharmacyManagementList');
-            if (!appData.pharmacies.length) {
-                container.innerHTML = '<div class="empty-state">Нет аптек</div>';
-                return;
-            }
-
-            let html = '<table class="table"><thead><tr><th>№</th><th>Адрес</th><th></th></tr></thead><tbody>';
-            appData.pharmacies.forEach(p => {
-                html += `<tr>
-                    <td>${p.number}</td>
-                    <td>${p.address}</td>
-                    <td style="text-align: right;">
-                        <button class="btn btn-danger" onclick="openEditPharmacy(${p.id})" style="margin-right: 4px;">✎</button>
-                        <button class="btn btn-danger" onclick="deletePharmacy(${p.id})">✕</button>
-                    </td>
-                </tr>`;
-            });
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
-
-        function openCreatePharmacy() {
-            document.getElementById('pharmacyNumberInput').value = '';
-            document.getElementById('pharmacyAddressInput').value = '';
-            openModal('createPharmacyModal');
-            document.getElementById('pharmacyNumberInput').focus();
-        }
-
-        function createPharmacy() {
-            const number = document.getElementById('pharmacyNumberInput').value.trim();
-            const address = document.getElementById('pharmacyAddressInput').value.trim();
-
-            if (!number || !address) return alert('Заполните номер и адрес аптеки');
-
-            const name = `Аптека №${number}`;
-
-            appData.pharmacies.push({ 
-                id: Date.now(), 
-                name,
-                number,
-                address,
-                notes: [], 
-                tasks: [] 
-            });
-            saveData();
-            renderPharmacies();
-            updateFilterOptions();
-            renderPharmacyManagementList();
-            closeModal('createPharmacyModal');
-        }
-
-        function openEditPharmacy(id) {
-            const pharmacy = appData.pharmacies.find(p => p.id === id);
-            if (!pharmacy) return;
-
-            editingPharmacyId = id;
-            document.getElementById('editPharmacyNumberInput').value = pharmacy.number || '';
-            document.getElementById('editPharmacyAddressInput').value = pharmacy.address || '';
-            openModal('editPharmacyModal');
-        }
-
-        function saveEditedPharmacy() {
-            const pharmacy = appData.pharmacies.find(p => p.id === editingPharmacyId);
-            if (!pharmacy) return alert('Аптека не найдена');
-
-            const number = document.getElementById('editPharmacyNumberInput').value.trim();
-            const address = document.getElementById('editPharmacyAddressInput').value.trim();
-
-            if (!number || !address) return alert('Заполните номер и адрес аптеки');
-
-            pharmacy.number = number;
-            pharmacy.address = address;
-            pharmacy.name = `Аптека №${number}`;
-
-            saveData();
-            renderPharmacies();
-            renderPharmacyManagementList();
-            updateFilterOptions();
-            if (appData.currentPharmacy === pharmacy.id) showPharmacy();
-            closeModal('editPharmacyModal');
-            editingPharmacyId = null;
-        }
-
-        function deletePharmacy(id) {
-            if (!confirm('Удалить аптеку?')) return;
-            appData.pharmacies = appData.pharmacies.filter(p => p.id !== id);
-            if (appData.currentPharmacy === id) appData.currentPharmacy = null;
-            saveData();
-            renderPharmacies();
-            renderPharmacyManagementList();
-            updateFilterOptions();
-            showDashboard();
-        }
-
-        function selectPharmacy(id) {
-            appData.currentPharmacy = id;
-            saveData();
-            renderPharmacies();
+        renderPharmacies();
+        renderPharmacyManagementList();
+        updateFilterOptions();
+        if (appData.currentPharmacy === pharmacy.id) {
             showPharmacy();
         }
+        saveData();
+        closeModal('editPharmacyModal');
+        editingPharmacyId = null;
+    }
 
-        function renderPharmacies() {
-            const list = document.getElementById('pharmaciesList');
-            list.innerHTML = '';
-            appData.pharmacies.forEach((p, idx) => {
-                const colorClass = pharmacyColors[idx % pharmacyColors.length];
-                const li = document.createElement('li');
-                li.className = 'nav-item';
-                li.innerHTML = `
-                    <button class="nav-button ${appData.currentPharmacy === p.id ? 'active ' + colorClass : ''}" onclick="selectPharmacy(${p.id})">
-                        <span>№${p.number}</span>
-                        <button class="nav-delete" onclick="deletePharmacy(${p.id}); event.stopPropagation();">✕</button>
-                    </button>
-                `;
-                list.appendChild(li);
+    function deletePharmacy(id) {
+        if (!confirm('Удалить аптеку?')) return;
+        appData.pharmacies = appData.pharmacies.filter(p => p.id !== id);
+        if (appData.currentPharmacy === id) appData.currentPharmacy = null;
+        renderPharmacies();
+        renderPharmacyManagementList();
+        updateFilterOptions();
+        showDashboard();
+        saveData();
+    }
+
+    function selectPharmacy(id) {
+        appData.currentPharmacy = id;
+        saveData();
+        if (id === 'common') {
+            showCommon();
+        } else {
+            showPharmacy();
+        }
+    }
+
+    function renderPharmacies() {
+        const list = document.getElementById('pharmaciesList');
+        list.innerHTML = '';
+        appData.pharmacies.forEach((p, idx) => {
+            const colorClass = pharmacyColors[idx % pharmacyColors.length];
+            const isActive = appData.currentPharmacy === p.id;
+            const li = document.createElement('li');
+            li.className = 'nav-item';
+            li.innerHTML = `
+                <button class="nav-button ${isActive ? 'active ' + colorClass : ''}" onclick="selectPharmacy(${p.id})">
+                    <span>№${p.number}</span>
+                    <button class="nav-delete" onclick="deletePharmacy(${p.id}); event.stopPropagation();">✕</button>
+                </button>
+            `;
+            list.appendChild(li);
+        });
+    }
+
+    // NOTES
+    function openAddNote() {
+        if (!appData.currentPharmacy) {
+            alert('Выберите аптеку или Общие задачи');
+            return;
+        }
+        editingNote = null;
+        document.getElementById('noteModalTitle').textContent = 'Новая заметка';
+        document.getElementById('deleteNoteBtn').style.display = 'none';
+        document.getElementById('noteTextInput').value = '';
+        openModal('addNoteModal');
+        document.getElementById('noteTextInput').focus();
+    }
+
+    function openEditNote(noteIdx) {
+        let target;
+        if (appData.currentPharmacy === 'common') {
+            target = appData.common;
+        } else {
+            target = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
+        }
+
+        if (!target || !target.notes || !target.notes[noteIdx]) {
+            alert('Заметка не найдена');
+            return;
+        }
+
+        editingNote = { index: noteIdx, pharmacyId: appData.currentPharmacy };
+        document.getElementById('noteModalTitle').textContent = 'Редактировать заметку';
+        document.getElementById('deleteNoteBtn').style.display = 'block';
+        document.getElementById('noteTextInput').value = target.notes[noteIdx].text;
+        openModal('addNoteModal');
+        document.getElementById('noteTextInput').focus();
+    }
+
+    function saveNote() {
+        const text = document.getElementById('noteTextInput').value.trim();
+        if (!text) {
+            alert('Введите текст');
+            return;
+        }
+
+        let target;
+        if (appData.currentPharmacy === 'common') {
+            if (!appData.common) appData.common = { notes: [], tasks: [] };
+            target = appData.common;
+        } else {
+            target = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
+        }
+
+        if (!target) {
+            alert('Не выбрана аптека');
+            return;
+        }
+
+        target.notes = target.notes || [];
+        
+        if (editingNote) {
+            target.notes[editingNote.index].text = text;
+        } else {
+            target.notes.unshift({
+                text,
+                date: new Date().toISOString()
             });
         }
 
-        // NOTES
-        function openAddNote() {
-            if (!appData.currentPharmacy) return alert('Выберите аптеку');
-            document.getElementById('noteTextInput').value = '';
-            openModal('addNoteModal');
-            document.getElementById('noteTextInput').focus();
-        }
-
-        function saveNote() {
-            const text = document.getElementById('noteTextInput').value.trim();
-            if (!text) return alert('Введите текст');
-            const pharmacy = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
-            if (pharmacy) {
-                pharmacy.notes.unshift({ text, date: new Date().toISOString() });
-                saveData();
-                renderPharmacy();
-                renderDashboard();
-                closeModal('addNoteModal');
-            }
-        }
-
-        function deleteNote(noteIdx) {
-            if (!confirm('Удалить?')) return;
-            const pharmacy = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
-            if (pharmacy) {
-                pharmacy.notes.splice(noteIdx, 1);
-                saveData();
-                renderPharmacy();
-                renderDashboard();
-            }
-        }
-
-        // TASKS
-        function openAddTask() {
-            if (!appData.currentPharmacy) return alert('Выберите аптеку');
-            document.getElementById('taskTitleInput').value = '';
-            document.getElementById('taskLabelInput').value = '';
-            document.getElementById('taskStaffInput').value = '';
-            document.getElementById('taskDeadlineInput').value = '';
-            updateTaskSelects();
-            openModal('addTaskModal');
-            document.getElementById('taskTitleInput').focus();
-        }
-
-        function saveTask() {
-            const title = document.getElementById('taskTitleInput').value.trim();
-            if (!title) return alert('Введите название');
-            const pharmacy = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
-            if (pharmacy) {
-                pharmacy.tasks.unshift({
-                    title,
-                    label: document.getElementById('taskLabelInput').value,
-                    staffId: document.getElementById('taskStaffInput').value,
-                    deadline: document.getElementById('taskDeadlineInput').value,
-                    completed: false
-                });
-                saveData();
-                renderPharmacy();
-                renderDashboard();
-                closeModal('addTaskModal');
-            }
-        }
-
-        function toggleTask(taskIdx) {
-            const pharmacy = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
-            if (pharmacy && pharmacy.tasks[taskIdx]) {
-                pharmacy.tasks[taskIdx].completed = !pharmacy.tasks[taskIdx].completed;
-                saveData();
-                renderPharmacy();
-                renderDashboard();
-            }
-        }
-
-        function deleteTask(taskIdx) {
-            if (!confirm('Удалить?')) return;
-            const pharmacy = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
-            if (pharmacy) {
-                pharmacy.tasks.splice(taskIdx, 1);
-                saveData();
-                renderPharmacy();
-                renderDashboard();
-            }
-        }
-
-        // STAFF
-        function openStaffModal() {
-            renderStaffTable();
-            openModal('staffModal');
-            document.getElementById('settingsMenu').classList.remove('active');
-        }
-
-        function addStaff() {
-            const name = document.getElementById('staffNameInput').value.trim();
-            const position = document.getElementById('staffPositionInput').value.trim();
-            if (!name || !position) return alert('ФИО и Должность обязательны');
-            appData.staff.push({
-                id: 'staff_' + Date.now(),
-                name, position,
-                phone: document.getElementById('staffPhoneInput').value.trim(),
-                email: document.getElementById('staffEmailInput').value.trim()
-            });
-            saveData();
-            renderStaffTable();
-            updateTaskSelects();
-            updateFilterOptions();
-            document.getElementById('staffNameInput').value = '';
-            document.getElementById('staffPositionInput').value = '';
-            document.getElementById('staffPhoneInput').value = '';
-            document.getElementById('staffEmailInput').value = '';
-        }
-
-        function deleteStaff(id) {
-            if (!confirm('Удалить?')) return;
-            appData.staff = appData.staff.filter(s => s.id !== id);
-            saveData();
-            renderStaffTable();
-            updateTaskSelects();
-            updateFilterOptions();
-        }
-
-        function renderStaffTable() {
-            const container = document.getElementById('staffTableContainer');
-            if (!appData.staff.length) {
-                container.innerHTML = '<div class="empty-state">Нет сотрудников</div>';
-                return;
-            }
-            let html = '<table class="table"><thead><tr><th>ФИО</th><th>Должность</th><th>Тел.</th><th></th></tr></thead><tbody>';
-            appData.staff.forEach(s => {
-                html += `<tr><td>${s.name}</td><td>${s.position}</td><td><a href="tel:${s.phone}" style="color: #7CBCC4; text-decoration: none; font-size: 10px;">${s.phone}</a></td><td><button class="btn btn-danger" onclick="deleteStaff('${s.id}')">X</button></td></tr>`;
-            });
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
-
-        // LABELS
-        function openLabelsModal() {
-            renderLabelsList();
-            openModal('labelsModal');
-            document.getElementById('settingsMenu').classList.remove('active');
-        }
-
-        function addLabel() {
-            const name = document.getElementById('newLabelInput').value.trim();
-            if (!name) return alert('Введите название');
-            if (appData.labels.includes(name)) return alert('Существует');
-            appData.labels.push(name);
-            saveData();
-            renderLabelsList();
-            updateTaskSelects();
-            updateFilterOptions();
-            document.getElementById('newLabelInput').value = '';
-        }
-
-        function deleteLabel(name) {
-            if (!confirm('Удалить?')) return;
-            appData.labels = appData.labels.filter(l => l !== name);
-            saveData();
-            renderLabelsList();
-            updateTaskSelects();
-            updateFilterOptions();
-        }
-
-        function renderLabelsList() {
-            const container = document.getElementById('labelsListContainer');
-            if (!appData.labels.length) {
-                container.innerHTML = '<div class="empty-state">Нет ярлыков</div>';
-                return;
-            }
-            let html = '';
-            appData.labels.forEach((l, idx) => {
-                const colorClass = colorClasses[idx % colorClasses.length];
-                html += `<div class="label-badge ${colorClass}">${l}<button class="label-remove" onclick="deleteLabel('${l}')" style="cursor: pointer;">✕</button></div>`;
-            });
-            container.innerHTML = html;
-        }
-
-        function updateTaskSelects() {
-            let labelHtml = '<option value="">Выберите</option>';
-            appData.labels.forEach(l => { labelHtml += `<option value="${l}">${l}</option>`; });
-            document.getElementById('taskLabelInput').innerHTML = labelHtml;
-
-            let staffHtml = '<option value="">Выберите</option>';
-            appData.staff.forEach(s => { staffHtml += `<option value="${s.id}">${s.name}</option>`; });
-            document.getElementById('taskStaffInput').innerHTML = staffHtml;
-        }
-
-        // FILTERS
-        function updateFilterOptions() {
-            let pharmacyHtml = '<option value="">Все</option>';
-            appData.pharmacies.forEach(p => {
-                pharmacyHtml += `<option value="${p.id}">№${p.number} — ${p.address}</option>`;
-            });
-            document.getElementById('filterPharmacy').innerHTML = pharmacyHtml;
-
-            let staffHtml = '<option value="">Все</option>';
-            appData.staff.forEach(s => {
-                staffHtml += `<option value="${s.id}">${s.name}</option>`;
-            });
-            document.getElementById('filterStaff').innerHTML = staffHtml;
-
-            let labelHtml = '<option value="">Все</option>';
-            appData.labels.forEach(l => {
-                labelHtml += `<option value="${l}">${l}</option>`;
-            });
-            document.getElementById('filterLabel').innerHTML = labelHtml;
-        }
-
-        function applyFilters() {
-            currentFilters.pharmacy = document.getElementById('filterPharmacy').value;
-            currentFilters.staff = document.getElementById('filterStaff').value;
-            currentFilters.label = document.getElementById('filterLabel').value;
-            currentFilters.deadline = document.getElementById('filterDeadline').value;
-            renderDashboard();
-        }
-
-        function clearFilters() {
-            currentFilters = { pharmacy: '', staff: '', label: '', deadline: '' };
-            document.getElementById('filterPharmacy').value = '';
-            document.getElementById('filterStaff').value = '';
-            document.getElementById('filterLabel').value = '';
-            document.getElementById('filterDeadline').value = '';
-            renderDashboard();
-        }
-
-        function matchesFilters(task) {
-            if (currentFilters.pharmacy && task.pharmacyId != currentFilters.pharmacy) return false;
-            if (currentFilters.staff && task.staffId !== currentFilters.staff) return false;
-            if (currentFilters.label && task.label !== currentFilters.label) return false;
-            if (currentFilters.deadline) {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const deadline = task.deadline ? new Date(task.deadline) : null;
-
-                if (!deadline) return false;
-
-                switch (currentFilters.deadline) {
-                    case 'today':
-                        return deadline.getTime() === today.getTime();
-                    case 'week':
-                        const weekEnd = new Date(today);
-                        weekEnd.setDate(weekEnd.getDate() + 7);
-                        return deadline >= today && deadline <= weekEnd;
-                    case 'month':
-                        return deadline.getMonth() === today.getMonth() && deadline.getFullYear() === today.getFullYear();
-                    case 'overdue':
-                        return deadline < today && !task.completed;
-                }
-            }
-
-            return true;
-        }
-
-        // RENDERING
-        function renderPharmacy() {
-            const pharmacy = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
-            if (!pharmacy) return;
-
-            document.getElementById('contentTitle').textContent = `📦 Аптека №${pharmacy.number} — ${pharmacy.address}`;
-
-            let notesHtml = '';
-            if (!pharmacy.notes.length) {
-                notesHtml = '<div class="empty-state">Нет</div>';
-            } else {
-                pharmacy.notes.forEach((note, idx) => {
-                    notesHtml += `
-                        <div class="item-card note">
-                            <div class="item-title">${note.text}</div>
-                            <div class="item-meta">${new Date(note.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>
-                            <button class="item-delete" onclick="deleteNote(${idx})">✕</button>
-                        </div>
-                    `;
-                });
-            }
-            document.getElementById('pharmacyNotesList').innerHTML = notesHtml;
-
-            let tasksHtml = '';
-            if (!pharmacy.tasks.length) {
-                tasksHtml = '<div class="empty-state">Нет</div>';
-            } else {
-                pharmacy.tasks.forEach((task, idx) => {
-                    const staff = appData.staff.find(s => s.id === task.staffId);
-                    const deadline = task.deadline ? new Date(task.deadline) : null;
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    const isOverdue = deadline && deadline < today && !task.completed;
-
-                    let tagsHtml = '';
-                    const labelIdx = appData.labels.indexOf(task.label);
-                    if (task.label) tagsHtml += `<span class="tag ${labelClasses[labelIdx % labelClasses.length]}">${task.label}</span>`;
-                    if (staff) tagsHtml += `<span class="tag staff">${staff.name}</span>`;
-                    if (deadline) tagsHtml += `<span class="tag ${isOverdue ? 'overdue' : 'deadline'}">📅 ${deadline.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short'})}</span>`;
-
-                    tasksHtml += `
-                        <div class="item-card task-card ${task.completed ? 'completed' : ''}">
-                            <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${idx})">
-                            <div style="flex: 1;">
-                                <div class="item-title">${task.title}</div>
-                                <div class="item-meta">${tagsHtml}</div>
-                            </div>
-                            <button class="item-delete" onclick="deleteTask(${idx})">✕</button>
-                        </div>
-                    `;
-                });
-            }
-            document.getElementById('pharmacyTasksList').innerHTML = tasksHtml;
-        }
-
-        function renderDashboard() {
-            let allTasks = [];
-            appData.pharmacies.forEach(p => {
-                p.tasks.forEach((t, idx) => {
-                    allTasks.push({ ...t, pharmacyId: p.id, pharmacyName: `№${p.number} — ${p.address}`, taskIdx: idx });
-                });
-            });
-
-            const filteredTasks = allTasks.filter(t => matchesFilters(t));
-            let tasksHtml = '';
-            if (!filteredTasks.length) {
-                tasksHtml = '<div class="empty-state">Нет задач</div>';
-            } else {
-                filteredTasks.forEach(t => {
-                    const staff = appData.staff.find(s => s.id === t.staffId);
-                    const deadline = t.deadline ? new Date(t.deadline) : null;
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    const isOverdue = deadline && deadline < today && !t.completed;
-
-                    let tagsHtml = `<span class="tag pharmacy">${t.pharmacyName}</span>`;
-                    const labelIdx = appData.labels.indexOf(t.label);
-                    if (t.label) tagsHtml += `<span class="tag ${labelClasses[labelIdx % labelClasses.length]}">${t.label}</span>`;
-                    if (staff) tagsHtml += `<span class="tag staff">${staff.name}</span>`;
-                    if (deadline) tagsHtml += `<span class="tag ${isOverdue ? 'overdue' : 'deadline'}">📅 ${deadline.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short'})}</span>`;
-
-                    tasksHtml += `
-                        <div class="item-card task-card ${t.completed ? 'completed' : ''}">
-                            <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="toggleAllTask('${t.pharmacyId}', ${t.taskIdx})">
-                            <div style="flex: 1;">
-                                <div class="item-title">${t.title}</div>
-                                <div class="item-meta">${tagsHtml}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            document.getElementById('allTasksList').innerHTML = tasksHtml;
-
-            let allNotes = [];
-            appData.pharmacies.forEach(p => {
-                p.notes.forEach(n => {
-                    allNotes.push({ ...n, pharmacyName: `№${p.number} — ${p.address}`, pharmacyId: p.id });
-                });
-            });
-
-            let notesHtml = '';
-            if (!allNotes.length) {
-                notesHtml = '<div class="empty-state">Нет заметок</div>';
-            } else {
-                allNotes.forEach(n => {
-                    const match = !currentFilters.pharmacy || n.pharmacyId == currentFilters.pharmacy;
-                    if (match) {
-                        notesHtml += `
-                            <div class="item-card note">
-                                <div class="item-title">${n.text}</div>
-                                <div class="item-meta"><span class="tag pharmacy">${n.pharmacyName}</span> ${new Date(n.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</div>
-                            </div>
-                        `;
-                    }
-                });
-            }
-            document.getElementById('allNotesList').innerHTML = notesHtml;
-        }
-
-        function toggleAllTask(pharmacyId, taskIdx) {
-            const pharmacy = appData.pharmacies.find(p => p.id === pharmacyId);
-            if (pharmacy && pharmacy.tasks[taskIdx]) {
-                pharmacy.tasks[taskIdx].completed = !pharmacy.tasks[taskIdx].completed;
-                saveData();
-                renderDashboard();
-            }
-        }
-
-        // NAVIGATION
-        function showDashboard() {
-            document.querySelector('.nav-button.active')?.classList.remove('active');
-            document.querySelector('.sidebar-section:first-child .nav-button')?.classList.add('active');
-            document.getElementById('dashboardView').style.display = '';
-            document.getElementById('pharmacyView').style.display = 'none';
-            document.getElementById('contentTitle').textContent = '📊 Рабочий стол';
-            updateFilterOptions();
-            renderDashboard();
-        }
-
-        function showPharmacy() {
-            document.getElementById('dashboardView').style.display = 'none';
-            document.getElementById('pharmacyView').style.display = '';
+        if (appData.currentPharmacy === 'common') {
+            renderCommon();
+        } else {
             renderPharmacy();
         }
+        renderDashboard();
+        saveData();
+        closeModal('addNoteModal');
+        editingNote = null;
+    }
 
-        loadData();
-        renderPharmacies();
+    function deleteNoteModal() {
+        if (!editingNote) return;
+        let target;
+        if (editingNote.pharmacyId === 'common') {
+            target = appData.common;
+        } else {
+            target = appData.pharmacies.find(p => p.id === editingNote.pharmacyId);
+        }
+
+        if (target && target.notes) {
+            target.notes.splice(editingNote.index, 1);
+            if (editingNote.pharmacyId === 'common') {
+                renderCommon();
+            } else {
+                renderPharmacy();
+            }
+            renderDashboard();
+            saveData();
+            closeModal('addNoteModal');
+            editingNote = null;
+        }
+    }
+
+    function deleteNote(noteIdx) {
+        if (!confirm('Удалить?')) return;
+
+        let target;
+        if (appData.currentPharmacy === 'common') {
+            target = appData.common;
+        } else {
+            target = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
+        }
+
+        if (target && target.notes) {
+            target.notes.splice(noteIdx, 1);
+            if (appData.currentPharmacy === 'common') {
+                renderCommon();
+            } else {
+                renderPharmacy();
+            }
+            renderDashboard();
+            saveData();
+        }
+    }
+
+    // TASKS
+    function openAddTask() {
+        if (!appData.currentPharmacy) {
+            alert('Выберите аптеку или Общие задачи');
+            return;
+        }
+        editingTask = null;
+        document.getElementById('taskModalTitle').textContent = 'Новая задача';
+        document.getElementById('deleteTaskBtn').style.display = 'none';
+        document.getElementById('taskTitleInput').value = '';
+        document.getElementById('taskLabelInput').value = '';
+        document.getElementById('taskStaffInput').value = '';
+        document.getElementById('taskDeadlineInput').value = '';
+        updateTaskSelects();
+        openModal('addTaskModal');
+        document.getElementById('taskTitleInput').focus();
+    }
+
+    function openEditTask(taskIdx) {
+        let target;
+        if (appData.currentPharmacy === 'common') {
+            target = appData.common;
+        } else {
+            target = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
+        }
+
+        if (!target || !target.tasks || !target.tasks[taskIdx]) {
+            alert('Задача не найдена');
+            return;
+        }
+
+        const task = target.tasks[taskIdx];
+        editingTask = { index: taskIdx, pharmacyId: appData.currentPharmacy };
+        document.getElementById('taskModalTitle').textContent = 'Редактировать задачу';
+        document.getElementById('deleteTaskBtn').style.display = 'block';
+        document.getElementById('taskTitleInput').value = task.title;
+        document.getElementById('taskLabelInput').value = task.label || '';
+        document.getElementById('taskStaffInput').value = task.staffId || '';
+        document.getElementById('taskDeadlineInput').value = task.deadline || '';
+        updateTaskSelects();
+        openModal('addTaskModal');
+        document.getElementById('taskTitleInput').focus();
+    }
+
+    function saveTask() {
+        const title = document.getElementById('taskTitleInput').value.trim();
+        if (!title) {
+            alert('Введите название');
+            return;
+        }
+
+        let target;
+        if (appData.currentPharmacy === 'common') {
+            if (!appData.common) appData.common = { notes: [], tasks: [] };
+            target = appData.common;
+        } else {
+            target = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
+        }
+
+        if (!target) {
+            alert('Не выбрана аптека');
+            return;
+        }
+
+        target.tasks = target.tasks || [];
+        
+        const taskData = {
+            title,
+            label: document.getElementById('taskLabelInput').value,
+            staffId: document.getElementById('taskStaffInput').value,
+            deadline: document.getElementById('taskDeadlineInput').value,
+            completed: editingTask ? target.tasks[editingTask.index].completed : false
+        };
+
+        if (editingTask) {
+            target.tasks[editingTask.index] = taskData;
+        } else {
+            taskData.completed = false;
+            target.tasks.unshift(taskData);
+        }
+
+        if (appData.currentPharmacy === 'common') {
+            renderCommon();
+        } else {
+            renderPharmacy();
+        }
+        renderDashboard();
+        saveData();
+        closeModal('addTaskModal');
+        editingTask = null;
+    }
+
+    function deleteTaskModal() {
+        if (!editingTask) return;
+        let target;
+        if (editingTask.pharmacyId === 'common') {
+            target = appData.common;
+        } else {
+            target = appData.pharmacies.find(p => p.id === editingTask.pharmacyId);
+        }
+
+        if (target && target.tasks) {
+            target.tasks.splice(editingTask.index, 1);
+            if (editingTask.pharmacyId === 'common') {
+                renderCommon();
+            } else {
+                renderPharmacy();
+            }
+            renderDashboard();
+            saveData();
+            closeModal('addTaskModal');
+            editingTask = null;
+        }
+    }
+
+    function toggleTask(taskIdx) {
+        let target;
+        if (appData.currentPharmacy === 'common') {
+            target = appData.common;
+        } else {
+            target = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
+        }
+
+        if (target && target.tasks && target.tasks[taskIdx]) {
+            target.tasks[taskIdx].completed = !target.tasks[taskIdx].completed;
+            if (appData.currentPharmacy === 'common') {
+                renderCommon();
+            } else {
+                renderPharmacy();
+            }
+            renderDashboard();
+            saveData();
+        }
+    }
+
+    function deleteTask(taskIdx) {
+        if (!confirm('Удалить?')) return;
+
+        let target;
+        if (appData.currentPharmacy === 'common') {
+            target = appData.common;
+        } else {
+            target = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
+        }
+
+        if (target && target.tasks) {
+            target.tasks.splice(taskIdx, 1);
+            if (appData.currentPharmacy === 'common') {
+                renderCommon();
+            } else {
+                renderPharmacy();
+            }
+            renderDashboard();
+            saveData();
+        }
+    }
+
+    // STAFF
+    function openStaffModal() {
+        renderStaffTable();
+        openModal('staffModal');
+        document.getElementById('settingsMenu').classList.remove('active');
+    }
+
+    function addStaff() {
+        const name = document.getElementById('staffNameInput').value.trim();
+        const position = document.getElementById('staffPositionInput').value.trim();
+        if (!name || !position) {
+            alert('ФИО и Должность обязательны');
+            return;
+        }
+        appData.staff.push({
+            id: 'staff_' + Date.now(),
+            name,
+            position,
+            phone: document.getElementById('staffPhoneInput').value.trim(),
+            email: document.getElementById('staffEmailInput').value.trim()
+        });
+        renderStaffTable();
+        updateTaskSelects();
+        updateFilterOptions();
+        saveData();
+        document.getElementById('staffNameInput').value = '';
+        document.getElementById('staffPositionInput').value = '';
+        document.getElementById('staffPhoneInput').value = '';
+        document.getElementById('staffEmailInput').value = '';
+    }
+
+    function openEditStaff(id) {
+        const staff = appData.staff.find(s => s.id === id);
+        if (!staff) return;
+
+        editingStaffId = id;
+        document.getElementById('editStaffNameInput').value = staff.name || '';
+        document.getElementById('editStaffPositionInput').value = staff.position || '';
+        document.getElementById('editStaffPhoneInput').value = staff.phone || '';
+        document.getElementById('editStaffEmailInput').value = staff.email || '';
+        openModal('editStaffModal');
+    }
+
+    function saveEditedStaff() {
+        const staff = appData.staff.find(s => s.id === editingStaffId);
+        if (!staff) {
+            alert('Сотрудник не найден');
+            return;
+        }
+
+        const name = document.getElementById('editStaffNameInput').value.trim();
+        const position = document.getElementById('editStaffPositionInput').value.trim();
+
+        if (!name || !position) {
+            alert('ФИО и Должность обязательны');
+            return;
+        }
+
+        staff.name = name;
+        staff.position = position;
+        staff.phone = document.getElementById('editStaffPhoneInput').value.trim();
+        staff.email = document.getElementById('editStaffEmailInput').value.trim();
+
+        renderStaffTable();
+        updateTaskSelects();
+        updateFilterOptions();
+        renderPharmacy();
+        renderDashboard();
+        saveData();
+        closeModal('editStaffModal');
+        editingStaffId = null;
+    }
+
+    function deleteStaff(id) {
+        if (!confirm('Удалить?')) return;
+        appData.staff = appData.staff.filter(s => s.id !== id);
+        renderStaffTable();
+        updateTaskSelects();
+        updateFilterOptions();
+        renderPharmacy();
+        renderDashboard();
+        saveData();
+    }
+
+    function renderStaffTable() {
+        const container = document.getElementById('staffTableContainer');
+        if (!appData.staff.length) {
+            container.innerHTML = '<div class="empty-state">Нет сотрудников</div>';
+            return;
+        }
+        let html = '<table class="table"><thead><tr><th>ФИО</th><th>Должность</th><th>Тел.</th><th></th></tr></thead><tbody>';
+        appData.staff.forEach(s => {
+            html += `<tr>
+                <td>${s.name}</td>
+                <td>${s.position}</td>
+                <td><a href="tel:${s.phone}" style="color: #7CBCC4; text-decoration: none; font-size: 10px;">${s.phone}</a></td>
+                <td style="text-align: right;">
+                    <button class="btn btn-danger" onclick="openEditStaff('${s.id}')" style="margin-right: 4px;">✎</button>
+                    <button class="btn btn-danger" onclick="deleteStaff('${s.id}')">X</button>
+                </td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    // LABELS
+    function openLabelsModal() {
+        renderLabelsList();
+        openModal('labelsModal');
+        document.getElementById('settingsMenu').classList.remove('active');
+    }
+
+    function addLabel() {
+        const name = document.getElementById('newLabelInput').value.trim();
+        if (!name) {
+            alert('Введите название');
+            return;
+        }
+        if (appData.labels.includes(name)) {
+            alert('Такой ярлык уже существует');
+            return;
+        }
+        appData.labels.push(name);
+        renderLabelsList();
+        updateTaskSelects();
+        updateFilterOptions();
+        saveData();
+        document.getElementById('newLabelInput').value = '';
+    }
+
+    function deleteLabel(name) {
+        if (!confirm('Удалить?')) return;
+        appData.labels = appData.labels.filter(l => l !== name);
+        renderLabelsList();
+        updateTaskSelects();
+        updateFilterOptions();
+        saveData();
+    }
+
+    function renderLabelsList() {
+        const container = document.getElementById('labelsListContainer');
+        if (!appData.labels.length) {
+            container.innerHTML = '<div class="empty-state">Нет ярлыков</div>';
+            return;
+        }
+        let html = '';
+        appData.labels.forEach(l => {
+            html += `<div class="label-badge">${l}<button class="label-remove" onclick="deleteLabel('${l}')">✕</button></div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function updateTaskSelects() {
+        let labelHtml = '<option value="">Выберите</option>';
+        appData.labels.forEach(l => { labelHtml += `<option value="${l}">${l}</option>`; });
+        document.getElementById('taskLabelInput').innerHTML = labelHtml;
+
+        let staffHtml = '<option value="">Выберите</option>';
+        appData.staff.forEach(s => { staffHtml += `<option value="${s.id}">${s.name}</option>`; });
+        document.getElementById('taskStaffInput').innerHTML = staffHtml;
+    }
+
+    // FILTERS
+    function updateFilterOptions() {
+        let pharmacyHtml = '<option value="">Все</option>';
+        pharmacyHtml += `<option value="common">Общие задачи</option>`;
+        appData.pharmacies.forEach(p => {
+            pharmacyHtml += `<option value="${p.id}">№${p.number} — ${p.address}</option>`;
+        });
+        document.getElementById('filterPharmacy').innerHTML = pharmacyHtml;
+
+        let staffHtml = '<option value="">Все</option>';
+        appData.staff.forEach(s => {
+            staffHtml += `<option value="${s.id}">${s.name}</option>`;
+        });
+        document.getElementById('filterStaff').innerHTML = staffHtml;
+
+        let labelHtml = '<option value="">Все</option>';
+        appData.labels.forEach(l => {
+            labelHtml += `<option value="${l}">${l}</option>`;
+        });
+        document.getElementById('filterLabel').innerHTML = labelHtml;
+    }
+
+    function applyFilters() {
+        currentFilters.pharmacy = document.getElementById('filterPharmacy').value;
+        currentFilters.staff = document.getElementById('filterStaff').value;
+        currentFilters.label = document.getElementById('filterLabel').value;
+        currentFilters.deadline = document.getElementById('filterDeadline').value;
+        renderDashboard();
+    }
+
+    function clearFilters() {
+        currentFilters = { pharmacy: '', staff: '', label: '', deadline: '' };
+        document.getElementById('filterPharmacy').value = '';
+        document.getElementById('filterStaff').value = '';
+        document.getElementById('filterLabel').value = '';
+        document.getElementById('filterDeadline').value = '';
+        renderDashboard();
+    }
+
+    function matchesFilters(task) {
+        if (currentFilters.pharmacy && String(task.pharmacyId) !== String(currentFilters.pharmacy)) return false;
+        if (currentFilters.staff && task.staffId !== currentFilters.staff) return false;
+        if (currentFilters.label && task.label !== currentFilters.label) return false;
+        if (currentFilters.deadline) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const deadline = task.deadline ? new Date(task.deadline) : null;
+
+            if (!deadline) return false;
+
+            switch (currentFilters.deadline) {
+                case 'today':
+                    return deadline.getTime() === today.getTime();
+                case 'week':
+                    const weekEnd = new Date(today);
+                    weekEnd.setDate(weekEnd.getDate() + 7);
+                    return deadline >= today && deadline <= weekEnd;
+                case 'month':
+                    return deadline.getMonth() === today.getMonth() &&
+                           deadline.getFullYear() === today.getFullYear();
+                case 'overdue':
+                    return deadline < today && !task.completed;
+            }
+        }
+        return true;
+    }
+
+    // RENDERING
+    function renderPharmacy() {
+        const pharmacy = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
+        if (!pharmacy) return;
+
+        document.getElementById('contentTitle').textContent = `📦 Аптека №${pharmacy.number} — ${pharmacy.address}`;
+
+        let notesHtml = '';
+        if (!pharmacy.notes || !pharmacy.notes.length) {
+            notesHtml = '<div class="empty-state">Нет заметок</div>';
+        } else {
+            pharmacy.notes.forEach((note, idx) => {
+                notesHtml += `
+                    <div class="item-card note" onclick="openEditNote(${idx})">
+                        <div class="item-title">${note.text}</div>
+                        <div class="item-meta">
+                            ${new Date(note.date).toLocaleDateString('ru-RU', {
+                                day: 'numeric',
+                                month: 'short',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}
+                        </div>
+                        <button class="item-delete" onclick="event.stopPropagation(); deleteNote(${idx})">✕</button>
+                    </div>
+                `;
+            });
+        }
+        document.getElementById('pharmacyNotesList').innerHTML = notesHtml;
+
+        let tasksHtml = '';
+        const visibleTasks = pharmacy.tasks ? pharmacy.tasks.filter(t => !t.completed || showCompletedTasks.pharmacy) : [];
+
+        if (!visibleTasks.length) {
+            tasksHtml = '<div class="empty-state">Нет задач</div>';
+        } else {
+            visibleTasks.forEach((task, idx) => {
+                const actualIdx = pharmacy.tasks.indexOf(task);
+                const staff = appData.staff.find(s => s.id === task.staffId);
+                const deadline = task.deadline ? new Date(task.deadline) : null;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const isOverdue = deadline && deadline < today && !task.completed;
+
+                let tagsHtml = '';
+                if (task.label) tagsHtml += `<span class="tag">${task.label}</span>`;
+                if (staff) tagsHtml += `<span class="tag staff">${staff.name}</span>`;
+                if (deadline) tagsHtml += `<span class="tag ${isOverdue ? 'overdue' : 'deadline'}">📅 ${deadline.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</span>`;
+
+                tasksHtml += `
+                    <div class="item-card task-card ${task.completed ? 'completed' : ''}" onclick="openEditTask(${actualIdx})">
+                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="event.stopPropagation(); toggleTask(${actualIdx})">
+                        <div style="flex: 1;">
+                            <div class="item-title">${task.title}</div>
+                            <div class="item-meta">${tagsHtml}</div>
+                        </div>
+                        <button class="item-delete" onclick="event.stopPropagation(); deleteTask(${actualIdx})">✕</button>
+                    </div>
+                `;
+            });
+        }
+        document.getElementById('pharmacyTasksList').innerHTML = tasksHtml;
+    }
+
+    function renderCommon() {
+        document.getElementById('contentTitle').textContent = '📌 Общие задачи';
+
+        if (!appData.common) appData.common = { notes: [], tasks: [] };
+
+        let notesHtml = '';
+        if (!appData.common.notes || !appData.common.notes.length) {
+            notesHtml = '<div class="empty-state">Нет заметок</div>';
+        } else {
+            appData.common.notes.forEach((note, idx) => {
+                notesHtml += `
+                    <div class="item-card note" onclick="openEditNote(${idx})">
+                        <div class="item-title">${note.text}</div>
+                        <div class="item-meta">
+                            ${new Date(note.date).toLocaleDateString('ru-RU', {
+                                day: 'numeric',
+                                month: 'short',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}
+                        </div>
+                        <button class="item-delete" onclick="event.stopPropagation(); deleteNote(${idx})">✕</button>
+                    </div>
+                `;
+            });
+        }
+        document.getElementById('pharmacyNotesList').innerHTML = notesHtml;
+
+        let tasksHtml = '';
+        const visibleTasks = appData.common.tasks ? appData.common.tasks.filter(t => !t.completed || showCompletedTasks.pharmacy) : [];
+
+        if (!visibleTasks.length) {
+            tasksHtml = '<div class="empty-state">Нет задач</div>';
+        } else {
+            visibleTasks.forEach((task, idx) => {
+                const actualIdx = appData.common.tasks.indexOf(task);
+                const staff = appData.staff.find(s => s.id === task.staffId);
+                const deadline = task.deadline ? new Date(task.deadline) : null;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const isOverdue = deadline && deadline < today && !task.completed;
+
+                let tagsHtml = '';
+                if (task.label) tagsHtml += `<span class="tag">${task.label}</span>`;
+                if (staff) tagsHtml += `<span class="tag staff">${staff.name}</span>`;
+                if (deadline) tagsHtml += `<span class="tag ${isOverdue ? 'overdue' : 'deadline'}">📅 ${deadline.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</span>`;
+
+                tasksHtml += `
+                    <div class="item-card task-card ${task.completed ? 'completed' : ''}" onclick="openEditTask(${actualIdx})">
+                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="event.stopPropagation(); toggleTask(${actualIdx})">
+                        <div style="flex: 1;">
+                            <div class="item-title">${task.title}</div>
+                            <div class="item-meta">${tagsHtml}</div>
+                        </div>
+                        <button class="item-delete" onclick="event.stopPropagation(); deleteTask(${actualIdx})">✕</button>
+                    </div>
+                `;
+            });
+        }
+        document.getElementById('pharmacyTasksList').innerHTML = tasksHtml;
+    }
+
+    function renderDashboard() {
+        let allTasks = [];
+
+        if (appData.common && appData.common.tasks) {
+            appData.common.tasks.forEach((t, idx) => {
+                allTasks.push({ ...t, pharmacyId: 'common', pharmacyName: 'Общие задачи', taskIdx: idx });
+            });
+        }
+
+        appData.pharmacies.forEach(p => {
+            if (!p.tasks) return;
+            p.tasks.forEach((t, idx) => {
+                allTasks.push({ ...t, pharmacyId: p.id, pharmacyName: `№${p.number} — ${p.address}`, taskIdx: idx });
+            });
+        });
+
+        const filteredTasks = allTasks.filter(t => matchesFilters(t) && (!t.completed || showCompletedTasks.dashboard));
+        let tasksHtml = '';
+        if (!filteredTasks.length) {
+            tasksHtml = '<div class="empty-state">Нет задач</div>';
+        } else {
+            filteredTasks.forEach(t => {
+                const staff = appData.staff.find(s => s.id === t.staffId);
+                const deadline = t.deadline ? new Date(t.deadline) : null;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const isOverdue = deadline && deadline < today && !t.completed;
+
+                let tagsHtml = `<span class="tag pharmacy">${t.pharmacyName}</span>`;
+                if (t.label) tagsHtml += `<span class="tag">${t.label}</span>`;
+                if (staff) tagsHtml += `<span class="tag staff">${staff.name}</span>`;
+                if (deadline) tagsHtml += `<span class="tag ${isOverdue ? 'overdue' : 'deadline'}">📅 ${deadline.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</span>`;
+
+                tasksHtml += `
+                    <div class="item-card task-card ${t.completed ? 'completed' : ''}">
+                        <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="toggleAllTask('${t.pharmacyId}', ${t.taskIdx})">
+                        <div style="flex: 1;">
+                            <div class="item-title">${t.title}</div>
+                            <div class="item-meta">${tagsHtml}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        document.getElementById('allTasksList').innerHTML = tasksHtml;
+
+        let allNotes = [];
+
+        if (appData.common && appData.common.notes) {
+            appData.common.notes.forEach(n => {
+                allNotes.push({ ...n, pharmacyName: 'Общие задачи', pharmacyId: 'common' });
+            });
+        }
+
+        appData.pharmacies.forEach(p => {
+            if (!p.notes) return;
+            p.notes.forEach(n => {
+                allNotes.push({ ...n, pharmacyName: `№${p.number} — ${p.address}`, pharmacyId: p.id });
+            });
+        });
+
+        let notesHtml = '';
+        if (!allNotes.length) {
+            notesHtml = '<div class="empty-state">Нет заметок</div>';
+        } else {
+            allNotes.forEach(n => {
+                const match = !currentFilters.pharmacy || String(n.pharmacyId) === String(currentFilters.pharmacy);
+                if (match) {
+                    notesHtml += `
+                        <div class="item-card note">
+                            <div class="item-title">${n.text}</div>
+                            <div class="item-meta">
+                                <span class="tag pharmacy">${n.pharmacyName}</span>
+                                ${new Date(n.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+        document.getElementById('allNotesList').innerHTML = notesHtml;
+    }
+
+    function toggleAllTask(pharmacyId, taskIdx) {
+        let target;
+        if (pharmacyId === 'common') {
+            target = appData.common;
+        } else {
+            target = appData.pharmacies.find(p => String(p.id) === String(pharmacyId));
+        }
+
+        if (target && target.tasks && target.tasks[taskIdx]) {
+            target.tasks[taskIdx].completed = !target.tasks[taskIdx].completed;
+            renderDashboard();
+            saveData();
+        }
+    }
+
+    function showDashboard() {
+        document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+        const firstNavBtn = document.querySelector('.sidebar-section:first-child .nav-button');
+        if (firstNavBtn) firstNavBtn.classList.add('active');
+
+        document.getElementById('dashboardView').style.display = '';
+        document.getElementById('pharmacyView').style.display = 'none';
+        document.getElementById('contentTitle').textContent = '📊 Рабочий стол';
         updateFilterOptions();
         renderDashboard();
-    </script>
+    }
+
+    function showPharmacy() {
+        document.getElementById('dashboardView').style.display = 'none';
+        document.getElementById('pharmacyView').style.display = '';
+        renderPharmacy();
+    }
+
+    function showCommon() {
+        document.getElementById('dashboardView').style.display = 'none';
+        document.getElementById('pharmacyView').style.display = '';
+        renderCommon();
+    }
+
+    // INIT
+    window.addEventListener('DOMContentLoaded', initFirebaseSync);
+</script>
 </body>
 </html>
