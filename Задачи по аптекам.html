@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -1322,8 +1323,8 @@
                     <div class="settings-item labels" onclick="openLabelsModal()">
                         🏷️ Ярлыки
                     </div>
-                    <div class="settings-item pharmacy" onclick="openCreatePharmacy()">
-                        🏥 Добавить аптеку
+                    <div class="settings-item pharmacy" onclick="openPharmacyManagementModal()">
+                        🏥 Аптеки
                     </div>
                 </div>
             </div>
@@ -1421,7 +1422,6 @@
                                 </div>
                                 <div class="items-container" id="allTasksList"></div>
                             </div>
-
                             <div class="panel all-notes">
                                 <div class="panel-header">
                                     <span class="panel-icon">📝</span>
@@ -1462,6 +1462,24 @@
     </div>
 
     <!-- ===== MODALS ===== -->
+    <div class="modal-overlay" id="pharmacyManagementModal" onclick="if(event.target===this) closeModal('pharmacyManagementModal')">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Управление Аптеками</h2>
+                <button class="modal-close" onclick="closeModal('pharmacyManagementModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <button class="btn btn-primary" style="width: 100%; margin-bottom: 15px;" onclick="openCreatePharmacy()">
+                    + Новая аптека
+                </button>
+                <div id="pharmacyManagementList"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('pharmacyManagementModal')">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="createPharmacyModal" onclick="if(event.target===this) closeModal('createPharmacyModal')">
         <div class="modal">
             <div class="modal-header">
@@ -1470,13 +1488,40 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label form-required">Название</label>
-                    <input type="text" id="pharmacyNameInput" class="form-input" placeholder="Аптека №1">
+                    <label class="form-label form-required">Номер аптеки</label>
+                    <input type="text" id="pharmacyNumberInput" class="form-input" placeholder="1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label form-required">Адрес</label>
+                    <input type="text" id="pharmacyAddressInput" class="form-input" placeholder="ул. Большая Покровская, д. 1">
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" onclick="createPharmacy()">Создать</button>
                 <button class="btn btn-secondary" onclick="closeModal('createPharmacyModal')">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editPharmacyModal" onclick="if(event.target===this) closeModal('editPharmacyModal')">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Редактировать Аптеку</h2>
+                <button class="modal-close" onclick="closeModal('editPharmacyModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label form-required">Номер аптеки</label>
+                    <input type="text" id="editPharmacyNumberInput" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label form-required">Адрес</label>
+                    <input type="text" id="editPharmacyAddressInput" class="form-input">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveEditedPharmacy()">Сохранить</button>
+                <button class="btn btn-secondary" onclick="closeModal('editPharmacyModal')">Отмена</button>
             </div>
         </div>
     </div>
@@ -1594,12 +1639,10 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-analytics.js";
         import { getDatabase, ref, set, get, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCXU_qtA65zudpgUsdNdbndOSpuGRbEJ2c",
             authDomain: "pharmacy-manager-d7802.firebaseapp.com",
@@ -1611,12 +1654,10 @@
             databaseURL: "https://pharmacy-manager-d7802-default-rtdb.firebaseio.com"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const database = getDatabase(app);
 
-        // Expose Firebase functions globally
         window.firebaseDB = {
             database,
             ref,
@@ -1655,6 +1696,8 @@
         const pharmacyColors = ['color-purple', 'color-pink', 'color-cyan', 'color-amber', 'color-teal', 'color-red', 'color-indigo'];
         const labelClasses = ['label1', 'label2', 'label3', 'label1', 'label2', 'label3'];
 
+        let editingPharmacyId = null;
+
         function toggleSettings(e) {
             e.stopPropagation();
             const menu = document.getElementById('settingsMenu');
@@ -1685,6 +1728,7 @@
                 appData.pharmacies = loaded.pharmacies || appData.pharmacies;
                 appData.currentPharmacy = loaded.currentPharmacy || appData.currentPharmacy;
                 appData.labels = loaded.labels || appData.labels;
+                appData.staff = loaded.staff || appData.staff;
             }
         }
 
@@ -1707,21 +1751,94 @@
         }
 
         // PHARMACIES
-        function openCreatePharmacy() {
-            document.getElementById('pharmacyNameInput').value = '';
-            openModal('createPharmacyModal');
-            document.getElementById('pharmacyNameInput').focus();
+        function openPharmacyManagementModal() {
+            renderPharmacyManagementList();
+            openModal('pharmacyManagementModal');
             document.getElementById('settingsMenu').classList.remove('active');
         }
 
+        function renderPharmacyManagementList() {
+            const container = document.getElementById('pharmacyManagementList');
+            if (!appData.pharmacies.length) {
+                container.innerHTML = '<div class="empty-state">Нет аптек</div>';
+                return;
+            }
+
+            let html = '<table class="table"><thead><tr><th>№</th><th>Адрес</th><th></th></tr></thead><tbody>';
+            appData.pharmacies.forEach(p => {
+                html += `<tr>
+                    <td>${p.number}</td>
+                    <td>${p.address}</td>
+                    <td style="text-align: right;">
+                        <button class="btn btn-danger" onclick="openEditPharmacy(${p.id})" style="margin-right: 4px;">✎</button>
+                        <button class="btn btn-danger" onclick="deletePharmacy(${p.id})">✕</button>
+                    </td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function openCreatePharmacy() {
+            document.getElementById('pharmacyNumberInput').value = '';
+            document.getElementById('pharmacyAddressInput').value = '';
+            openModal('createPharmacyModal');
+            document.getElementById('pharmacyNumberInput').focus();
+        }
+
         function createPharmacy() {
-            const name = document.getElementById('pharmacyNameInput').value.trim();
-            if (!name) return alert('Введите название аптеки');
-            appData.pharmacies.push({ id: Date.now(), name, notes: [], tasks: [] });
+            const number = document.getElementById('pharmacyNumberInput').value.trim();
+            const address = document.getElementById('pharmacyAddressInput').value.trim();
+
+            if (!number || !address) return alert('Заполните номер и адрес аптеки');
+
+            const name = `Аптека №${number}`;
+
+            appData.pharmacies.push({ 
+                id: Date.now(), 
+                name,
+                number,
+                address,
+                notes: [], 
+                tasks: [] 
+            });
             saveData();
             renderPharmacies();
             updateFilterOptions();
+            renderPharmacyManagementList();
             closeModal('createPharmacyModal');
+        }
+
+        function openEditPharmacy(id) {
+            const pharmacy = appData.pharmacies.find(p => p.id === id);
+            if (!pharmacy) return;
+
+            editingPharmacyId = id;
+            document.getElementById('editPharmacyNumberInput').value = pharmacy.number || '';
+            document.getElementById('editPharmacyAddressInput').value = pharmacy.address || '';
+            openModal('editPharmacyModal');
+        }
+
+        function saveEditedPharmacy() {
+            const pharmacy = appData.pharmacies.find(p => p.id === editingPharmacyId);
+            if (!pharmacy) return alert('Аптека не найдена');
+
+            const number = document.getElementById('editPharmacyNumberInput').value.trim();
+            const address = document.getElementById('editPharmacyAddressInput').value.trim();
+
+            if (!number || !address) return alert('Заполните номер и адрес аптеки');
+
+            pharmacy.number = number;
+            pharmacy.address = address;
+            pharmacy.name = `Аптека №${number}`;
+
+            saveData();
+            renderPharmacies();
+            renderPharmacyManagementList();
+            updateFilterOptions();
+            if (appData.currentPharmacy === pharmacy.id) showPharmacy();
+            closeModal('editPharmacyModal');
+            editingPharmacyId = null;
         }
 
         function deletePharmacy(id) {
@@ -1730,6 +1847,7 @@
             if (appData.currentPharmacy === id) appData.currentPharmacy = null;
             saveData();
             renderPharmacies();
+            renderPharmacyManagementList();
             updateFilterOptions();
             showDashboard();
         }
@@ -1750,7 +1868,7 @@
                 li.className = 'nav-item';
                 li.innerHTML = `
                     <button class="nav-button ${appData.currentPharmacy === p.id ? 'active ' + colorClass : ''}" onclick="selectPharmacy(${p.id})">
-                        <span>${p.name}</span>
+                        <span>№${p.number}</span>
                         <button class="nav-delete" onclick="deletePharmacy(${p.id}); event.stopPropagation();">✕</button>
                     </button>
                 `;
@@ -1929,7 +2047,7 @@
             let html = '';
             appData.labels.forEach((l, idx) => {
                 const colorClass = colorClasses[idx % colorClasses.length];
-                html += `<div class="label-badge ${colorClass}">${l}<button class="label-remove" onclick="deleteLabel('${l}')">✕</button></div>`;
+                html += `<div class="label-badge ${colorClass}">${l}<button class="label-remove" onclick="deleteLabel('${l}')" style="cursor: pointer;">✕</button></div>`;
             });
             container.innerHTML = html;
         }
@@ -1948,7 +2066,7 @@
         function updateFilterOptions() {
             let pharmacyHtml = '<option value="">Все</option>';
             appData.pharmacies.forEach(p => {
-                pharmacyHtml += `<option value="${p.id}">${p.name}</option>`;
+                pharmacyHtml += `<option value="${p.id}">№${p.number} — ${p.address}</option>`;
             });
             document.getElementById('filterPharmacy').innerHTML = pharmacyHtml;
 
@@ -1986,7 +2104,6 @@
             if (currentFilters.pharmacy && task.pharmacyId != currentFilters.pharmacy) return false;
             if (currentFilters.staff && task.staffId !== currentFilters.staff) return false;
             if (currentFilters.label && task.label !== currentFilters.label) return false;
-
             if (currentFilters.deadline) {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
@@ -2015,6 +2132,8 @@
         function renderPharmacy() {
             const pharmacy = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
             if (!pharmacy) return;
+
+            document.getElementById('contentTitle').textContent = `📦 Аптека №${pharmacy.number} — ${pharmacy.address}`;
 
             let notesHtml = '';
             if (!pharmacy.notes.length) {
@@ -2068,12 +2187,11 @@
             let allTasks = [];
             appData.pharmacies.forEach(p => {
                 p.tasks.forEach((t, idx) => {
-                    allTasks.push({ ...t, pharmacyId: p.id, pharmacyName: p.name, taskIdx: idx });
+                    allTasks.push({ ...t, pharmacyId: p.id, pharmacyName: `№${p.number} — ${p.address}`, taskIdx: idx });
                 });
             });
 
             const filteredTasks = allTasks.filter(t => matchesFilters(t));
-
             let tasksHtml = '';
             if (!filteredTasks.length) {
                 tasksHtml = '<div class="empty-state">Нет задач</div>';
@@ -2107,7 +2225,7 @@
             let allNotes = [];
             appData.pharmacies.forEach(p => {
                 p.notes.forEach(n => {
-                    allNotes.push({ ...n, pharmacyName: p.name, pharmacyId: p.id });
+                    allNotes.push({ ...n, pharmacyName: `№${p.number} — ${p.address}`, pharmacyId: p.id });
                 });
             });
 
@@ -2153,8 +2271,6 @@
         function showPharmacy() {
             document.getElementById('dashboardView').style.display = 'none';
             document.getElementById('pharmacyView').style.display = '';
-            const pharmacy = appData.pharmacies.find(p => p.id === appData.currentPharmacy);
-            document.getElementById('contentTitle').textContent = pharmacy ? `📦 ${pharmacy.name}` : 'Аптека';
             renderPharmacy();
         }
 
