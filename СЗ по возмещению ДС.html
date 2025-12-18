@@ -104,38 +104,60 @@
             margin-bottom: 8px;
         }
 
-        /* Настройки печати */
+        /* --- ИСПРАВЛЕННЫЕ НАСТРОЙКИ ПЕЧАТИ --- */
         @media print {
-            body {
-                background: white;
-                margin: 0;
-                padding: 0;
+            /* Сбрасываем скрытие переполнения на body и html, чтобы печатались все страницы */
+            body, html {
+                height: auto !important;
+                overflow: visible !important;
+                background: white !important;
             }
-            .no-print {
+
+            /* Скрываем всё лишнее */
+            header, aside, .no-print {
                 display: none !important;
             }
+
+            /* Основной контейнер делаем видимым и сбрасываем ограничения */
+            main {
+                display: block !important;
+                height: auto !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                position: static !important;
+            }
+
+            /* Контейнер страниц */
             .pages-container {
-                display: block;
-            }
-            .a4-page {
-                box-shadow: none;
-                margin: 0;
+                display: block !important;
+                position: absolute;
+                top: 0;
+                left: 0;
                 width: 100%;
-                height: auto;
-                min-height: 297mm; 
-                page-break-after: always; 
-                padding: 10mm 15mm;
-                display: block;
             }
+
+            /* Страница A4 */
+            .a4-page {
+                box-shadow: none !important;
+                margin: 0 !important;
+                border: none !important;
+                width: 100% !important; /* На печати ширина 100% от листа */
+                height: auto !important;
+                min-height: 290mm; /* Чуть меньше 297, чтобы избежать пустых листов */
+                page-break-after: always !important; /* Разрыв страницы после каждого блока */
+                padding: 10mm 15mm !important;
+                display: flex !important; /* Возвращаем flex для структуры */
+            }
+
+            /* Убираем разрыв после последней страницы */
             .a4-page:last-child {
-                page-break-after: auto;
+                page-break-after: auto !important;
             }
+
             .receipt-img {
-                border: none;
-            }
-            @page {
-                size: A4;
-                margin: 0;
+                border: none !important;
+                max-height: 260mm; /* Ограничиваем высоту картинки на печати */
             }
         }
     </style>
@@ -276,7 +298,7 @@
                     </div>
                 </form>
 
-                <p class="text-[10px] text-gray-400 mt-4 text-center">v8.1 | Исправленные ошибки</p>
+                <p class="text-[10px] text-gray-400 mt-4 text-center">v9.0 | Исправлена печать</p>
             </div>
         </aside>
 
