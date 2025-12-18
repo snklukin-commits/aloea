@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор СЗ: Возмещение средств</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Times+New+Roman&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f3f4f6;
+        }
+        
+        /* Эмуляция листа A4 */
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 0 auto 20px auto; 
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            font-family: 'Times New Roman', serif;
+            font-size: 12pt;
+            line-height: 1.15;
+            color: #000;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Сетка заголовка документа */
+        .doc-header-grid {
+            display: grid;
+            grid-template-columns: 60% 40%; 
+            gap: 0 10px;
+            margin-bottom: 5px;
+        }
+        
+        .doc-col {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .doc-line {
+            min-height: 1.2em;
+        }
+
+        /* Поля ввода */
+        .input-field {
+            transition: all 0.2s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #009245;
+            box-shadow: 0 0 0 3px rgba(0, 146, 69, 0.1);
+        }
+
+        /* Стилизация подписи */
+        .signature-img {
+            position: absolute;
+            bottom: -10px; 
+            left: 50%;
+            transform: translateX(-50%);
+            max-height: 96px; 
+            max-width: 224px;
+            mix-blend-mode: multiply; 
+            pointer-events: none;
+        }
+
+        /* Контейнер для чеков */
+        .receipt-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 20px;
+        }
+        .receipt-img {
+            max-width: 100%;
+            max-height: 250mm; 
+            object-fit: contain;
+            border: 1px solid #eee; 
+        }
+        .receipt-label {
+            align-self: flex-start;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 14pt;
+        }
+
+        /* Список чеков в сайдбаре */
+        .receipt-list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        /* Настройки печати */
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .pages-container {
+                display: block;
+            }
+            .a4-page {
+                box-shadow: none;
+                margin: 0;
+                width: 100%;
+                height: auto;
+                min-height: 297mm; 
+                page-break-after: always; 
+                padding: 10mm 15mm;
+                display: block;
+            }
+            .a4-page:last-child {
+                page-break-after: auto;
+            }
+            .receipt-img {
+                border: none;
+            }
+            @page {
+                size: A4;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-800 h-screen flex flex-col overflow-hidden">
+
+    <!-- Шапка приложения -->
+    <header class="bg-white border-b border-gray-200 h-16 flex-none no-print z-20 shadow-sm">
+        <div class="container mx-auto px-4 h-full flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-green-600 rounded flex items-center justify-center text-white font-bold text-lg">A</div>
+                <h1 class="text-xl font-medium text-gray-700">Генератор служебных записок</h1>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="window.print()" class="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+                    <span>🖨️ Печать</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <div class="flex flex-1 overflow-hidden">
+        
+        <!-- Левая панель: Управление -->
+        <aside class="w-full md:w-[350px] bg-white border-r border-gray-200 overflow-y-auto no-print flex flex-col z-10 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+            <div class="p-6">
+                <div class="mb-6 bg-green-50 p-4 rounded-lg border border-green-100">
+                    <h2 class="text-green-800 font-semibold text-sm mb-1">Параметры документа</h2>
+                    <p class="text-xs text-green-600 leading-relaxed">
+                        Заполните поля. Текст основания можно редактировать вручную.
+                    </p>
+                </div>
+
+                <form id="docForm" class="space-y-4" onsubmit="return false;">
+                    
+                    <!-- 1. ПОДПИСЬ -->
+                    <div class="space-y-3 border-b border-gray-100 pb-4">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Подпись</h3>
+                        <div class="flex items-center gap-2 mb-2">
+                            <input type="checkbox" id="signCheckbox" class="w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500">
+                            <label for="signCheckbox" class="text-sm text-gray-700 font-medium select-none cursor-pointer">Вставить скан подписи</label>
+                        </div>
+                        <div id="signUploadContainer" class="hidden animate-fade-in transition-all">
+                            <label class="block text-xs text-gray-500 mb-1">Загрузить подпись (JPG/PNG):</label>
+                            <input type="file" id="signFileInput" accept="image/*" 
+                                class="block w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- 2. ЧЕКИ -->
+                    <div class="space-y-3 border-b border-gray-100 pb-4">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Приложение (Чеки)</h3>
+                        <div>
+                            <label for="receiptsInput" class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-md text-xs font-semibold hover:bg-blue-100 transition-colors w-full justify-center border border-blue-200">
+                                <span>➕ Добавить чеки</span>
+                            </label>
+                            <input type="file" id="receiptsInput" multiple accept="image/*" class="hidden">
+                        </div>
+                        <div id="receiptsList" class="mt-2 space-y-2"></div>
+                        <p id="noReceiptsMsg" class="text-[10px] text-gray-400 text-center py-2 mt-2">Нет добавленных чеков</p>
+                    </div>
+
+                    <!-- 3. ТЕКСТ ЗАЯВЛЕНИЯ -->
+                    <div class="space-y-3 border-b border-gray-100 pb-4">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Текст заявления</h3>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Основание (Прошу...)</label>
+                            <textarea id="reasonInput" rows="3" 
+                                class="input-field w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-800"
+                                placeholder="Например: Прошу возместить денежные средства за приобретение хоз.товаров"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Объект</label>
+                            <input type="text" id="objectInput" list="objectsList" placeholder="Выберите или введите..."
+                                class="input-field w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                            <datalist id="objectsList"></datalist>
+                            <p id="sheetStatus" class="text-[10px] text-gray-400 mt-1">Загрузка списка из Google Sheets...</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Сумма (Руб.)</label>
+                            <input type="number" id="amountInput" placeholder="0.00" step="0.01" min="0"
+                                class="input-field w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-bold text-green-700">
+                        </div>
+                        <div>
+                             <label class="block text-xs font-medium text-gray-600 mb-1">Исх. №</label>
+                             <input type="text" id="outNumInput" placeholder="__" 
+                                 class="input-field w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-800">
+                        </div>
+                        <div>
+                             <label class="block text-xs font-medium text-gray-600 mb-1">Дата док-та</label>
+                             <input type="date" id="dateInput" 
+                                 class="input-field w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-800">
+                        </div>
+                    </div>
+
+                    <!-- 4. АДРЕСАТЫ -->
+                    <div class="space-y-3 border-b border-gray-100 pb-4">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Кому</h3>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">ФИО</label>
+                            <input type="text" id="directorInput" value="Бочаровой А.В." 
+                                class="input-field w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-800">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Должность</label>
+                            <input type="text" id="directorTitleInput" value="Директор региона Владимир" 
+                                class="input-field w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-800">
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 border-b border-gray-100 pb-4">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">От кого</h3>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">ФИО</label>
+                            <input type="text" id="employeeInput" value="Клюкин С.Н." 
+                                class="input-field w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-800">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Должность</label>
+                            <input type="text" id="employeeTitleInput" value="Территориальный менеджер" 
+                                class="input-field w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-800">
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 border-b border-gray-100 pb-4">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Копия</h3>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">ФИО</label>
+                            <input type="text" id="copyToInput" value="Леоновой О.В." 
+                                class="input-field w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-800">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Должность</label>
+                            <input type="text" id="copyTitleInput" value="Бухгалтер" 
+                                class="input-field w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-800">
+                        </div>
+                    </div>
+                </form>
+
+                <p class="text-[10px] text-gray-400 mt-4 text-center">v8.1 | Исправленные ошибки</p>
+            </div>
+        </aside>
+
+        <!-- Правая панель: Предпросмотр документа -->
+        <main class="flex-1 bg-gray-100 overflow-y-auto p-4 md:p-8 flex justify-center items-start">
+            
+            <div id="pagesContainer" class="pages-container">
+
+                <!-- Страница 1: Служебная записка -->
+                <div id="documentPage" class="a4-page animate-fade-in-up">
+                    
+                    <div class="flex-none">
+                        <div class="text-center font-bold text-[14pt] uppercase mb-4">
+                            СЛУЖЕБНАЯ ЗАПИСКА
+                        </div>
+
+                        <div class="doc-header-grid text-[11pt]">
+                            <div class="doc-col">
+                                <div class="doc-line">Исх. № <span id="previewOutNum">__</span></div>
+                                <div class="doc-line mt-2">от <span id="previewDateFull">«__» _______ 20__ г.</span></div>
+                                <div class="doc-line mt-4">От кого: <span id="previewEmployeeName" class="font-bold">Клюкин С.Н.</span></div>
+                                <div class="doc-line">Должность: <span id="previewEmployeeTitle" class="italic">Территориальный менеджер</span></div>
+                                <div class="doc-line mt-8">Телефон:</div>
+                            </div>
+
+                            <div class="doc-col">
+                                <div class="doc-line">Вх. № <span id="previewInNum">__</span></div>
+                                <div class="doc-line mt-2">от «___» ___________ 20__</div>
+                                <div class="doc-line mt-4">Кому: <span id="previewDirectorName" class="font-bold">Бочаровой А.В.</span></div>
+                                <div class="doc-line">Должность: <span id="previewDirectorTitle" class="italic">Директор региона Владимир</span></div>
+                                <div class="doc-line mt-2">Кому (копия): <span id="previewCopyTo">Леоновой О.В.</span></div>
+                                <div class="doc-line">Должность: <span id="previewCopyTitle">Бухгалтер</span></div>
+                                <div class="doc-line mt-2">Телефон:</div>
+                            </div>
+                        </div>
+
+                        <div class="font-medium text-[12pt] mt-4 mb-2">Предмет: ТМЦ</div>
+                    </div>
+
+                    <div class="w-full border-b border-black mb-4"></div>
+
+                    <div class="flex-1 flex flex-col pt-24">
+                        <div class="text-justify mb-8 indent-12 leading-relaxed text-[12pt]">
+                            <span id="previewReason">Прошу возместить денежные средства за приобретение хоз.товаров</span> для 
+                            <span id="previewObject" class="font-medium">__________________________________________</span>.
+                        </div>
+
+                        <div class="text-justify mb-2 leading-relaxed text-[12pt]">
+                            Сумма к возмещению – <span id="previewAmountNum" class="font-bold">____</span> руб.
+                        </div>
+                        
+                        <div class="text-justify italic mb-8 bg-gray-50 p-2 border border-gray-100 print:bg-transparent print:border-0 print:p-0 text-[12pt]">
+                            (<span id="previewAmountText">________________________</span>)
+                        </div>
+
+                        <div class="mb-12 text-[12pt]">Чеки прилагаю.</div>
+                    </div>
+
+                    <div class="flex-none mt-auto">
+                        <div class="flex justify-between items-end text-[12pt]">
+                            <div id="previewEmployeeTitleSig" class="w-1/3 text-[11pt]">Территориальный менеджер</div>
+                            <div class="w-1/3 border-b border-black h-8 relative mx-4 flex items-end justify-center">
+                                <div id="signatureContainer" class="hidden">
+                                    <img id="signatureImage" src="" alt="Подпись" class="signature-img">
+                                </div>
+                            </div>
+                            <div id="previewEmployeeNameSig" class="w-1/3 text-right">Клюкин С.Н.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const state = {
+            director: "Бочаровой А.В.",
+            directorTitle: "Директор региона Владимир",
+            employee: "Клюкин С.Н.",
+            employeeTitle: "Территориальный менеджер",
+            copyTo: "Леоновой О.В.",
+            copyTitle: "Бухгалтер",
+            reasonText: "Прошу возместить денежные средства за приобретение хоз.товаров",
+            date: "",
+            outNum: "__",
+            amount: 0,
+            object: "",
+            receipts: []
+        };
+
+        async function fetchGoogleSheetData() {
+            const sheetId = '1KUegEdHb1Cl-AfriiZD7m6hwgTkHxfO5PDRsoDq1Isk';
+            const gid = '0'; 
+            const googleUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(googleUrl)}`;
+            
+            const statusEl = document.getElementById('sheetStatus');
+            const dataList = document.getElementById('objectsList');
+
+            try {
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error();
+                const text = await response.text();
+                const rows = text.split('\n');
+                if (dataList) dataList.innerHTML = '';
+                let count = 0;
+                rows.forEach(row => {
+                    const matches = row.match(/^"((?:""|[^"])*)"|([^,]*)/);
+                    if (matches) {
+                        let cell = matches[1] ? matches[1].replace(/""/g, '"') : matches[2];
+                        if (cell && cell.trim().length > 0) {
+                            const option = document.createElement('option');
+                            option.value = cell.trim();
+                            if (dataList) dataList.appendChild(option);
+                            count++;
+                        }
+                    }
+                });
+                if (statusEl) {
+                    statusEl.textContent = `Объектов загружено: ${count}`;
+                    statusEl.classList.add('text-green-600');
+                }
+            } catch (e) {
+                if (statusEl) {
+                    statusEl.textContent = 'Ошибка загрузки. Введите данные вручную.';
+                    statusEl.classList.add('text-red-500');
+                }
+            }
+        }
+
+        const numToText = (number) => {
+            if (!number || number === 0) return "________________________";
+            const units = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
+            const teens = ['десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
+            const tens = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
+            const hundreds = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
+
+            const morph = (n, f1, f2, f5) => {
+                n = Math.abs(n) % 100;
+                if (n > 10 && n < 20) return f5;
+                const n1 = n % 10;
+                if (n1 > 1 && n1 < 5) return f2;
+                if (n1 === 1) return f1;
+                return f5;
+            };
+
+            const convertGroup = (n, gender) => {
+                let res = "";
+                const h = Math.floor(n / 100);
+                const t = Math.floor((n % 100) / 10);
+                const u = n % 10;
+                if (h > 0) res += hundreds[h] + " ";
+                if (t === 1) res += teens[u] + " ";
+                else {
+                    if (t > 1) res += tens[t] + " ";
+                    if (u > 0) {
+                        if (gender === 'female' && u === 1) res += "одна ";
+                        else if (gender === 'female' && u === 2) res += "две ";
+                        else if (gender === 'male' && u === 1) res += "один ";
+                        else if (gender === 'male' && u === 2) res += "два ";
+                        else res += units[u] + " ";
+                    }
+                }
+                return res;
+            };
+
+            let rub = Math.floor(number);
+            let kop = Math.round((number - rub) * 100);
+            let text = "";
+            const th = Math.floor(rub / 1000);
+            if (th > 0) {
+                text += convertGroup(th, 'female') + morph(th, "тысяча", "тысячи", "тысяч") + " ";
+                rub %= 1000;
+            }
+            text += convertGroup(rub, 'male');
+            text += morph(Math.floor(number), "рубль", "рубля", "рублей");
+            
+            let kopText = (kop < 10 ? "0" + kop : kop) + " " + morph(kop, "копейка", "копейки", "копеек");
+            return (text + " " + kopText).trim();
+        };
+
+        function setupImageHandling() {
+            const signCheckbox = document.getElementById('signCheckbox');
+            const signUploadContainer = document.getElementById('signUploadContainer');
+            const signFileInput = document.getElementById('signFileInput');
+            const sigContainer = document.getElementById('signatureContainer');
+            const sigImage = document.getElementById('signatureImage');
+
+            if (signCheckbox) {
+                signCheckbox.addEventListener('change', (e) => {
+                    if (signUploadContainer) signUploadContainer.classList.toggle('hidden', !e.target.checked);
+                    if (sigContainer) sigContainer.classList.toggle('hidden', !e.target.checked);
+                });
+            }
+
+            if (signFileInput) {
+                signFileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file && sigImage) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => sigImage.src = ev.target.result;
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            const receiptsInput = document.getElementById('receiptsInput');
+            if (receiptsInput) {
+                receiptsInput.addEventListener('change', (e) => {
+                    const files = Array.from(e.target.files);
+                    files.forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            state.receipts.push({ id: Date.now() + Math.random(), dataUrl: ev.target.result });
+                            renderReceiptUI();
+                            renderReceiptPages();
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                    receiptsInput.value = '';
+                });
+            }
+        }
+
+        function renderReceiptUI() {
+            const list = document.getElementById('receiptsList');
+            const noMsg = document.getElementById('noReceiptsMsg');
+            if (!list) return;
+            list.innerHTML = '';
+            if (noMsg) noMsg.style.display = state.receipts.length ? 'none' : 'block';
+            state.receipts.forEach((r, idx) => {
+                const div = document.createElement('div');
+                div.className = 'receipt-list-item animate-fade-in';
+                div.innerHTML = `
+                    <div class="flex items-center gap-2"><img src="${r.dataUrl}" class="w-8 h-8 object-cover rounded border"><span>Чек №${idx+1}</span></div>
+                    <button onclick="removeReceipt(${r.id})" class="text-red-400 hover:text-red-600">✕</button>`;
+                list.appendChild(div);
+            });
+        }
+
+        function renderReceiptPages() {
+            const container = document.getElementById('pagesContainer');
+            const mainPage = document.getElementById('documentPage');
+            if (!container || !mainPage) return;
+            while (mainPage.nextElementSibling) mainPage.nextElementSibling.remove();
+            state.receipts.forEach((r, idx) => {
+                const page = document.createElement('div');
+                page.className = 'a4-page animate-fade-in-up';
+                page.innerHTML = `<div class="receipt-container"><div class="receipt-label">Приложение: Чек №${idx+1}</div><img src="${r.dataUrl}" class="receipt-img"></div>`;
+                container.appendChild(page);
+            });
+        }
+
+        window.removeReceipt = (id) => {
+            state.receipts = state.receipts.filter(r => r.id !== id);
+            renderReceiptUI();
+            renderReceiptPages();
+        };
+
+        function updateDocument() {
+            // Чтение данных из полей
+            const elDirector = document.getElementById('directorInput');
+            const elDirectorTitle = document.getElementById('directorTitleInput');
+            const elEmployee = document.getElementById('employeeInput');
+            const elEmployeeTitle = document.getElementById('employeeTitleInput');
+            const elCopyTo = document.getElementById('copyToInput');
+            const elCopyTitle = document.getElementById('copyTitleInput');
+            const elAmount = document.getElementById('amountInput');
+            const elObject = document.getElementById('objectInput');
+            const elReason = document.getElementById('reasonInput');
+            const elOutNum = document.getElementById('outNumInput');
+            const elDate = document.getElementById('dateInput');
+
+            if (elDirector) state.director = elDirector.value;
+            if (elDirectorTitle) state.directorTitle = elDirectorTitle.value;
+            if (elEmployee) state.employee = elEmployee.value;
+            if (elEmployeeTitle) state.employeeTitle = elEmployeeTitle.value;
+            if (elCopyTo) state.copyTo = elCopyTo.value;
+            if (elCopyTitle) state.copyTitle = elCopyTitle.value;
+            if (elAmount) state.amount = parseFloat(elAmount.value) || 0;
+            if (elObject) state.object = elObject.value;
+            if (elReason) state.reasonText = elReason.value;
+            if (elOutNum) state.outNum = elOutNum.value || "__";
+            if (elDate) state.date = elDate.value;
+
+            // Обновление превью
+            const previewIds = {
+                'previewDirectorName': state.director,
+                'previewDirectorTitle': state.directorTitle,
+                'previewEmployeeName': state.employee,
+                'previewEmployeeTitle': state.employeeTitle,
+                'previewEmployeeNameSig': state.employee,
+                'previewEmployeeTitleSig': state.employeeTitle,
+                'previewCopyTo': state.copyTo,
+                'previewCopyTitle': state.copyTitle,
+                'previewReason': state.reasonText || "Прошу возместить денежные средства за приобретение хоз.товаров",
+                'previewOutNum': state.outNum
+            };
+
+            for (let id in previewIds) {
+                const el = document.getElementById(id);
+                if (el) el.textContent = previewIds[id];
+            }
+
+            const objEl = document.getElementById('previewObject');
+            if (objEl) objEl.textContent = state.object || "__________________________________________";
+
+            const previewDateFull = document.getElementById('previewDateFull');
+            if (previewDateFull) {
+                if (state.date) {
+                    const d = new Date(state.date);
+                    const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+                    previewDateFull.innerHTML = `«${d.getDate()}» ${months[d.getMonth()]} ${d.getFullYear()} г.`;
+                } else {
+                    previewDateFull.innerHTML = `«__» _______ 20__ г.`;
+                }
+            }
+
+            const amtEl = document.getElementById('previewAmountNum');
+            const amtTxt = document.getElementById('previewAmountText');
+            if (amtEl && amtTxt) {
+                if (state.amount > 0) {
+                    amtEl.textContent = state.amount.toLocaleString('ru-RU', { minimumFractionDigits: 2 });
+                    amtTxt.textContent = numToText(state.amount);
+                } else {
+                    amtEl.textContent = "____";
+                    amtTxt.textContent = "________________________";
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const elDate = document.getElementById('dateInput');
+            if (elDate) elDate.valueAsDate = new Date();
+            
+            const elReason = document.getElementById('reasonInput');
+            if (elReason) elReason.value = state.reasonText;
+            
+            setupImageHandling();
+            fetchGoogleSheetData();
+
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(i => i.addEventListener('input', updateDocument));
+
+            updateDocument();
+        });
+    </script>
+</body>
+</html>
