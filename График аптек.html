@@ -2327,12 +2327,26 @@
 
     // Загружаем библиотеку при загрузке страницы
     window.addEventListener('DOMContentLoaded', function() {
-        loadXLSXLibrary().catch(function(error) {
-            console.error('Ошибка загрузки XLSX:', error);
-            // Показываем предупреждение, но не блокируем работу приложения
+        console.log('Начало загрузки библиотеки XLSX...');
+        loadXLSXLibrary().then(function() {
+            console.log('✅ XLSX библиотека успешно загружена и готова к использованию');
+            // Обновляем статус кнопки экспорта
+            const exportBtn = document.querySelector('.btn-export');
+            if (exportBtn) {
+                exportBtn.style.opacity = '1';
+                exportBtn.title = 'Экспорт в Excel';
+            }
+        }).catch(function(error) {
+            console.error('❌ Ошибка загрузки XLSX:', error);
+            // Показываем предупреждение
             setTimeout(function() {
                 if (typeof XLSX === 'undefined') {
-                    console.warn('XLSX библиотека не загружена. Функция экспорта будет недоступна.');
+                    console.warn('⚠️ XLSX библиотека не загружена. Функция экспорта будет недоступна.');
+                    const exportBtn = document.querySelector('.btn-export');
+                    if (exportBtn) {
+                        exportBtn.style.opacity = '0.5';
+                        exportBtn.title = 'Библиотека XLSX не загружена. Обновите страницу.';
+                    }
                 }
             }, 2000);
         });
@@ -3759,11 +3773,13 @@ function getDisplayValue(employee, day) {
     if (typeof renderSchedule === 'function') renderSchedule();
 }
 
-        function exportToExcel() {
+        // Делаем функцию глобально доступной
+        window.exportToExcel = function exportToExcel() {
             try {
-                console.log('Начало экспорта в Excel...');
+                console.log('=== НАЧАЛО ЭКСПОРТА В EXCEL ===');
                 console.log('Проверка библиотеки XLSX:', typeof XLSX);
                 console.log('XLSX.utils:', typeof XLSX !== 'undefined' ? typeof XLSX.utils : 'не определен');
+                console.log('XLSX объект:', typeof XLSX !== 'undefined' ? XLSX : 'не определен');
                 
                 // Проверяем наличие библиотеки XLSX
                 if (typeof XLSX === 'undefined' || !XLSX.utils) {
@@ -3965,7 +3981,7 @@ function getDisplayValue(employee, day) {
                 console.error('Стек ошибки:', error.stack);
                 alert('Произошла ошибка при экспорте: ' + error.message + '\n\nПроверьте консоль браузера (F12) для подробностей.');
             }
-        }
+        };
 
         function printSchedule() {
             window.print();
@@ -4013,6 +4029,42 @@ function getDisplayValue(employee, day) {
             // Обновляем селекты
             updateGraphicEmployeeSelect();
             updateGraphicPharmacySelect();
+            
+            // Подключаем кнопку экспорта альтернативным способом
+            const exportBtn = document.querySelector('.btn-export');
+            if (exportBtn) {
+                console.log('✅ Кнопка экспорта найдена, добавляю обработчик события');
+                // Проверяем доступность функции
+                console.log('Проверка функции exportToExcel:', typeof window.exportToExcel, typeof exportToExcel);
+                
+                exportBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🖱️ Кнопка экспорта нажата через addEventListener');
+                    console.log('Проверка доступности функций:', {
+                        'window.exportToExcel': typeof window.exportToExcel,
+                        'exportToExcel': typeof exportToExcel,
+                        'XLSX': typeof XLSX
+                    });
+                    
+                    if (typeof window.exportToExcel === 'function') {
+                        console.log('Вызов window.exportToExcel()');
+                        window.exportToExcel();
+                    } else if (typeof exportToExcel === 'function') {
+                        console.log('Вызов exportToExcel()');
+                        exportToExcel();
+                    } else {
+                        alert('Функция exportToExcel не найдена.\n\nПроверьте консоль браузера (F12) для подробностей.');
+                        console.error('❌ Функция exportToExcel не определена');
+                        console.log('Доступные функции в window:', Object.keys(window).filter(k => k.includes('export')));
+                    }
+                });
+                
+                // Также оставляем onclick для совместимости
+                exportBtn.setAttribute('onclick', 'event.preventDefault(); if(typeof window.exportToExcel === "function") { window.exportToExcel(); } else if(typeof exportToExcel === "function") { exportToExcel(); } else { alert("Функция не найдена"); }');
+            } else {
+                console.warn('⚠️ Кнопка экспорта не найдена в DOM');
+            }
 
             // Setup real-time listeners after initialization
             setupFirebaseListeners();
