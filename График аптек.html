@@ -4015,7 +4015,7 @@ function getDisplayValue(employee, day) {
 }
 
         // Делаем функцию глобально доступной
-        window.exportToExcel = function exportToExcel() {
+        window.exportToExcel = async function exportToExcel() {
             try {
                 console.log('=== НАЧАЛО ЭКСПОРТА В EXCEL ===');
                 console.log('Проверка библиотеки XLSX:', typeof XLSX);
@@ -4075,6 +4075,34 @@ function getDisplayValue(employee, day) {
                 }
                 console.log('Библиотека XLSX загружена и готова');
 
+                // Загружаем данные об отсутствиях, если они еще не загружены
+                if (!absenceData || Object.keys(absenceData).length === 0) {
+                    try {
+                        const absenceDataValue = await firebaseGetItem('absenceData') || {};
+                        absenceData = typeof absenceDataValue === 'string' ? JSON.parse(absenceDataValue) : absenceDataValue;
+                    } catch (e) {
+                        console.warn('Не удалось загрузить данные об отсутствиях:', e);
+                        absenceData = {};
+                    }
+                }
+
+                // Функция для проверки отсутствия сотрудника на конкретный день
+                function getAbsenceForDay(employeeName, day) {
+                    if (!absenceData || !absenceData[employeeName]) return null;
+                    const checkDate = new Date(currentYear, currentMonth, day);
+                    for (let absence of absenceData[employeeName]) {
+                        const startDate = new Date(absence.startDate);
+                        const endDate = new Date(absence.endDate);
+                        if (checkDate >= startDate && checkDate <= endDate) {
+                            return {
+                                symbol: absence.type === 'vacation' ? 'О' : 'Б',
+                                color: absence.type === 'vacation' ? '#fff3cd' : '#f8d7da'
+                            };
+                        }
+                    }
+                    return null;
+                }
+
                 // Проверяем наличие данных
                 if (!employees || employees.length === 0) {
                     alert('Нет данных для экспорта. Пожалуйста, добавьте сотрудников в график.');
@@ -4090,19 +4118,20 @@ function getDisplayValue(employee, day) {
                 const pharmacySelect = document.getElementById('pharmacyNumber');
                 let pharmacyNumberText = '-- Не выбрано --';
                 let pharmacyAddress = '';
+                let pharmacyId = null;
                 
                 if (pharmacySelect && pharmacySelect.selectedIndex >= 0) {
+                    pharmacyId = pharmacySelect.value;
                     const optionText = pharmacySelect.options[pharmacySelect.selectedIndex].text;
                     // Извлекаем номер аптеки из текста "Аптека №123" или "Аптека №123-45"
                     const match = optionText.match(/Аптека\s*№\s*(.+)/);
                     pharmacyNumberText = match ? match[1].trim() : optionText.replace(/^Аптека\s*№\s*/, '').trim();
                     
                     // Получаем адрес из справочника аптек
-                    const pharmacyId = pharmacySelect.value;
-                    if (pharmacyId && typeof pharmacyReference !== 'undefined' && pharmacyReference) {
+                    if (pharmacyId && pharmacyId !== '--' && typeof pharmacyReference !== 'undefined' && pharmacyReference) {
                         const ph = pharmacyReference.find(p => p.id === pharmacyId);
-                        if (ph) {
-                            pharmacyAddress = ph.address || '';
+                        if (ph && ph.address) {
+                            pharmacyAddress = ph.address;
                         }
                     }
                 }
@@ -4114,98 +4143,150 @@ function getDisplayValue(employee, day) {
                 }
 
                 const daysInMonth = getDaysInMonth(currentMonth, currentYear);
-                const monthName = typeof getMonthName === 'function' ? getMonthName(currentMonth) : 'Месяц';
+                const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
+                                   'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+                const monthName = monthNames[currentMonth] || 'Месяц';
+                const monthNameUpper = monthName.toUpperCase();
+                const weekDays = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
 
-                ws_data.push([`ГРАФИК СОТРУДНИКОВ АПТЕКИ НА ${monthName} ${currentYear} г.`]);
-            ws_data.push([]);
-                const infoRow = [`Аптека № ${pharmacyNumberText}`];
-                if (pharmacyAddress) {
-                    infoRow.push(`Адрес: ${pharmacyAddress}`);
-                }
-                ws_data.push(infoRow);
-            ws_data.push([]);
-
-            const headerRow1 = ['Должность', 'Ф.И.О. сотрудника', 'График'];
-                for (let day = 1; day <= daysInMonth; day++) {
-                headerRow1.push(day);
-            }
-            headerRow1.push('Отработано за месяц, час');
-            ws_data.push(headerRow1);
-
-            const headerRow2 = ['', '', ''];
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dayOfWeek = typeof getDayOfWeek === 'function' ? getDayOfWeek(day) : 0;
-                    const dayName = typeof daysOfWeek !== 'undefined' && daysOfWeek[dayOfWeek] ? daysOfWeek[dayOfWeek] : '';
-                    headerRow2.push(dayName);
-            }
-            headerRow2.push('');
-            ws_data.push(headerRow2);
-
-            employees.forEach((employee) => {
-                    const startRow = ['Начало работы', (employee.position || '') + ' ' + (employee.name || ''), employee.schedule || ''];
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        const dayValue = typeof getDisplayValue === 'function' ? getDisplayValue(employee, day) : '';
-                    startRow.push(dayValue ? dayValue.split('-')[0] : '');
-                }
-                startRow.push('');
-                ws_data.push(startRow);
-
-                const endRow = ['Окончание работы', '', ''];
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        const dayValue = typeof getDisplayValue === 'function' ? getDisplayValue(employee, day) : '';
-                    endRow.push(dayValue ? dayValue.split('-')[1] : '');
-                }
-                endRow.push('');
-                ws_data.push(endRow);
-
-                const breakRow = ['Перерыв на обед', '', ''];
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        const dayValue = typeof getDisplayValue === 'function' ? getDisplayValue(employee, day) : '';
-                    breakRow.push(dayValue ? '1' : '');
-                }
-                    const totalShifts = Array.from({length: daysInMonth}, (_, i) => 
-                        (typeof getDisplayValue === 'function' && getDisplayValue(employee, i + 1)) ? 1 : 0
-                ).reduce((a, b) => a + b, 0);
-                breakRow.push(totalShifts);
-                ws_data.push(breakRow);
-
-                const hoursRow = ['Количество часов', '', ''];
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        const dayValue = typeof getDisplayValue === 'function' ? getDisplayValue(employee, day) : '';
-                    let hours = 0;
-                    if (dayValue) {
-                        const match = dayValue.match(/(\d+)-(\d+)/);
-                        if (match) {
-                            const start = parseInt(match[1]);
-                            const end = parseInt(match[2]);
-                            hours = end - start - 1;
-                            hours = hours < 0 ? (hours + 24) : hours;
-                        }
-                    }
-                    hoursRow.push(hours > 0 ? hours : '');
-                }
-                    const totalHours = typeof calculateTotalHours === 'function' ? calculateTotalHours(employee) : 0;
-                    hoursRow.push(totalHours);
-                ws_data.push(hoursRow);
-
+                // Заголовок (как в печатной форме)
                 ws_data.push([]);
-            });
+                ws_data.push(['Аптека № ' + pharmacyNumberText]);
+                ws_data.push(['Адрес ' + pharmacyAddress]);
+                ws_data.push([]);
+                ws_data.push(['УТВЕРЖДЕН:', '', 'Бочарова А.В.', '', 'Директор региона']);
+                ws_data.push([]);
+                ws_data.push([`ГРАФИК СОТРУДНИКОВ А/П НА ${monthNameUpper} ${currentYear} г.`]);
+                ws_data.push([]);
+
+                // Заголовки таблицы
+                const headerRow1 = ['Должность', 'Ф.И.О. сотрудника', ''];
+                for (let day = 1; day <= daysInMonth; day++) {
+                    headerRow1.push(day);
+                }
+                headerRow1.push('Отработано за месяц. час.');
+                ws_data.push(headerRow1);
+
+                const headerRow2 = ['', '', ''];
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(currentYear, currentMonth, day);
+                    headerRow2.push(weekDays[date.getDay()]);
+                }
+                headerRow2.push('');
+                ws_data.push(headerRow2);
+
+                // Данные для каждого сотрудника (как в печатной форме)
+                employees.forEach((employee) => {
+                    const position = employee.position || '';
+                    const name = employee.name || '';
+                    const employeeTotalHours = calculateTotalHours(employee);
+
+                    // Строка "Начало работы" - здесь заполняем должность и ФИО
+                    const startRow = [position, name, 'Начало работы'];
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const dayValue = getDisplayValue(employee, day);
+                        let startTime = '';
+                        
+                        // Проверяем отсутствие (отпуск/больничный)
+                        const absence = getAbsenceForDay(name, day);
+                        if (absence) {
+                            startTime = absence.symbol;
+                        } else if (dayValue) {
+                            const match = dayValue.match(/(\d+)-(\d+)/);
+                            if (match) {
+                                startTime = match[1];
+                            }
+                        }
+                        startRow.push(startTime || '');
+                    }
+                    startRow.push(''); // Пустая ячейка для итогового столбца
+                    ws_data.push(startRow);
+
+                    // Строка "Окончание работы"
+                    const endRow = ['', '', 'Окончание работы'];
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const dayValue = getDisplayValue(employee, day);
+                        let endTime = '';
+                        
+                        // Проверяем отсутствие (отпуск/больничный)
+                        const absence = getAbsenceForDay(name, day);
+                        if (!absence && dayValue) {
+                            const match = dayValue.match(/(\d+)-(\d+)/);
+                            if (match) {
+                                endTime = match[2];
+                            }
+                        }
+                        endRow.push(endTime || '');
+                    }
+                    endRow.push(''); // Пустая ячейка для итогового столбца
+                    ws_data.push(endRow);
+
+                    // Строка "Перерыв на обед"
+                    const breakRow = ['', '', 'Перерыв на обед'];
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const dayValue = getDisplayValue(employee, day);
+                        let breakHour = '';
+                        
+                        // Проверяем отсутствие (отпуск/больничный)
+                        const absence = getAbsenceForDay(name, day);
+                        if (!absence && dayValue) {
+                            breakHour = '1';
+                        }
+                        breakRow.push(breakHour || '');
+                    }
+                    breakRow.push(''); // Пустая ячейка для итогового столбца
+                    ws_data.push(breakRow);
+
+                    // Строка "Количество часов"
+                    const hoursRow = ['', '', 'Количество часов'];
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const dayValue = getDisplayValue(employee, day);
+                        let hours = '';
+                        
+                        // Проверяем отсутствие (отпуск/больничный)
+                        const absence = getAbsenceForDay(name, day);
+                        if (!absence && dayValue) {
+                            const match = dayValue.match(/(\d+)-(\d+)/);
+                            if (match) {
+                                const start = parseInt(match[1]);
+                                const end = parseInt(match[2]);
+                                let dayHours = end - start - 1;
+                                if (dayHours < 0) dayHours += 24;
+                                if (dayHours > 0) {
+                                    hours = dayHours.toString();
+                                }
+                            }
+                        }
+                        hoursRow.push(hours || '');
+                    }
+                    hoursRow.push(employeeTotalHours > 0 ? employeeTotalHours : ''); // Итог только в строке "Количество часов"
+                    ws_data.push(hoursRow);
+
+                    ws_data.push([]);
+                });
+
+                // Добавляем раздел "Ознакомлены/Согласовано"
+                ws_data.push([]);
+                ws_data.push(['Ознакомлены/Согласовано:']);
+                employees.slice(0, 7).forEach((emp) => {
+                    ws_data.push([emp.name || '', '', '(должность)', '', '(подпись)']);
+                });
 
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
             ws['!cols'] = [
+                { wch: 15 },
+                { wch: 25 },
                 { wch: 18 },
-                { wch: 20 },
-                { wch: 10 },
-                    ...Array(daysInMonth).fill({ wch: 8 }),
-                { wch: 15 }
+                ...Array(daysInMonth).fill({ wch: 6 }),
+                { wch: 20 }
             ];
 
             XLSX.utils.book_append_sheet(wb, ws, 'График');
                 
-                // Формируем имя файла (используем уже полученный номер аптеки)
-                let fileName = 'schedule_export';
+                // Формируем имя файла
+                let fileName = 'График_сотрудников';
                 if (pharmacyNumberText && pharmacyNumberText !== '-- Не выбрано --') {
-                    fileName = `schedule_${pharmacyNumberText}`;
+                    fileName = `График_${pharmacyNumberText}_${monthNameUpper}_${currentYear}`;
                 }
                 
                 console.log('Создание файла:', fileName);
