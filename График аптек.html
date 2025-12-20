@@ -3427,11 +3427,21 @@
             });
 
             // Listen to reference data changes
+            let lastReferenceDataHash = null;
             firebaseOnValue('scheduleReferenceData', (data) => {
                 if (data) {
                     const refData = typeof data === 'string' ? JSON.parse(data) : data;
+                    const currentHash = JSON.stringify(refData);
+                    
+                    // Проверяем, действительно ли данные изменились
+                    if (currentHash === lastReferenceDataHash) {
+                        return; // Данные не изменились, пропускаем обновление
+                    }
+                    
                     pharmacyReference = refData.pharmacyReference || [];
                     employeeReference = refData.employeeReference || [];
+                    lastReferenceDataHash = currentHash;
+                    
                     if (typeof updateGraphicPharmacySelect === 'function') updateGraphicPharmacySelect();
                     if (typeof updateRefPharmacySelect === 'function') updateRefPharmacySelect();
                     if (typeof updateGraphicEmployeeSelect === 'function') updateGraphicEmployeeSelect();
@@ -4764,88 +4774,138 @@ function getDisplayValue(employee, day) {
             highlightDaysWithNobody(); // Подсвечиваем дни когда никто не работает
         }
 
-        async function saveData() {
-    const pharmacySelect = document.getElementById('pharmacyNumber');
-    const pharmacyAddressInput = document.getElementById('pharmacyAddress');
-    const idToSave = currentPharmacyId || '--';
-    const scheduleKey = getScheduleKey(currentYear, currentMonth, idToSave);
-    
-    // Убеждаемся, что поле isSubcontractor явно установлено для всех сотрудников перед сохранением
-    const employeesToSave = employees.map(emp => {
-        // КРИТИЧНО: Firebase Realtime Database может удалять поля со значением false
-        // Используем число 1 для true и 0 для false, чтобы гарантировать сохранение
-        const employeeToSave = {
-            id: emp.id,
-            position: emp.position || '',
-            name: emp.name || '',
-            startHour: emp.startHour !== undefined ? emp.startHour : null,
-            endHour: emp.endHour !== undefined ? emp.endHour : null,
-            schedule: emp.schedule !== undefined ? emp.schedule : null,
-            scheduleStartDay: emp.scheduleStartDay !== undefined ? emp.scheduleStartDay : null,
-            isSubcontractor: emp.isSubcontractor === true ? 1 : 0, // Сохраняем как число для надежности
-            dayOverrides: emp.dayOverrides || {}
-        };
-        // Дополнительная гарантия
-        if (employeeToSave.isSubcontractor === undefined || employeeToSave.isSubcontractor === null) {
-            employeeToSave.isSubcontractor = 0;
-        }
-        return employeeToSave;
-    });
-    
-    // Отладка: проверяем подработчиков перед сохранением (проверяем как число 1)
-    const subcontractorsCount = employeesToSave.filter(emp => emp.isSubcontractor === 1 || emp.isSubcontractor === true).length;
-    if (subcontractorsCount > 0) {
-        console.log('💾 Сохраняем подработчиков:', subcontractorsCount, 'из', employeesToSave.length, 'сотрудников');
-        employeesToSave.forEach(emp => {
-            if (emp.isSubcontractor === 1 || emp.isSubcontractor === true) {
-                console.log('  - Подработчик:', emp.name, 'isSubcontractor:', emp.isSubcontractor, '(тип:', typeof emp.isSubcontractor, ')');
+        // Debounce для сохранения данных
+        let saveDataTimeout = null;
+        let isSaving = false;
+        let pendingSave = false;
+        
+        // Функция для немедленного сохранения (для критических операций)
+        async function saveDataImmediate() {
+            // Очищаем debounce таймер, если он есть
+            if (saveDataTimeout) {
+                clearTimeout(saveDataTimeout);
+                saveDataTimeout = null;
             }
-        });
-    }
-    
-    const scheduleData = {
-        pharmacyId: idToSave,
-        pharmacyNumber: idToSave,
-        pharmacyAddress: pharmacyAddressInput ? pharmacyAddressInput.value : '',
-        employees: employeesToSave
-    };
-    
-    // Дополнительная проверка перед сохранением
-    console.log('🔍 Проверка данных перед сохранением:');
-    console.log('  - Всего сотрудников:', employeesToSave.length);
-    employeesToSave.forEach((emp, idx) => {
-        console.log(`  - Сотрудник ${idx + 1}:`, {
-            name: emp.name,
-            isSubcontractor: emp.isSubcontractor,
-            type: typeof emp.isSubcontractor,
-            hasField: 'isSubcontractor' in emp
-        });
-    });
-    
-    await firebaseSetItem(scheduleKey, scheduleData);
-    
-    // КРИТИЧНО: Проверяем, что данные действительно сохранились
-    const verifyData = await firebaseGetItem(scheduleKey);
-    if (verifyData && verifyData.employees) {
-        const savedSubcontractors = verifyData.employees.filter(emp => emp.isSubcontractor === 1 || emp.isSubcontractor === true).length;
-        console.log('✅ Проверка после сохранения: подработчиков в сохраненных данных:', savedSubcontractors);
-        if (savedSubcontractors !== subcontractorsCount) {
-            console.error('❌ ОШИБКА: Количество подработчиков не совпадает! Сохранено:', savedSubcontractors, 'Ожидалось:', subcontractorsCount);
-            // Пробуем сохранить еще раз с явным указанием всех полей
-            console.log('🔄 Повторная попытка сохранения...');
-            await firebaseSetItem(scheduleKey, scheduleData);
+            await performSaveData();
         }
-    }
-    
-    await firebaseSetItem('savedCurrentMonth', currentMonth.toString());
-    await firebaseSetItem('savedCurrentYear', currentYear.toString());
-    await firebaseSetItem('savedCurrentPharmacyId', idToSave);
-    const refData = {
-        pharmacyReference: pharmacyReference || [],
-        employeeReference: employeeReference || []
-    };
-    await firebaseSetItem('scheduleReferenceData', refData);
-}
+        
+        // Отдельная функция для сохранения справочников с debounce
+        let saveReferenceTimeout = null;
+        let lastReferenceHash = null;
+        
+        async function saveReferenceData() {
+            const refData = {
+                pharmacyReference: pharmacyReference || [],
+                employeeReference: employeeReference || []
+            };
+            
+            const currentHash = JSON.stringify(refData);
+            // Если данные не изменились, не сохраняем
+            if (currentHash === lastReferenceHash) {
+                return;
+            }
+            
+            // Очищаем предыдущий таймер
+            if (saveReferenceTimeout) {
+                clearTimeout(saveReferenceTimeout);
+            }
+            
+            // Используем debounce - сохраняем через 500мс после последнего изменения
+            saveReferenceTimeout = setTimeout(async () => {
+                try {
+                    await firebaseSetItem('scheduleReferenceData', refData);
+                    lastReferenceHash = currentHash;
+                } catch (error) {
+                    console.error('Ошибка сохранения справочников:', error);
+                }
+            }, 500);
+        }
+        
+        async function saveData() {
+            // Если уже идет сохранение, помечаем что нужно сохранить еще раз после завершения
+            if (isSaving) {
+                pendingSave = true;
+                return;
+            }
+            
+            // Очищаем предыдущий таймер
+            if (saveDataTimeout) {
+                clearTimeout(saveDataTimeout);
+            }
+            
+            // Используем debounce - сохраняем через 1 секунду после последнего изменения
+            saveDataTimeout = setTimeout(async () => {
+                await performSaveData();
+            }, 1000);
+        }
+        
+        async function performSaveData() {
+            if (isSaving) {
+                pendingSave = true;
+                return;
+            }
+            
+            isSaving = true;
+            pendingSave = false;
+            
+            try {
+                const pharmacySelect = document.getElementById('pharmacyNumber');
+                const pharmacyAddressInput = document.getElementById('pharmacyAddress');
+                const idToSave = currentPharmacyId || '--';
+                const scheduleKey = getScheduleKey(currentYear, currentMonth, idToSave);
+                
+                // Убеждаемся, что поле isSubcontractor явно установлено для всех сотрудников перед сохранением
+                const employeesToSave = employees.map(emp => {
+                    // КРИТИЧНО: Firebase Realtime Database может удалять поля со значением false
+                    // Используем число 1 для true и 0 для false, чтобы гарантировать сохранение
+                    const employeeToSave = {
+                        id: emp.id,
+                        position: emp.position || '',
+                        name: emp.name || '',
+                        startHour: emp.startHour !== undefined ? emp.startHour : null,
+                        endHour: emp.endHour !== undefined ? emp.endHour : null,
+                        schedule: emp.schedule !== undefined ? emp.schedule : null,
+                        scheduleStartDay: emp.scheduleStartDay !== undefined ? emp.scheduleStartDay : null,
+                        isSubcontractor: emp.isSubcontractor === true ? 1 : 0, // Сохраняем как число для надежности
+                        dayOverrides: emp.dayOverrides || {}
+                    };
+                    // Дополнительная гарантия
+                    if (employeeToSave.isSubcontractor === undefined || employeeToSave.isSubcontractor === null) {
+                        employeeToSave.isSubcontractor = 0;
+                    }
+                    return employeeToSave;
+                });
+                
+                const scheduleData = {
+                    pharmacyId: idToSave,
+                    pharmacyNumber: idToSave,
+                    pharmacyAddress: pharmacyAddressInput ? pharmacyAddressInput.value : '',
+                    employees: employeesToSave
+                };
+                
+                // Сохраняем хеш данных перед сохранением
+                lastSavedDataHash = JSON.stringify(scheduleData);
+                isLocalUpdate = true; // Помечаем, что это наше обновление
+                
+                // Сохраняем в Firebase (без проверки после сохранения для ускорения)
+                await firebaseSetItem(scheduleKey, scheduleData);
+                
+                // Сохраняем настройки (они небольшие, можно сохранять всегда)
+                await firebaseSetItem('savedCurrentMonth', currentMonth.toString());
+                await firebaseSetItem('savedCurrentYear', currentYear.toString());
+                await firebaseSetItem('savedCurrentPharmacyId', idToSave);
+                
+                // Справочники сохраняются отдельно при их изменении, здесь не нужно
+            } catch (error) {
+                console.error('Ошибка сохранения данных:', error);
+            } finally {
+                isSaving = false;
+                // Если было запрошено сохранение во время текущего сохранения, выполняем его
+                if (pendingSave) {
+                    setTimeout(() => performSaveData(), 100);
+                }
+            }
+        }
 
         async function loadData() {
     const savedRefData = await firebaseGetItem('scheduleReferenceData');
@@ -6646,10 +6706,9 @@ function getDisplayValue(employee, day) {
                 }
                 existing.number = number;
                 existing.address = address;
-                saveData().then(() => {
-                    alert('Аптека обновлена!');
-                    cancelEditPharmacy(); // Сбрасываем режим редактирования
-                });
+                saveReferenceData(); // Используем отдельную функцию для справочников
+                alert('Аптека обновлена!');
+                cancelEditPharmacy(); // Сбрасываем режим редактирования
             } else {
                 // Добавление новой аптеки
                 if (pharmacyReference.some(p => p.number === number)) { 
@@ -6659,9 +6718,8 @@ function getDisplayValue(employee, day) {
             pharmacyReference.push({id: 'ph_' + Date.now(), number, address});
             document.getElementById('newPharmacyNumber').value = '';
             document.getElementById('newPharmacyAddress').value = '';
-                saveData().then(() => {
-                    alert('Аптека добавлена!');
-                });
+                saveReferenceData(); // Используем отдельную функцию для справочников
+                alert('Аптека добавлена!');
             }
 
             renderPharmacyList();
@@ -6711,7 +6769,7 @@ function getDisplayValue(employee, day) {
             renderPharmacyList();
             updateGraphicPharmacySelect();
             updateRefPharmacySelect();
-            saveData();
+            saveReferenceData(); // Используем отдельную функцию для справочников
         }
 
         
@@ -6889,10 +6947,9 @@ function getDisplayValue(employee, day) {
                 existing.schedule = schedule;
                 existing.startHour = parseInt(startHour);
                 existing.endHour = parseInt(endHour);
-                saveData().then(() => {
-                    alert('Сотрудник обновлен!');
-                    cancelEditEmployee(); // Сбрасываем режим редактирования
-                });
+                saveReferenceData(); // Используем отдельную функцию для справочников
+                alert('Сотрудник обновлен!');
+                cancelEditEmployee(); // Сбрасываем режим редактирования
             } else {
                 // Добавление нового сотрудника
             employeeReference.push({
@@ -6907,9 +6964,8 @@ function getDisplayValue(employee, day) {
             document.getElementById('newEmployeeSchedule').value = '';
             document.getElementById('newEmployeeStartHour').value = '';
             document.getElementById('newEmployeeEndHour').value = '';
-                saveData().then(() => {
-                    alert('Сотрудник добавлен!');
-                });
+                saveReferenceData(); // Используем отдельную функцию для справочников
+                alert('Сотрудник добавлен!');
             }
 
             renderEmployeeList();
@@ -6968,7 +7024,7 @@ function getDisplayValue(employee, day) {
             employeeReference = employeeReference.filter(e => e.id !== id);
             renderEmployeeList();
             updateGraphicEmployeeSelect();
-            saveData();
+            saveReferenceData(); // Используем отдельную функцию для справочников
         }
 
         
